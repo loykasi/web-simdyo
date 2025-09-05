@@ -1,0 +1,27 @@
+name: scratch-frontend
+services:
+  # production
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: frontend
+  #   expose:
+  #     - 3000
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db-api
+  #   environment:
+  #     - VITE_API_URL=http://localhost:8000
+
+  # development
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+    container_name: scratch-frontend
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
