@@ -13,7 +13,8 @@ public static class CorsExtension
                 {
                     policy.WithOrigins("http://localhost:3000")
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 }
             );
         });

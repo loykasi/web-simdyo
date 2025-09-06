@@ -67,6 +67,15 @@ namespace Scratch.API.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _accountService.LogOut();
+
+            return Ok();
+        }
+
         [HttpGet]
         [Authorize]
         [Route("profile")]

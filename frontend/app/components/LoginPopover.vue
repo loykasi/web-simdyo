@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { AuthState } from '~/stores/auth'
+import { useAuthStore } from '~/stores/auth.store'
 import { useLogin } from '~/composables/useLogin';
 import type { LoginRequest } from '~/types/auth.type';
 
-const { user } = AuthState();
+const { user } = useAuthStore();
 const { isLoginSuccess, login } = useLogin();
 
 const schema = z.object({

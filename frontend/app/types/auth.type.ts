@@ -10,8 +10,9 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    username: string;
-    email: string
+    userName: string;
+    email: string;
+    expiresAt: string;
 }
 
 export interface User {

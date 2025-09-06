@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { NavigationMenuItem, DropdownMenuItem } from '@nuxt/ui';
-import { AuthState } from '~/stores/auth';
+import { useAuthStore } from '~/stores/auth.store';
 
-const { isLoggedIn, user } = AuthState();
+const { isLoggedIn, user } = useAuthStore();
 
 const items = computed<NavigationMenuItem[][]>(() => [
     [
@@ -65,8 +65,6 @@ function loginClicked(event: MouseEvent)
 }
 
 const openAccountMenu = ref(false);
-const accountArchorRef = ref();
-
 function accountClicked(event: MouseEvent)
 {
     openAccountMenu.value = !openAccountMenu.value;

@@ -13,7 +13,7 @@ public static class ServiceExtension
         services.AddScoped<IUserRespository, UserRespository>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IEmailSender, EmailSender>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
     }
 }

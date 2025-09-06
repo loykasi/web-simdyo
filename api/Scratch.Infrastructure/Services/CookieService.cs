@@ -3,13 +3,18 @@ using Scratch.Application.Abstracts;
 
 namespace Scratch.Infrastructure.Services
 {
-    public class TokenService(IHttpContextAccessor httpContextAccessor) : ITokenService
+    public class CookieService(IHttpContextAccessor httpContextAccessor) : ICookieService
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public string Get(string key)
         {
             return _httpContextAccessor.HttpContext.Request.Cookies[key];
+        }
+
+        public void Delete(string key)
+        {
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete(key);
         }
 
         public void SetToken(string key, string value, DateTime? expiration = null)

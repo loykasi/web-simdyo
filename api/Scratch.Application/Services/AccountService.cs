@@ -18,7 +18,7 @@ namespace Scratch.Application.Services
         IEmailSender emailSender,
         IConfiguration configuration,
         ICurrentUserService currentUserService,
-        ITokenService tokenService
+        ICookieService cookieService
     ) : IAccountService
     {
         private readonly IAuthTokenProcessor _authTokenProcessor = authTokenProcessor;
@@ -27,7 +27,7 @@ namespace Scratch.Application.Services
         private readonly IEmailSender _emailSender = emailSender;
         private readonly IConfiguration _configuration = configuration;
         private readonly ICurrentUserService _currentUserService = currentUserService;
-        private readonly ITokenService _tokenService = tokenService;
+        private readonly ICookieService _cookieService = cookieService;
 
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest registerRequest)
         {
@@ -119,15 +119,12 @@ namespace Scratch.Application.Services
 
             await _userManager.UpdateAsync(user);
 
-            //_authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expiration);
-            //_authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
-
-            _tokenService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
-            _tokenService.SetToken("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
+            _cookieService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
+            _cookieService.SetToken("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
 
             return Result.Success
             (
-                new LoginResponse(user.UserName!, user.Email!)
+                new LoginResponse(user.UserName!, user.Email!, expiration.ToString("o"))
             );
         }
 
@@ -248,6 +245,21 @@ namespace Scratch.Application.Services
 
         public async Task<Result> LogOut()
         {
+            string refreshToken = _cookieService.Get("REFRESH_TOKEN");
+            var user = await _userRespository.GetUserByRefreshTokenAsync(refreshToken);
+
+            if (user == null)
+            {
+                throw new RefreshTokenException("Invalid refresh token");
+            }
+
+            user.RefreshToken = string.Empty;
+            user.RefreshTokenExpriresAtUTC = null;
+            await _userManager.UpdateAsync(user);
+
+            _cookieService.Delete("ACCESS_TOKEN");
+            _cookieService.Delete("REFRESH_TOKEN");
+
             return Result.Success();
         }
     }

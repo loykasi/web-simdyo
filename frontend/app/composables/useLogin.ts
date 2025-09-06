@@ -1,4 +1,4 @@
-import { AuthState } from "~/stores/auth";
+import { useAuthStore } from "~/stores/auth.store";
 import type { LoginRequest, LoginResponse, User } from "~/types/auth.type";
 
 export function useLogin() {
@@ -6,17 +6,19 @@ export function useLogin() {
 
     async function login(request: LoginRequest) {
         const toast = useToast();
-        const { isLoggedIn, user } = AuthState();
+        const { user, setExpiresAt } = useAuthStore();
         useAPI<LoginResponse>("auth/login", {
             method: "POST",
             body: request
         }).then((res) => {
-            console.log("success: " + res);
             user.value = {
                 email: res.email,
-                username: res.username
+                username: res.userName
             } as User;
+            
+            setExpiresAt(res.expiresAt);
             isLoginSuccess.value = true;
+            
             toast.add({
                 title: "Success",
                 description: "You have successfully logged in!",
@@ -30,6 +32,14 @@ export function useLogin() {
                 color: "error",
             })
         })
+    }
+
+    async function logout() {
+        const { user, stopRefreshTokenTimer } = useAuthStore();
+
+        useAPI("auth/logout");
+        user.value = null;
+        stopRefreshTokenTimer();
     }
 
     return { isLoginSuccess, login }

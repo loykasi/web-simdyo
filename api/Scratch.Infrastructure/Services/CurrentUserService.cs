@@ -7,11 +7,11 @@ namespace Scratch.Infrastructure.Services
 {
     public class CurrentUserService
     (
-        ITokenService tokenService,
+        ICookieService tokenService,
         IAuthTokenProcessor authTokenProcessor
     ) : ICurrentUserService
     {
-        private readonly ITokenService _tokenService = tokenService;
+        private readonly ICookieService _tokenService = tokenService;
         private readonly IAuthTokenProcessor _authTokenProcessor = authTokenProcessor;
 
         public string GetUserID()
