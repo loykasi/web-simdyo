@@ -6,9 +6,9 @@ import type { RegisterRequest } from '~/types/auth.type';
 
 const schema = z.object({
     username: z.string('Invalid username'),
-  email: z.email('Invalid email'),
-  password: z.string('Invalid password').min(6, 'Must be at least 6 characters'),
-  confirmPassword: z.string('Invalid')
+    email: z.email('Invalid email'),
+    password: z.string('Invalid password').min(6, 'Must be at least 6 characters'),
+    confirmPassword: z.string('Invalid')
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],

@@ -1,4 +1,4 @@
-import type { RegisterRequest } from "~/types/auth.type";
+import type { RegisterRequest, ResetPasswordRequest } from "~/types/auth.type";
 
 export function useAuth() {
 
@@ -42,5 +42,29 @@ export function useAuth() {
         })
     }
 
-    return { isRegisterSuccess, register, isVerifying, isVerifySuccess, confirmEmail }
+    async function forgotPassword(email: string) {
+        return useAPI("auth/forgot-password", {
+            method: "POST",
+            body: {
+                email
+            }
+        })
+    }
+
+    async function resetPassword(payload: ResetPasswordRequest) {
+        return useAPI("auth/reset-password", {
+            method: "POST",
+            body: payload
+        })
+    }
+
+    return {
+        isRegisterSuccess,
+        register,
+        isVerifying,
+        isVerifySuccess,
+        confirmEmail,
+        forgotPassword,
+        resetPassword
+    }
 }

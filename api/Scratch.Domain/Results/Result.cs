@@ -24,12 +24,14 @@
         public static Result NotFound(params Error[] errors) => new(ErrorType.NotFound, errors);
         public static Result BadRequest(params Error[] errors) => new(ErrorType.AccessUnAuthorized, errors);
         public static Result Conflict(params Error[] errors) => new(ErrorType.Conflict, errors);
+        public static Result UnAuthorized(params Error[] errors) => new(ErrorType.AccessUnAuthorized, errors);
 
         public static Result<T> Success<T>(T value) => new(value);
         public static Result<T> Failure<T>(params Error[] errors) => new(ErrorType.Failure, errors);
         public static Result<T> NotFound<T>(params Error[] errors) => new(ErrorType.NotFound, errors);
         public static Result<T> BadRequest<T>(params Error[] errors) => new(ErrorType.AccessUnAuthorized, errors);
         public static Result<T> Conflict<T>(params Error[] errors) => new(ErrorType.Conflict, errors);
+        public static Result<T> UnAuthorized<T>(params Error[] errors) => new(ErrorType.AccessUnAuthorized, errors);
     }
 
     public class Result<T> : Result

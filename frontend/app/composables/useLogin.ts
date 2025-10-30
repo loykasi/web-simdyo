@@ -13,7 +13,7 @@ export function useLogin() {
         }).then((res) => {
             user.value = {
                 email: res.email,
-                username: res.userName
+                userName: res.userName
             } as User;
             
             setExpiresAt(res.expiresAt);
@@ -34,13 +34,30 @@ export function useLogin() {
         })
     }
 
-    async function logout() {
-        const { user, stopRefreshTokenTimer } = useAuthStore();
-
-        useAPI("auth/logout");
-        user.value = null;
-        stopRefreshTokenTimer();
+    async function fetchProfile()
+    {
+        const { user } = useAuthStore();
+        useAPI<User>("auth/profile", {
+            method: "GET",
+        }).then(res => {
+            user.value = {
+                email: res.email,
+                userName: res.userName
+            } as User;
+            console.log("Fetch profile successful");
+        }).catch(err => {
+            console.log("Fetch profile failed");
+        });
     }
 
-    return { isLoginSuccess, login }
+    async function logout() {
+        const { user } = useAuthStore();
+
+        useAPI("auth/logout", {
+            method: "POST"
+        });
+        user.value = null;
+    }
+
+    return { isLoginSuccess, login, fetchProfile, logout }
 }

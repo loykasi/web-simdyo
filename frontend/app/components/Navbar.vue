@@ -12,11 +12,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
         },
         {
             label: 'Create',
-            icon: 'i-lucide-book-open',
+            to: '/create'
         },
         {
             label: 'Explorer',
-            icon: 'i-lucide-database',
+            to: '/explore'
         },
     ],
     isLoggedIn.value
@@ -42,23 +42,8 @@ const items = computed<NavigationMenuItem[][]>(() => [
     ]
 ]);
 
-const accountItems = ref<DropdownMenuItem[]>([
-  {
-    label: 'Profile',
-    icon: 'i-lucide-user'
-  },
-  {
-    label: 'Settings',
-    icon: 'i-lucide-cog'
-  },
-  {
-    label: 'Logout',
-    icon: 'i-lucide-credit-card'
-  },
-])
-
 const open = ref(false);
-const loginArchorRef = ref();
+const loginArchorRef = ref<HTMLElement>();
 function loginClicked(event: MouseEvent)
 {
 	open.value = !open.value;
@@ -83,7 +68,7 @@ function accountClicked(event: MouseEvent)
         <template #auth="{ item }">
             <div ref="loginArchorRef" class="px-2.5 py-1.5">
                 <template v-if="isLoggedIn">
-                    <div v-on:click="accountClicked">{{user?.username}}</div>
+                    <div v-on:click="accountClicked">{{user?.userName}}</div>
                 </template>
                 <template v-else>
                     <div v-on:click="loginClicked">Login</div>
@@ -92,7 +77,8 @@ function accountClicked(event: MouseEvent)
         </template>
     </UNavigationMenu>
 
-	<UPopover
+    <LoginPopover :reference="loginArchorRef" :open="open" />
+	<!-- <UPopover
 		v-model:open="open"
 		:content="{
 			reference: loginArchorRef,
@@ -101,13 +87,13 @@ function accountClicked(event: MouseEvent)
         arrow
 	>
 		<template #content>
-			<LoginPopover />
+			
 		</template>
-	</UPopover>
+	</UPopover> -->
 
-    <UDropdownMenu
-        v-model:open="openAccountMenu"
+    <!-- <UDropdownMenu
         :items="accountItems"
+        v-model:open="openAccountMenu"
         :content="{
             align: 'start',
             side: 'bottom',
@@ -118,5 +104,5 @@ function accountClicked(event: MouseEvent)
             content: 'w-48'
         }"
     >
-    </UDropdownMenu>
+    </UDropdownMenu> -->
 </template>

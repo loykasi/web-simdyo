@@ -9,10 +9,11 @@ namespace Scratch.Application.Abstracts
         Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest registerRequest);
         Task<Result> ConfirmEmail(ConfirmEmailRequest request);
         Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest);
-        Task RefreshTokenAsync(string? refreshToken);
+        Task<Result> RefreshTokenAsync(string? refreshToken);
         Task<Result> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
         Task<Result> ResetPassword(ResetPasswordRequest resetPasswordRequest);
         Task<Result<ProfileResponse>> GetProfile();
         Task<Result> LogOut();
+        Task<Result> ChangePassword(ChangePasswordRequest changePasswordRequest);
     }
 }

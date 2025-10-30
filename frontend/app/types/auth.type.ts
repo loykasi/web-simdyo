@@ -9,6 +9,13 @@ export interface LoginRequest {
     password: string;
 }
 
+export interface ResetPasswordRequest {
+    token: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}
+
 export interface LoginResponse {
     userName: string;
     email: string;
@@ -16,6 +23,6 @@ export interface LoginResponse {
 }
 
 export interface User {
-    username: string,
+    userName: string,
     email: string,
 }

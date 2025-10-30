@@ -3,19 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using Scratch.Application.Abstracts;
 using Scratch.Domain.Requests;
 using Scratch.Domain.Responses;
+using Scratch.Domain.Results;
 
 namespace Scratch.API.Controllers
 {
     [Route("api/[controller]")]
     public class AuthController(IAccountService accountService) : BaseController
     {
-        private readonly IAccountService _accountService = accountService;
-
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
-            var result = await _accountService.RegisterAsync(registerRequest);
+            var result = await accountService.RegisterAsync(registerRequest);
 
             return ToApiResult(result);
         }
@@ -24,7 +23,7 @@ namespace Scratch.API.Controllers
         [Route("confirm-email")]
         public async Task<IActionResult> Confirm(ConfirmEmailRequest request)
         {
-            var result = await _accountService.ConfirmEmail(request);
+            var result = await accountService.ConfirmEmail(request);
 
             return ToApiResult(result);
         }
@@ -33,7 +32,7 @@ namespace Scratch.API.Controllers
         [Route("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            var result = await _accountService.LoginAsync(loginRequest);
+            var result = await accountService.LoginAsync(loginRequest);
 
             return ToApiResult(result);
         }
@@ -44,36 +43,36 @@ namespace Scratch.API.Controllers
         {
             var refreshToken = HttpContext.Request.Cookies["REFRESH_TOKEN"];
 
-            await _accountService.RefreshTokenAsync(refreshToken);
+            var result = await accountService.RefreshTokenAsync(refreshToken);
 
-            return Ok();
+            return ToApiResult(result);
         }
 
         [HttpPost]
         [Route("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest forgotPassworedRquest)
         {
-            await _accountService.ForgotPassword(forgotPassworedRquest);
+            var result = await accountService.ForgotPassword(forgotPassworedRquest);
 
-            return Ok();
+            return ToApiResult(result);
         }
 
         [HttpPost]
         [Route("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest)
         {
-            await _accountService.ResetPassword(resetPasswordRequest);
+            var result = await accountService.ResetPassword(resetPasswordRequest);
 
-            return Ok();
+            return ToApiResult(result);
         }
 
         [HttpPost]
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
-            await _accountService.LogOut();
+            var result = await accountService.LogOut();
 
-            return Ok();
+            return ToApiResult(result);
         }
 
         [HttpGet]
@@ -81,7 +80,7 @@ namespace Scratch.API.Controllers
         [Route("profile")]
         public async Task<IActionResult> GetProfile()
         {
-            var result = await _accountService.GetProfile();
+            var result = await accountService.GetProfile();
 
             return ToApiResult(result);
         }

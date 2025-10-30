@@ -1,4 +1,9 @@
 <template>
-    <Navbar />
-    <slot />
+    <Header />
+    <UMain>
+        <UContainer>
+            <NuxtPage />
+        </UContainer>
+    </UMain>
+    <Footer />
 </template>

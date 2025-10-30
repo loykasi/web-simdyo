@@ -13,7 +13,7 @@ namespace Scratch.Application.Services
     public class AccountService
     (
         IAuthTokenProcessor authTokenProcessor,
-        IUserRespository userRespository,
+        IUnitOfWork unitOfWork,
         UserManager<User> userManager,
         IEmailSender emailSender,
         IConfiguration configuration,
@@ -21,17 +21,9 @@ namespace Scratch.Application.Services
         ICookieService cookieService
     ) : IAccountService
     {
-        private readonly IAuthTokenProcessor _authTokenProcessor = authTokenProcessor;
-        private readonly IUserRespository _userRespository = userRespository;
-        private readonly UserManager<User> _userManager = userManager;
-        private readonly IEmailSender _emailSender = emailSender;
-        private readonly IConfiguration _configuration = configuration;
-        private readonly ICurrentUserService _currentUserService = currentUserService;
-        private readonly ICookieService _cookieService = cookieService;
-
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest registerRequest)
         {
-            bool isUserExists = await _userManager.FindByNameAsync(registerRequest.UserName) != null;
+            bool isUserExists = await userManager.FindByNameAsync(registerRequest.UserName) != null;
             if (isUserExists)
             {
                 return Result.Conflict<RegisterResponse>
@@ -40,7 +32,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            isUserExists = await _userManager.FindByEmailAsync(registerRequest.Email) != null;
+            isUserExists = await userManager.FindByEmailAsync(registerRequest.Email) != null;
             if (isUserExists)
             {
                 return Result.Conflict<RegisterResponse>
@@ -51,7 +43,7 @@ namespace Scratch.Application.Services
 
             User user = User.Create(registerRequest.Email, registerRequest.UserName);
 
-            var result = await _userManager.CreateAsync(user, registerRequest.Password);
+            var result = await userManager.CreateAsync(user, registerRequest.Password);
 
             if (!result.Succeeded)
             {
@@ -61,7 +53,7 @@ namespace Scratch.Application.Services
                 );
             }
             
-            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string token = await userManager.GenerateEmailConfirmationTokenAsync(user);
             await SendConfirmationEmail(user, token);
 
             return Result.Success(
@@ -76,13 +68,13 @@ namespace Scratch.Application.Services
                 return Result.NotFound(new Error("Token.Notfound", "Token is missing"));
             }
 
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
                 return Result.NotFound(new Error("User.notFound", "User not found"));
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, request.Token);
+            var result = await userManager.ConfirmEmailAsync(user, request.Token);
             if (!result.Succeeded)
             {
                 return Result.BadRequest
@@ -96,11 +88,11 @@ namespace Scratch.Application.Services
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            var user = await userManager.FindByEmailAsync(loginRequest.Email);
 
             if (user == null
-                || !await _userManager.IsEmailConfirmedAsync(user)
-                || !await _userManager.CheckPasswordAsync(user, loginRequest.Password)
+                || !await userManager.IsEmailConfirmedAsync(user)
+                || !await userManager.CheckPasswordAsync(user, loginRequest.Password)
                 )
             {
                 return Result.Failure<LoginResponse>
@@ -109,18 +101,18 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var (jwtToken, expiration) = _authTokenProcessor.GenerateJwtToken(user);
-            var refreshToken = _authTokenProcessor.GenerateRefreshToken();
+            var (jwtToken, expiration) = authTokenProcessor.GenerateJwtToken(user);
+            var refreshToken = authTokenProcessor.GenerateRefreshToken();
 
             var refreshTokenExpirationAtUTC = DateTime.UtcNow.AddDays(7);
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpriresAtUTC = refreshTokenExpirationAtUTC;
 
-            await _userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);
 
-            _cookieService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
-            _cookieService.SetToken("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
+            cookieService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
+            cookieService.SetToken("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
 
             return Result.Success
             (
@@ -128,42 +120,44 @@ namespace Scratch.Application.Services
             );
         }
 
-        public async Task RefreshTokenAsync(string? refreshToken)
+        public async Task<Result> RefreshTokenAsync(string? refreshToken)
         {
             if (string.IsNullOrEmpty(refreshToken))
             {
-                throw new RefreshTokenException("Refresh token is missing.");
+                return Result.NotFound(new Error("RefreshTokenMissing", "Refresh token is missing."));
             }
 
-            var user = await _userRespository.GetUserByRefreshTokenAsync(refreshToken);
+            var user = await unitOfWork.UserRespository.GetUserByRefreshTokenAsync(refreshToken);
 
             if (user == null)
             {
-                throw new RefreshTokenException("Invalid refresh token");
+                return Result.UnAuthorized(new Error("InvalidToken", "Refresh token is invalid."));
             }
 
             if (user.RefreshTokenExpriresAtUTC < DateTime.UtcNow)
             {
-                throw new RefreshTokenException("Refresh token is expired.");
+                return Result.UnAuthorized(new Error("ExpiredToken", "Refresh token is expired."));
             }
 
-            var (jwtToken, expirationDateInUtc) = _authTokenProcessor.GenerateJwtToken(user);
-            var refreshTokenValue = _authTokenProcessor.GenerateRefreshToken();
+            var (jwtToken, expirationDateInUtc) = authTokenProcessor.GenerateJwtToken(user);
+            var refreshTokenValue = authTokenProcessor.GenerateRefreshToken();
 
             var refreshTokenExpirationDateInUtc = DateTime.UtcNow.AddDays(7);
 
             user.RefreshToken = refreshTokenValue;
             user.RefreshTokenExpriresAtUTC = refreshTokenExpirationDateInUtc;
 
-            await _userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);
 
-            _authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
-            _authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
+            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+
+            return Result.Success();
         }
 
         public async Task<Result> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
         {
-            var user = await _userManager.FindByEmailAsync(forgotPasswordRequest.Email);
+            var user = await userManager.FindByEmailAsync(forgotPasswordRequest.Email);
             if (user == null)
             {
                 return Result.NotFound
@@ -172,7 +166,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
             await SendPasswordResetEmail(user, token);
 
@@ -183,7 +177,7 @@ namespace Scratch.Application.Services
         {
             // valid request dto first
 
-            var user = await _userManager.FindByEmailAsync(resetPasswordRequest.Email);
+            var user = await userManager.FindByEmailAsync(resetPasswordRequest.Email);
             if (user == null)
             {
                 return Result.NotFound
@@ -192,7 +186,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.Password);
+            var result = await userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.Password);
 
             if (!result.Succeeded)
             {
@@ -207,28 +201,28 @@ namespace Scratch.Application.Services
 
         private async Task SendConfirmationEmail(User user, string token)
         {
-            string baseUrl = _configuration.GetSection("URLOptions")["Web"]!;
+            string baseUrl = configuration.GetSection("URLOptions")["Web"]!;
             string url = $"{baseUrl}/confirm-email?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
             string body = $"Click link to verify your account: <a href=\"{url}\" target=\"_blank\" >Click here</a>";
 
-            await _emailSender.Send(user.UserName!, user.Email!, "Account Verification", body);
+            await emailSender.Send(user.UserName!, user.Email!, "Account Verification", body);
         }
 
         private async Task SendPasswordResetEmail(User user, string token)
         {
-            string baseUrl = _configuration.GetSection("URLOptions")["Web"]!;
+            string baseUrl = configuration.GetSection("URLOptions")["Web"]!;
             string url = $"{baseUrl}/reset-password?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
             string body = $"Click link to reset your password: <a href=\"{url}\" target=\"_blank\" >Click here</a>" +
                 $"\ntoken: {token}";
 
-            await _emailSender.Send(user.UserName!, user.Email!, "Reset Password", body);
+            await emailSender.Send(user.UserName!, user.Email!, "Reset Password", body);
         }
 
         public async Task<Result<ProfileResponse>> GetProfile()
         {
-            string userID = _currentUserService.GetUserID();
+            string userID = currentUserService.GetUserID();
             
-            var user = await _userManager.FindByIdAsync(userID);
+            var user = await userManager.FindByIdAsync(userID);
             if (user == null)
             {
                 return Result.NotFound<ProfileResponse>
@@ -245,8 +239,8 @@ namespace Scratch.Application.Services
 
         public async Task<Result> LogOut()
         {
-            string refreshToken = _cookieService.Get("REFRESH_TOKEN");
-            var user = await _userRespository.GetUserByRefreshTokenAsync(refreshToken);
+            string refreshToken = cookieService.Get("REFRESH_TOKEN");
+            var user = await unitOfWork.UserRespository.GetUserByRefreshTokenAsync(refreshToken);
 
             if (user == null)
             {
@@ -255,10 +249,41 @@ namespace Scratch.Application.Services
 
             user.RefreshToken = string.Empty;
             user.RefreshTokenExpriresAtUTC = null;
-            await _userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);
 
-            _cookieService.Delete("ACCESS_TOKEN");
-            _cookieService.Delete("REFRESH_TOKEN");
+            cookieService.Delete("ACCESS_TOKEN");
+            cookieService.Delete("REFRESH_TOKEN");
+
+            return Result.Success();
+        }
+
+        public async Task<Result> ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            string userID = currentUserService.GetUserID();
+
+            var user = await userManager.FindByIdAsync(userID);
+            if (user == null)
+            {
+                return Result.NotFound<ProfileResponse>
+                (
+                    new Error("Profile.NotFound", "Invalid token")
+                );
+            }
+
+            var result = await userManager.ChangePasswordAsync
+                                        (
+                                            user,
+                                            changePasswordRequest.CurrentPassword,
+                                            changePasswordRequest.NewPassword
+                                        );
+
+            if (!result.Succeeded)
+            {
+                return Result.NotFound
+                (
+                    [.. result.Errors.Select(e => new Error(e.Code, e.Description))]
+                );
+            }
 
             return Result.Success();
         }
