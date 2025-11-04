@@ -10,7 +10,10 @@ namespace Scratch.Application.Abstracts
     public interface IProjectRepository
     {
         Task<IEnumerable<Project>> GetProjects();
-        Task<Project> GetById(Guid id);
+        Task<Project> GetById(int id);
         void Add(Project project);
+        Task<int> GetTotalProjectFromAccount(Guid id);
+        Task<IEnumerable<Project>> GetUserProjects(Guid id);
+        Task<int> GetProjectLike(int id);
     }
 }

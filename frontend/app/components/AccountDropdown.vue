@@ -8,11 +8,13 @@ const { user } = useAuthStore();
 const accountItems = ref<DropdownMenuItem[]>([
   {
     label: 'Profile',
-    icon: 'i-lucide-user'
+    icon: 'i-lucide-user',
+    to: `/profile/${user.value?.userName}`
   },
   {
     label: 'Settings',
-    icon: 'i-lucide-cog'
+    icon: 'i-lucide-cog',
+    to: '/account'
   },
   {
     label: 'Logout',

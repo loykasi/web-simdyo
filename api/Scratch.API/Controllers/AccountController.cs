@@ -18,5 +18,14 @@ namespace Scratch.API.Controllers
 
             return ToApiResult(result);
         }
+
+        [HttpGet]
+        [Route("{userName}")]
+        public async Task<IActionResult> GetProfile(string userName)
+        {
+            var result = await accountService.GetProfileDetail(userName);
+
+            return ToApiResult(result);
+        }
     }
 }

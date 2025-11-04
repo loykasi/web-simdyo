@@ -20,8 +20,16 @@ namespace Scratch.API.Controllers
             return ToApiResult(result);
         }
 
+        [HttpGet("user/{userName}")]
+        public async Task<IActionResult> GetUsersProject(string userName)
+        {
+            var result = await projectService.GetUserProjects(userName);
+
+            return ToApiResult(result);
+        }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProject(Guid id)
+        public async Task<IActionResult> GetProject(string id)
         {
             var result = await projectService.Get(id);
 

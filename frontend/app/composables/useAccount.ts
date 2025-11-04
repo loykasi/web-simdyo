@@ -1,4 +1,5 @@
 import type { ChangePasswordRequest } from "~/types/changePassword.type";
+import type { Profile } from "~/types/profile.type";
 
 export function useAccount() {
     async function changePassword(payload: ChangePasswordRequest) {
@@ -8,7 +9,14 @@ export function useAccount() {
         });
     }
 
+    async function getProfileDetail(userName: string) {
+        return useAPI<Profile>(`account/${userName}`, {
+            method: "GET",
+        });
+    }
+
     return {
         changePassword,
+        getProfileDetail
     }
 }

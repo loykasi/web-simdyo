@@ -4,11 +4,12 @@ namespace Scratch.Domain.Responses
 {
     public record ProjectResponse
     (
-        Guid? Id,
+        string? PublicId,
         string? Title,
         string? Description,
         string? Category,
         string? ProjectLink,
-        string? ThumbnailLink
+        string? ThumbnailLink,
+        string? UserName
     );
 }

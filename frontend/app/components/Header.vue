@@ -31,10 +31,10 @@ const items = computed<NavigationMenuItem[]>(() => [
 <template>
 	<UHeader>
 		<template #left>
-			<a
-				href="/"
+			<NuxtLink
+				to="/"
 				class="focus-visible:outline-primary hover:text-default transition-colors shrink-0 font-bold text-xl text-highlighted flex items-end gap-1.5 me-4"
-			>VisualBlock</a>
+			>VisualBlock</NuxtLink>
 			<UNavigationMenu :items="items" />
 		</template>
 

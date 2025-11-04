@@ -88,7 +88,7 @@ namespace Scratch.Application.Services
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var user = await userManager.FindByEmailAsync(loginRequest.Email);
+            var user = await userManager.FindByNameAsync(loginRequest.UserName);
 
             if (user == null
                 || !await userManager.IsEmailConfirmedAsync(user)
@@ -286,6 +286,25 @@ namespace Scratch.Application.Services
             }
 
             return Result.Success();
+        }
+
+        public async Task<Result<AccountDetailResponse>> GetProfileDetail(string userName)
+        {
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return Result.NotFound<AccountDetailResponse>
+                (
+                    new Error("Profile.NotFound", "Invalid token")
+                );
+            }
+
+            int totalProject = await unitOfWork.ProjectRepository.GetTotalProjectFromAccount(user.Id);
+
+            return Result.Success
+            (
+                new AccountDetailResponse(user.UserName!, user.Email!, totalProject)
+            );
         }
     }
 }

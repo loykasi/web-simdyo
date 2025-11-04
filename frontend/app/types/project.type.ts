@@ -13,4 +13,9 @@ export interface ProjectResponse {
     category: string;
     projectLink: string;
     thumbnailLink: string;
+    userName: string;
+}
+
+export interface ProjectsResponse {
+    projects: ProjectResponse[]
 }

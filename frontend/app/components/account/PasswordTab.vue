@@ -26,6 +26,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     };
     changePassword(payload)
         .then(() => {
+            state.currentPassword = "";
+            state.newPassword = "";
+            state.confirmPassword = "";
+
             toast.add({
                 title: "Success",
                 description: "Password has been changed!",

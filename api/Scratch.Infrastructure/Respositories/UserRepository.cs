@@ -4,7 +4,7 @@ using Scratch.Domain.Entities;
 
 namespace Scratch.Infrastructure.Respositories
 {
-    public class UserRespository(ApplicationDbContext applicationDbContext): IUserRespository
+    public class UserRepository(ApplicationDbContext applicationDbContext): IUserRespository
     {
         private readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
 

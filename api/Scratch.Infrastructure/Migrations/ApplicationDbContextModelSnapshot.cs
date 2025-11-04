@@ -22,6 +22,9 @@ namespace Scratch.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence<int>("ProjectIdSequence")
+                .IncrementsBy(100);
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -154,12 +157,17 @@ namespace Scratch.Infrastructure.Migrations
 
             modelBuilder.Entity("Scratch.Domain.Entities.Project", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "ProjectIdSequence");
 
                     b.Property<string>("Category")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -167,11 +175,20 @@ namespace Scratch.Infrastructure.Migrations
                     b.Property<string>("FileLink")
                         .HasColumnType("text");
 
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicId")
                         .HasColumnType("text");
 
                     b.Property<string>("ThumbnailLink")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -181,6 +198,35 @@ namespace Scratch.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Scratch.Domain.Entities.ProjectLike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProjectLikes");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.User", b =>
@@ -195,6 +241,9 @@ namespace Scratch.Infrastructure.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -237,6 +286,9 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -308,12 +360,43 @@ namespace Scratch.Infrastructure.Migrations
             modelBuilder.Entity("Scratch.Domain.Entities.Project", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Projects")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Scratch.Domain.Entities.ProjectLike", b =>
+                {
+                    b.HasOne("Scratch.Domain.Entities.Project", "Project")
+                        .WithMany("ProjectLikes")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Scratch.Domain.Entities.User", "User")
+                        .WithMany("ProjectLikes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Scratch.Domain.Entities.Project", b =>
+                {
+                    b.Navigation("ProjectLikes");
+                });
+
+            modelBuilder.Entity("Scratch.Domain.Entities.User", b =>
+                {
+                    b.Navigation("ProjectLikes");
+
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }

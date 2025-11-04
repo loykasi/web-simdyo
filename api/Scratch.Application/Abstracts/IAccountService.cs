@@ -15,5 +15,6 @@ namespace Scratch.Application.Abstracts
         Task<Result<ProfileResponse>> GetProfile();
         Task<Result> LogOut();
         Task<Result> ChangePassword(ChangePasswordRequest changePasswordRequest);
+        Task<Result<AccountDetailResponse>> GetProfileDetail(string userName);
     }
 }

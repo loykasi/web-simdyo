@@ -4,6 +4,7 @@
     {
         IUserRespository UserRespository { get; }
         IProjectRepository ProjectRepository { get; }
+        IProjectLikeRepository ProjectLikeRepository { get; }
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
