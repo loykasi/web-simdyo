@@ -2,13 +2,13 @@
 import type { ProjectsResponse } from '~/types/project.type';
 
 const route = useRoute();
-const userName = route.params.userName as string;
+const username = route.params.username as string;
 
 const { getProfileDetail } = useAccount();
-const { data: profile } = await useAsyncData("profile", () => getProfileDetail(userName));
+const { data: profile } = await useAsyncData("profile", () => getProfileDetail(username));
 const { data: projectsResponse } = await useAsyncData(
-	`${userName}.projects`,
-	() => useAPI<ProjectsResponse>(`projects/user/${userName}`, {
+	`${username}.projects`,
+	() => useAPI<ProjectsResponse>(`projects/user/${username}`, {
 		method: "GET",
 	})
 );
@@ -23,7 +23,7 @@ const { data: projectsResponse } = await useAsyncData(
 				<tbody>
 					<tr>
 						<td class="pe-8 py-1.5 font-medium text-default">Username</td>
-						<td>{{ profile?.userName }}</td>
+						<td>{{ profile?.username }}</td>
 					</tr>
 					<tr>
 						<td class="pe-8 py-1.5 font-medium text-default">Email</td>
@@ -41,7 +41,7 @@ const { data: projectsResponse } = await useAsyncData(
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
 			<NuxtLink
 				v-for="project in projectsResponse?.projects"
-				:to="`/projects/${project.id}`"
+				:to="`/projects/${project.publicId}`"
 				class="block rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
 			>
 				<img alt="placeholder" src="https://placehold.co/400" />
@@ -49,9 +49,9 @@ const { data: projectsResponse } = await useAsyncData(
 				<div class="p-4">
 				<h3 class="text-lg block h-14 line-clamp-2 font-bold">{{ project.title }}</h3>
 				<NuxtLink
-					:to="`/profile/${project.userName}`"
+					:to="`/profile/${project.username}`"
 					class="mt-1 text-sm text-blue-200 hover:underline"
-				>{{ project.userName }}</NuxtLink>
+				>{{ project.username }}</NuxtLink>
 				</div>
 			</NuxtLink>
         </div>

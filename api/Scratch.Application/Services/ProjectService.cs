@@ -20,7 +20,17 @@ namespace Scratch.Application.Services
         {
             var projects = await unitOfWork.ProjectRepository.GetProjects();
             var dto = projects.Select(p =>
-                new ProjectResponse(p.PublicId, p.Name, p.Description, p.Category, p.FileLink, p.ThumbnailLink, p.User.UserName)
+                new ProjectResponse
+                (
+                    p.PublicId,
+                    p.Name,
+                    p.Description,
+                    p.Category,
+                    p.FileLink,
+                    p.ThumbnailLink,
+                    p.User.UserName,
+                    p.CreatedAt.ToString("o")
+                )
             ).ToList();
             return Result.Success
             (
@@ -57,7 +67,8 @@ namespace Scratch.Application.Services
                     project.Category,
                     project.FileLink,
                     project.ThumbnailLink,
-                    project.User.UserName
+                    project.User.UserName,
+                    project.CreatedAt.ToString("o")
                 )
             );
         }
@@ -102,7 +113,8 @@ namespace Scratch.Application.Services
                     project.Category,
                     project.FileLink,
                     project.ThumbnailLink,
-                    project.User.UserName
+                    project.User.UserName,
+                    project.CreatedAt.ToString("o")
                 )
             );
         }
@@ -120,8 +132,18 @@ namespace Scratch.Application.Services
 
             var projects = await unitOfWork.ProjectRepository.GetUserProjects(user.Id);
 
-            var dto = projects.Select(p => 
-                new ProjectResponse(p.PublicId, p.Name, p.Description, p.Category, p.FileLink, p.ThumbnailLink, p.User.UserName)
+            var dto = projects.Select(p =>
+                new ProjectResponse
+                (
+                    p.PublicId,
+                    p.Name,
+                    p.Description,
+                    p.Category,
+                    p.FileLink,
+                    p.ThumbnailLink,
+                    p.User.UserName,
+                    p.CreatedAt.ToString("o")
+                )
             ).ToList();
 
             return Result.Success

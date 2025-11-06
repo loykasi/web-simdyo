@@ -5,7 +5,7 @@ export interface RegisterRequest {
 }
 
 export interface LoginRequest {
-    email: string;
+    username: string;
     password: string;
 }
 
@@ -17,12 +17,12 @@ export interface ResetPasswordRequest {
 }
 
 export interface LoginResponse {
-    userName: string;
+    username: string;
     email: string;
     expiresAt: string;
 }
 
 export interface User {
-    userName: string,
+    username: string,
     email: string,
 }

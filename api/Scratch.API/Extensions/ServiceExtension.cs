@@ -17,6 +17,7 @@ public static class ServiceExtension
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IProjectLikeService, ProjectLikeService>();
+        services.AddScoped<IProjectCommentService, ProjectCommentService>();
 
         services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
         services.AddScoped<IObjectStorageService, ObjectStorageService>();

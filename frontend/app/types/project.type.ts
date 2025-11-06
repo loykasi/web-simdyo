@@ -7,13 +7,14 @@ export interface UploadProjectRequest {
 }
 
 export interface ProjectResponse {
-    id: string;
+    publicId: string;
     title: string;
     description: string;
     category: string;
     projectLink: string;
     thumbnailLink: string;
-    userName: string;
+    username: string;
+    createdAt: string;
 }
 
 export interface ProjectsResponse {

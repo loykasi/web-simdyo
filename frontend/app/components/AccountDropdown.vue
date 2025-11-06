@@ -9,7 +9,7 @@ const accountItems = ref<DropdownMenuItem[]>([
   {
     label: 'Profile',
     icon: 'i-lucide-user',
-    to: `/profile/${user.value?.userName}`
+    to: `/profile/${user.value?.username}`
   },
   {
     label: 'Settings',
@@ -32,7 +32,7 @@ const accountItems = ref<DropdownMenuItem[]>([
       color="neutral"
       variant="subtle"
     >
-      {{user?.userName}}
+      {{user?.username}}
     </UButton>
   </UDropdownMenu>
 </template>

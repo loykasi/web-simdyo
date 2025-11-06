@@ -10,6 +10,7 @@ namespace Scratch.Domain.Responses
         string? Category,
         string? ProjectLink,
         string? ThumbnailLink,
-        string? UserName
+        string? Username,
+        string? CreatedAt
     );
 }

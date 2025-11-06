@@ -9,20 +9,20 @@ const { user } = useAuthStore();
 const { isLoginSuccess, login } = useLogin();
 
 const schema = z.object({
-	email: z.email('Invalid email'),
+	username: z.string('Invalid username'),
 	password: z.string('Invalid password').min(6, 'Must be at least 6 characters')
 })
 
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-	email: undefined,
+	username: undefined,
 	password: undefined
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const payload: LoginRequest = {
-        email: event.data.email,
+        username: event.data.username,
         password: event.data.password
     };
     login(payload);
@@ -46,8 +46,8 @@ const showPassword = ref(false);
 		<template #content>
 			<div class="p-4">
 				<UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-					<UFormField label="Email" name="email" >
-						<UInput v-model="state.email" placeholder="Email address" class="w-full mt-3" />
+					<UFormField label="Username" name="username" >
+						<UInput v-model="state.username" placeholder="UserName" class="w-full mt-3" />
 					</UFormField>
 
 					<UFormField label="Password" name="password">

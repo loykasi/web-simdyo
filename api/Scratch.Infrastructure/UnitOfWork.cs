@@ -1,10 +1,5 @@
 ﻿using Scratch.Application.Abstracts;
 using Scratch.Infrastructure.Respositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Scratch.Infrastructure
 {
@@ -15,6 +10,7 @@ namespace Scratch.Infrastructure
         public IUserRespository UserRespository { get; }
         public IProjectRepository ProjectRepository { get; }
         public IProjectLikeRepository ProjectLikeRepository { get; }
+        public IProjectCommentRepository ProjectCommentRepository { get; }
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
@@ -22,6 +18,7 @@ namespace Scratch.Infrastructure
             UserRespository = new UserRepository(dbContext);
             ProjectRepository = new ProjectRepository(dbContext);
             ProjectLikeRepository = new ProjectLikeRepository(dbContext);
+            ProjectCommentRepository = new ProjectCommentRepository(dbContext);
         }
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

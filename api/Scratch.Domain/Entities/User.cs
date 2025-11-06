@@ -9,6 +9,8 @@ namespace Scratch.Domain.Entities
 
         public ICollection<Project> Projects { get; set; }
         public ICollection<ProjectLike> ProjectLikes { get; set; }
+        public ICollection<ProjectComment> Comments { get; set; } = [];
+        public ICollection<ProjectComment> RepliedComments { get; set; } = [];
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

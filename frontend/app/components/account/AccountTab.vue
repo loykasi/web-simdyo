@@ -8,7 +8,7 @@ const { user } = useAuthStore();
         <div class="flex flex-col gap-4">
             <div>
                 <label class="block font-medium text-default">Username</label>
-                <div class="text-default">{{ user?.userName }}</div>
+                <div class="text-default">{{ user?.username }}</div>
             </div>
             <div>
                 <label class="block font-medium text-default">Email</label>

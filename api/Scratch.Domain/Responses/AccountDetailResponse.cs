@@ -1,4 +1,4 @@
 ﻿namespace Scratch.Domain.Responses
 {
-    public record AccountDetailResponse(string UserName, string Email, int TotalProject);
+    public record AccountDetailResponse(string Username, string Email, int TotalProject);
 }

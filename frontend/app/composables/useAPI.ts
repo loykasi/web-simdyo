@@ -1,6 +1,6 @@
 export function useAPI<T>(
     url: string, 
-    userOptions: { method?: string, body?: any } = {}
+    userOptions: { method?: string, body?: any, query?: Record<string, any> | undefined } = {}
 ) {
     const config = useRuntimeConfig();
 
@@ -8,6 +8,7 @@ export function useAPI<T>(
         baseURL: `${config.public.baseUrl}`,
         method: userOptions.method as any || "GET",
         body: userOptions.body,
+        query: userOptions.query,
         credentials: "include",
         retry: 1,
         retryStatusCodes: [401],

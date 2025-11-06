@@ -1,5 +1,6 @@
 export interface Profile {
-    userName: string,
+    username: string,
     email: string,
     totalProject: number,
+    joinedDate: string
 }

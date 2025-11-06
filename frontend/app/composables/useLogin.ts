@@ -13,7 +13,7 @@ export function useLogin() {
         }).then((res) => {
             user.value = {
                 email: res.email,
-                userName: res.userName
+                username: res.username
             } as User;
             
             setExpiresAt(res.expiresAt);
@@ -42,7 +42,7 @@ export function useLogin() {
         }).then(res => {
             user.value = {
                 email: res.email,
-                userName: res.userName
+                username: res.username
             } as User;
             console.log("Fetch profile successful");
         }).catch(err => {
