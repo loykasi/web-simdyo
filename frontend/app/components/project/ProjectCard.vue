@@ -1,0 +1,39 @@
+<script setup lang="ts">
+import type { ProjectResponse } from '~/types/project.type';
+
+defineProps<{
+    project: ProjectResponse
+}>();
+</script>
+<template>
+    <div
+        class="rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
+    >
+        <NuxtLink
+            :to="`/projects/${project.publicId}`"
+            class="block aspect-square w-full"
+        >
+            <img alt="placeholder" src="https://placehold.co/400" class="aspect-square" />
+            <!-- <img alt="placeholder" :src="project.thumbnailLink" /> -->
+        </NuxtLink>
+
+        <div class="p-4">
+            <NuxtLink
+                :to="`/projects/${project.publicId}`"
+                class="text-lg block line-clamp-1 font-bold hover:underline"
+            >
+                {{ project.title }}
+            </NuxtLink>
+            <NuxtLink
+                :to="`/profile/${project.username}`"
+                class="mt-1 text-sm text-blue-200 hover:underline"
+            >{{ project.username }}</NuxtLink>
+            <div class="mt-2">
+                <div class="flex items-center gap-2">
+                    <UIcon name="material-symbols:favorite" class="block size-5" />
+                    <span>{{ project.likeCount }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
