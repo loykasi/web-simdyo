@@ -14,7 +14,9 @@ export interface ProjectResponse {
     projectLink: string;
     thumbnailLink: string;
     username: string;
+    likeCount: number;
     createdAt: string;
+    deletedAt: string | null;
 }
 
 export interface ProjectsResponse {

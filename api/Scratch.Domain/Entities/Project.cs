@@ -1,6 +1,6 @@
 ﻿namespace Scratch.Domain.Entities
 {
-    public class Project : ITrackable
+    public class Project : ITrackable, ISoftDeletable
     {
         public int Id { get; set; }
         public string? Name { get; set; }
@@ -16,6 +16,7 @@
         public int LikeCount { get; set; }
         public ICollection<ProjectLike> ProjectLikes { get; set; }
 
+        public DateTime? DeletedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

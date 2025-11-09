@@ -1,4 +1,5 @@
 ﻿using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 using Scratch.Infrastructure.Respositories;
 
 namespace Scratch.Infrastructure

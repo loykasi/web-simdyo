@@ -1,16 +1,22 @@
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth.store';
 import type { ProjectResponse } from '~/types/project.type';
 
+const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
 const projectId = route.params.id as string;
 
 const { likeProject, unlikeProject } = useLikeProject();
 
-const { data: project } = await useAsyncData(
+const { data: project, status: fetchProjectStatus } = await useAsyncData(
 	`project.${projectId}`,
 	() => useAPI<ProjectResponse>(`projects/${projectId}`, {
 		method: "GET",
-	})
+	}),
+    {
+        server: false,
+        lazy: true
+    }
 );
 
 const { data: likeCount } = await useAsyncData(
@@ -57,19 +63,122 @@ const detailOpen = ref(false);
 function ToggleMoreInformation() {
     detailOpen.value = !detailOpen.value;
 }
+
+///////
+
+const statusLoading = ref(false);
+
+function isAuthor() {
+    return isLoggedIn.value && user.value?.username == project.value?.username;
+}
+
+async function deleteProject() {
+    statusLoading.value = true;
+
+    useAPI(`projects/${projectId}`, {
+		method: "DELETE",
+	})
+    .then(() => {
+        if (project.value !== undefined)
+        {
+            console.log("delete");
+            project.value.deletedAt = new Date().toISOString();
+        }
+    })
+    .catch()
+    .finally(() => {
+        statusLoading.value = false;
+    })
+}
+
+async function restoreProject() {
+    statusLoading.value = true;
+    
+    useAPI(`projects/${projectId}/restore`, {
+		method: "POST",
+	})
+    .then(() => {
+        if (project.value !== undefined)
+        {
+            console.log("restore");
+            project.value.deletedAt = null;
+        }
+    })
+    .catch()
+    .finally(() => {
+        statusLoading.value = false;
+    })
+}
+
+//////
+
+const unityCanvas = ref<HTMLIFrameElement>();
+
+function handleUnityMessage(event: any) {
+    if (event.data?.type === 'unityLoaded') {
+        console.log('✅ Unity WebGL loaded!', event.origin);
+
+        if (unityCanvas.value?.contentWindow) {
+            unityCanvas.value.contentWindow.postMessage(
+                { type: 'loadProject', url: project.value?.projectLink },
+                '*'
+            )
+        }
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('message', handleUnityMessage)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('message', handleUnityMessage)
+})
 </script>
 <template>
     <UPage>
-        <template v-if="project">
+        <template v-if="fetchProjectStatus === 'pending' || fetchProjectStatus === 'idle'">
+            Loading...
+        </template>
+        <template v-else-if="fetchProjectStatus === 'success' && project">
             <div class="flex justify-between my-4">
                 <h1 class="text-3xl font-semibold">{{ project.title }}</h1>
                 <div class="flex gap-x-3">
-                    <UButton size="xl" color="error">Report</UButton>
-                    <UButton size="xl">See inside</UButton>
+                    <template v-if="isAuthor()">
+                        <UButton
+                            v-if="project.deletedAt === null"
+                            size="xl"
+                            color="error"
+                            @click="deleteProject"
+                            :loading="statusLoading"
+                        >
+                            Delete
+                        </UButton>
+                        <UButton
+                            v-else
+                            size="xl"
+                            color="error"
+                            @click="restoreProject"
+                            :loading="statusLoading"
+                        >
+                            Restore
+                        </UButton>
+                    </template>
+                    <!-- <UButton size="xl" color="error">Report</UButton>
+                    <UButton size="xl">See inside</UButton> -->
                 </div>
             </div>
             
-            <div class="aspect-[16/9] w-full bg-blue-800 mb-4"></div>
+            <div class="aspect-[16/9] w-full bg-blue-800 mb-4">
+                <!-- <iframe
+                    ref="unityCanvas"
+                    src="/game-build/index.html"
+                    width="100%"
+                    height="100%"
+                    class="size-full border-none"
+                    loading="lazy"
+                ></iframe> -->
+            </div>
 
             <UCard class="mt-4">
                 <div class="flex items-center justify-between gap-x-3 w-full">

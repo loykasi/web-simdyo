@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Extensions;
 using Scratch.Domain.Requests;
 using Scratch.Domain.Responses;
 using Scratch.Domain.Results;
@@ -19,19 +21,51 @@ namespace Scratch.Application.Services
         public async Task<Result<ProjectsResponse>> GetProjectsAsync()
         {
             var projects = await unitOfWork.ProjectRepository.GetProjects();
-            var dto = projects.Select(p =>
-                new ProjectResponse
+            var dto = projects.Select(p => p.ToProjectResponse()).ToList();
+            return Result.Success
+            (
+                new ProjectsResponse(dto)
+            );
+        }
+
+        public async Task<Result<ProjectsResponse>> GetUserProjects(string userName)
+        {
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return Result.NotFound<ProjectsResponse>
                 (
-                    p.PublicId,
-                    p.Name,
-                    p.Description,
-                    p.Category,
-                    p.FileLink,
-                    p.ThumbnailLink,
-                    p.User.UserName,
-                    p.CreatedAt.ToString("o")
-                )
-            ).ToList();
+                    new Error("Profile.NotFound", "Invalid token")
+                );
+            }
+
+            var projects = await unitOfWork.ProjectRepository.GetUserProjects(user.Id);
+
+            var dto = projects.Select(p => p.ToProjectResponse()).ToList();
+
+            return Result.Success
+            (
+                new ProjectsResponse(dto)
+            );
+        }
+
+        public async Task<Result<ProjectsResponse>> GetUserTrashAsync()
+        {
+            string userID = currentUserService.GetUserID();
+            var user = await userManager.FindByIdAsync(userID);
+
+            if (user == null)
+            {
+                return Result.NotFound<ProjectsResponse>
+                (
+                    new Error("Profile.NotFound", "Invalid token")
+                );
+            }
+
+            var projects = await unitOfWork.ProjectRepository.GetUserDeletedProjects(user.Id);
+
+            var dto = projects.Select(p => p.ToProjectResponse()).ToList();
+
             return Result.Success
             (
                 new ProjectsResponse(dto)
@@ -53,23 +87,42 @@ namespace Scratch.Application.Services
             {
                 return Result.NotFound<ProjectResponse>
                 (
-                    new Error("Project.NotFound", $"No project with id: {projectId}.")
+                    new Error("Project.NotFound", $"No project with id: {publicId}.")
                 );
             }
 
-            return Result.Success
-            (
-                new ProjectResponse
+            if (!project.DeletedAt.HasValue)
+            {
+                return Result.Success(project.ToProjectResponse());
+            }
+
+            if (!currentUserService.HasValidAccessToken())
+            {
+                return Result.NotFound<ProjectResponse>
                 (
-                    project.PublicId,
-                    project.Name,
-                    project.Description,
-                    project.Category,
-                    project.FileLink,
-                    project.ThumbnailLink,
-                    project.User.UserName,
-                    project.CreatedAt.ToString("o")
-                )
+                    new Error("Project.NotFound", $"No project with id: {publicId}.")
+                );
+            }
+
+            string userID = currentUserService.GetUserID();
+            var user = await userManager.FindByIdAsync(userID);
+
+            if (user == null)
+            {
+                return Result.NotFound<ProjectResponse>
+                (
+                    new Error("Profile.InvalidUserToken", "Invalid token")
+                );
+            }
+
+            if (project.UserId == user.Id)
+            {
+                return Result.Success(project.ToProjectResponse());
+            }
+
+            return Result.NotFound<ProjectResponse>
+            (
+                new Error("Project.NotFound", $"No project with id: {publicId}.")
             );
         }
 
@@ -103,53 +156,79 @@ namespace Scratch.Application.Services
 
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success
-            (
-                new ProjectResponse
-                (
-                    project.PublicId,
-                    project.Name,
-                    project.Description,
-                    project.Category,
-                    project.FileLink,
-                    project.ThumbnailLink,
-                    project.User.UserName,
-                    project.CreatedAt.ToString("o")
-                )
-            );
+            return Result.Success(project.ToProjectResponse());
         }
 
-        public async Task<Result<ProjectsResponse>> GetUserProjects(string userName)
+        public async Task<Result> Delete(string publicId)
         {
-            var user = await userManager.FindByNameAsync(userName);
+            string userID = currentUserService.GetUserID();
+
+            var user = await userManager.FindByIdAsync(userID);
             if (user == null)
             {
-                return Result.NotFound<ProjectsResponse>
+                return Result.NotFound
                 (
-                    new Error("Profile.NotFound", "Invalid token")
+                    new Error("Profile.InvalidUserToken", "Invalid token")
                 );
             }
 
-            var projects = await unitOfWork.ProjectRepository.GetUserProjects(user.Id);
-
-            var dto = projects.Select(p =>
-                new ProjectResponse
+            if (!DecodeId(publicId, out int projectId))
+            {
+                return Result.NotFound<ProjectResponse>
                 (
-                    p.PublicId,
-                    p.Name,
-                    p.Description,
-                    p.Category,
-                    p.FileLink,
-                    p.ThumbnailLink,
-                    p.User.UserName,
-                    p.CreatedAt.ToString("o")
-                )
-            ).ToList();
+                    new Error("Project.InvalidPublicId", "Invalid public ID.")
+                );
+            }
 
-            return Result.Success
-            (
-                new ProjectsResponse(dto)
-            );
+            var project = await unitOfWork.ProjectRepository.GetById(projectId);
+            if (project == null)
+            {
+                return Result.NotFound<ProjectResponse>
+                (
+                    new Error("Project.NotFound", $"No project with id: {publicId}.")
+                );
+            }
+
+            unitOfWork.ProjectRepository.SoftDelete(project);
+            await unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
+        }
+
+        public async Task<Result> Undelete(string publicId)
+        {
+            string userID = currentUserService.GetUserID();
+
+            var user = await userManager.FindByIdAsync(userID);
+            if (user == null)
+            {
+                return Result.NotFound
+                (
+                    new Error("Profile.InvalidUserToken", "Invalid token")
+                );
+            }
+
+            if (!DecodeId(publicId, out int projectId))
+            {
+                return Result.NotFound<ProjectResponse>
+                (
+                    new Error("Project.InvalidPublicId", "Invalid public ID.")
+                );
+            }
+
+            var project = await unitOfWork.ProjectRepository.GetById(projectId);
+            if (project == null)
+            {
+                return Result.NotFound<ProjectResponse>
+                (
+                    new Error("Project.NotFound", $"No project with id: {publicId}.")
+                );
+            }
+
+            unitOfWork.ProjectRepository.Undelete(project);
+            await unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
         }
 
         private bool DecodeId(string publicId, out int id)

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 
 namespace Scratch.API.Controllers
 {

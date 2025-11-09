@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
 using Scratch.Infrastructure.Options;
 using System.IdentityModel.Tokens.Jwt;

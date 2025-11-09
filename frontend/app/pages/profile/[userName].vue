@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth.store';
 import type { ProjectsResponse } from '~/types/project.type';
 
+const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
 const username = route.params.username as string;
 
@@ -8,12 +10,52 @@ const { getProfileDetail } = useAccount();
 const { data: profile } = await useAsyncData("profile", () => getProfileDetail(username));
 const { data: projectsResponse } = await useAsyncData(
 	`${username}.projects`,
-	() => useAPI<ProjectsResponse>(`projects/user/${username}`, {
+	() => useAPI<ProjectsResponse>(`projects/users/${username}`, {
 		method: "GET",
 	})
 );
-</script>
 
+const isFetchTrash = ref(false);
+const deletedProjects = ref<ProjectsResponse>();
+
+type tabType = "all" | "trash";
+
+const tab = ref<tabType>("all");
+
+function toTrashTab() {
+	tab.value = 'trash';
+	if (!isFetchTrash.value) {
+		isFetchTrash.value = true;
+		useAPI<ProjectsResponse>("projects/users/trash", {
+			method: "GET",
+		})
+		.then(res => {
+			deletedProjects.value = res;
+		})
+		.catch(err => {
+			console.log(err);
+		})
+	}
+}
+
+function toAllTab() {
+	tab.value = 'all';
+}
+
+function getTabColor(type: tabType) {
+	if (tab.value === type) {
+		return "primary";
+	}
+	return "neutral";
+}
+
+function getTabVariant(type: tabType) {
+	if (tab.value === type) {
+		return "solid";
+	}
+	return "outline";
+}
+</script>
 <template>
     <UPage>
         <UPageHeader title="Author Username" />
@@ -37,23 +79,42 @@ const { data: projectsResponse } = await useAsyncData(
 			</table>
         </UCard>
 
-        <h2 class="text-2xl font-bold mt-4">Projects</h2>
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-			<NuxtLink
-				v-for="project in projectsResponse?.projects"
-				:to="`/projects/${project.publicId}`"
-				class="block rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
-			>
-				<img alt="placeholder" src="https://placehold.co/400" />
+		<div class="flex items-center justify-between gap-x-4 mt-8 border-b border-b-default pb-2">
+			<h2 class="block text-3xl font-bold">Projects</h2>
 
-				<div class="p-4">
-				<h3 class="text-lg block h-14 line-clamp-2 font-bold">{{ project.title }}</h3>
-				<NuxtLink
-					:to="`/profile/${project.username}`"
-					class="mt-1 text-sm text-blue-200 hover:underline"
-				>{{ project.username }}</NuxtLink>
-				</div>
-			</NuxtLink>
+			<div
+				v-if="isLoggedIn && user?.username == profile?.username"
+				class="flex items-center gap-x-2"
+			>
+				<UButton
+					:color="getTabColor('all')"
+					:variant="getTabVariant('all')"
+					@click="toAllTab()"
+				>
+					All
+				</UButton>
+				<UButton
+					:color="getTabColor('trash')"
+					:variant="getTabVariant('trash')"
+					@click="toTrashTab()"
+				>
+					Trash
+				</UButton>
+			</div>
+		</div>
+        
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+			<ProjectCard
+				v-if="tab === 'all'"
+				v-for="project in projectsResponse?.projects"
+				:project="project"
+			/>
+
+			<ProjectCard
+				v-if="tab === 'trash'"
+				v-for="project in deletedProjects?.projects"
+				:project="project"
+			/>
         </div>
     </UPage>
 </template>

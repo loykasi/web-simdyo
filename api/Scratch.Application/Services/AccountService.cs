@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Exceptions;
 using Scratch.Domain.Requests;
@@ -299,7 +300,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            int totalProject = await unitOfWork.ProjectRepository.GetTotalProjectFromAccount(user.Id);
+            int totalProject = await unitOfWork.ProjectRepository.GetUserProjectCount(user.Id);
 
             return Result.Success
             (

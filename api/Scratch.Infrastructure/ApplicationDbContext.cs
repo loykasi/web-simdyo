@@ -21,6 +21,12 @@ namespace Scratch.Infrastructure
             builder.Entity<Project>()
                 .Property(p => p.Id)
                 .UseHiLo("ProjectIdSequence");
+
+            //builder.Entity<Project>().HasQueryFilter(p => p.DeletedAt.HasValue != false);
+
+            builder.Entity<Project>()
+                .HasIndex(p => p.DeletedAt)
+                .HasFilter("\"DeletedAt\" IS NULL");
         }
 
         public override int SaveChanges()

@@ -11,6 +11,8 @@ namespace Scratch.Domain.Responses
         string? ProjectLink,
         string? ThumbnailLink,
         string? Username,
-        string? CreatedAt
+        int likeCount,
+        string? CreatedAt,
+        string? DeletedAt
     );
 }

@@ -62,7 +62,7 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
     upload(payload)
         .then((res) => {
             loading.value = false;
-            navigateTo(`/projects/${res.id}`);
+            navigateTo(`/projects/${res.publicId}`);
         })
         .catch((error) => {
             loading.value = false;

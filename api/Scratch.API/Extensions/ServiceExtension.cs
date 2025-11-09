@@ -1,4 +1,5 @@
 ﻿using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 using Scratch.Application.Services;
 using Scratch.Infrastructure;
 using Scratch.Infrastructure.Processors;
@@ -20,11 +21,11 @@ public static class ServiceExtension
         services.AddScoped<IProjectCommentService, ProjectCommentService>();
 
         services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
-        services.AddScoped<IObjectStorageService, ObjectStorageService>();
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+        services.AddSingleton<IObjectStorageService, ObjectStorageService>();
         services.AddSingleton<IPublicIdService, PublicIdService>();
     }
 }

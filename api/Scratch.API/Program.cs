@@ -19,6 +19,9 @@ builder.Services.Configure<EmailOptions>(
 builder.Services.Configure<URLOptions>(
     builder.Configuration.GetSection(URLOptions.OptionKey)
 );
+builder.Services.Configure<S3Options>(
+    builder.Configuration.GetSection(S3Options.OptionsKey)
+);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

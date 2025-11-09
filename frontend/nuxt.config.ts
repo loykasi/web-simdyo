@@ -19,5 +19,8 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/icon',
     '@nuxt/fonts'
-  ]
+  ],
+  routeRules: {
+    '/create': { ssr: false },
+  }
 })

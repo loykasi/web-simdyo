@@ -1,4 +1,4 @@
-﻿using Scratch.Application.Abstracts;
+﻿using Scratch.Application.Interfaces.Repositories;
 using Sqids;
 
 namespace Scratch.Infrastructure.Services

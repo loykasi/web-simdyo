@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Repositories;
 
 namespace Scratch.Infrastructure.Services
 {
