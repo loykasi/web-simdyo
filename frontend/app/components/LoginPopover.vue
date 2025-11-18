@@ -5,8 +5,13 @@ import { useAuthStore } from '~/stores/auth.store'
 import { useLogin } from '~/composables/useLogin';
 import type { LoginRequest } from '~/types/auth.type';
 
+const toast = useToast();
 const { user } = useAuthStore();
-const { isLoginSuccess, login } = useLogin();
+const { login } = useLogin();
+const isLoginSuccess = ref(false);
+const loading = ref(false);
+const error = ref("");
+const open = ref(false);
 
 const schema = z.object({
 	username: z.string('Invalid username'),
@@ -21,11 +26,31 @@ const state = reactive<Partial<Schema>>({
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+	loading.value = true;
     const payload: LoginRequest = {
         username: event.data.username,
         password: event.data.password
     };
-    login(payload);
+    login(payload)
+	.then((res) => {
+		user.value = {
+			email: res.email,
+			username: res.username
+		};
+		
+		isLoginSuccess.value = true;
+
+		toast.add({
+			title: `Welcome, ${res.username}`,
+			color: 'success'
+		})
+	}).catch((err) => {
+		if (err.data[0].code === "Login.ValidationFailed") {
+			error.value = "Incorrect username or password"
+        }
+	}).finally(() => {
+		loading.value = false;
+	})
 }
 
 const showPassword = ref(false);
@@ -33,6 +58,7 @@ const showPassword = ref(false);
 
 <template>
 	<UPopover
+		v-model:open="open"
 		:content="{
 			align: 'end'
 		}"
@@ -44,10 +70,10 @@ const showPassword = ref(false);
 			variant="ghost"
 		/>
 		<template #content>
-			<div class="p-4">
+			<div class="p-4 min-w-xs">
 				<UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
 					<UFormField label="Username" name="username" >
-						<UInput v-model="state.username" placeholder="UserName" class="w-full mt-3" />
+						<UInput v-model="state.username" placeholder="Username" class="w-full mt-1" />
 					</UFormField>
 
 					<UFormField label="Password" name="password">
@@ -55,7 +81,7 @@ const showPassword = ref(false);
 							v-model="state.password"
 							placeholder="Password"
 							:type="showPassword ? 'text' : 'password'"
-							class="w-full mt-3"
+							class="w-full mt-1"
 						>
 							<template #trailing>
 							<UButton
@@ -71,12 +97,19 @@ const showPassword = ref(false);
 							</template>
 						</UInput>
 					</UFormField>
+
+					<div
+						v-if="error !== ''"
+						class="bg-error-100 dark:bg-error-600 p-2 rounded-md text-base"
+					>
+						{{ error }}
+					</div>
 						
 					<div>
-						<ULink to="/forgotPassword">Forgot password?</ULink>
+						<ULink to="/forgotPassword" @click="() => {open = false}">Forgot password?</ULink>
 					</div>
 
-					<UButton type="submit">
+					<UButton type="submit" :loading="loading">
 						Submit
 					</UButton>
 				</UForm>

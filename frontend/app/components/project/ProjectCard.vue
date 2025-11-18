@@ -17,20 +17,20 @@ defineProps<{
             <!-- <img alt="placeholder" :src="project.thumbnailLink" /> -->
         </NuxtLink>
 
-        <div class="p-4">
+        <div class="p-2">
             <NuxtLink
                 :to="`/projects/${project.publicId}`"
-                class="text-lg block line-clamp-1 font-bold hover:underline"
+                class="text-base text-primary block line-clamp-1 font-bold hover:underline"
             >
                 {{ project.title }}
             </NuxtLink>
             <NuxtLink
                 :to="`/profile/${project.username}`"
-                class="mt-1 text-sm text-blue-200 hover:underline"
+                class="mt-1 text-sm text-secondary hover:underline"
             >{{ project.username }}</NuxtLink>
-            <div class="mt-2">
-                <div class="flex items-center gap-2">
-                    <UIcon name="material-symbols:favorite" class="block size-5" />
+            <div class="">
+                <div class="flex items-center gap-2 text-muted">
+                    <UIcon name="material-symbols:favorite-outline" class="size-4" />
                     <span>{{ project.likeCount }}</span>
                 </div>
             </div>

@@ -39,15 +39,11 @@ namespace Scratch.Infrastructure.Services
                 InputStream = stream,
                 ContentType = file.ContentType,
                 DisablePayloadSigning = true,
-                DisableDefaultChecksumValidation = true
+                DisableDefaultChecksumValidation = true,
             };
 
-            await _s3Client.PutObjectAsync(request);
+            //await _s3Client.PutObjectAsync(request);
 
-            //string path = Path.Combine(_savePath, name);
-            //using FileStream fileStream = File.Create(path);
-            //await file.CopyToAsync(fileStream);
-            
             return _s3Path + name;
         }
     }

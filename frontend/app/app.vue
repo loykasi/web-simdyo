@@ -3,6 +3,12 @@ const { fetchProfile } = useLogin();
 onMounted(() => {
 	fetchProfile();
 })
+
+useHead({
+	titleTemplate: (titleChunk) => {
+		return titleChunk ? `${titleChunk} - CodeVisdoo` : 'CodeVisdoo'
+	},
+})
 </script>
 <template>
 	<UApp>

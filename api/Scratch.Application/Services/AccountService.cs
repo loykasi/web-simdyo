@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Scratch.Application.Abstracts;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Domain.Authorizations;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Exceptions;
 using Scratch.Domain.Requests;
@@ -45,6 +46,7 @@ namespace Scratch.Application.Services
             User user = User.Create(registerRequest.Email, registerRequest.UserName);
 
             var result = await userManager.CreateAsync(user, registerRequest.Password);
+            await userManager.AddToRoleAsync(user, Roles.Member);
 
             if (!result.Succeeded)
             {
@@ -102,7 +104,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var (jwtToken, expiration) = authTokenProcessor.GenerateJwtToken(user);
+            var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user);
             var refreshToken = authTokenProcessor.GenerateRefreshToken();
 
             var refreshTokenExpirationAtUTC = DateTime.UtcNow.AddDays(7);
@@ -132,15 +134,19 @@ namespace Scratch.Application.Services
 
             if (user == null)
             {
+                cookieService.Delete("ACCESS_TOKEN");
+                cookieService.Delete("REFRESH_TOKEN");
                 return Result.UnAuthorized(new Error("InvalidToken", "Refresh token is invalid."));
             }
 
             if (user.RefreshTokenExpriresAtUTC < DateTime.UtcNow)
             {
+                cookieService.Delete("ACCESS_TOKEN");
+                cookieService.Delete("REFRESH_TOKEN");
                 return Result.UnAuthorized(new Error("ExpiredToken", "Refresh token is expired."));
             }
 
-            var (jwtToken, expirationDateInUtc) = authTokenProcessor.GenerateJwtToken(user);
+            var (jwtToken, expirationDateInUtc) = await authTokenProcessor.GenerateJwtToken(user);
             var refreshTokenValue = authTokenProcessor.GenerateRefreshToken();
 
             var refreshTokenExpirationDateInUtc = DateTime.UtcNow.AddDays(7);
@@ -204,7 +210,7 @@ namespace Scratch.Application.Services
         {
             string baseUrl = configuration.GetSection("URLOptions")["Web"]!;
             string url = $"{baseUrl}/confirm-email?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
-            string body = $"Click link to verify your account: <a href=\"{url}\" target=\"_blank\" >Click here</a>";
+            string body = $"Click link to verify your account: <a href=\"{url}\" target=\"_blank\" >Click here</a><br/><div>{url}</div>";
 
             await emailSender.Send(user.UserName!, user.Email!, "Account Verification", body);
         }
@@ -232,9 +238,11 @@ namespace Scratch.Application.Services
                 );
             }
 
+            bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
+
             return Result.Success
             (
-                new ProfileResponse(user.UserName!, user.Email!)
+                new ProfileResponse(user.UserName!, user.Email!, isBanned)
             );
         }
 

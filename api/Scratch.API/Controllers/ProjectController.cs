@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Domain.Authorizations;
 using Scratch.Domain.Requests;
 
 namespace Scratch.API.Controllers
@@ -13,9 +15,9 @@ namespace Scratch.API.Controllers
     ): BaseController
     {
         [HttpGet]
-        public async Task<IActionResult> GetProjects()
+        public async Task<IActionResult> GetProjects([FromQuery] int? lastId, [FromQuery] int? page, [FromQuery] int? limit)
         {
-            var result = await projectService.GetProjectsAsync();
+            var result = await projectService.GetProjectsAsync(lastId, page, limit);
 
             return ToApiResult(result);
         }
@@ -51,6 +53,16 @@ namespace Scratch.API.Controllers
         public async Task<IActionResult> UploadProject(UploadProjectRequest uploadProjectRequest)
         {
             var result = await projectService.Upload(uploadProjectRequest);
+
+            return ToApiResult(result);
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Route("{publicId}")]
+        public async Task<IActionResult> UpdateProject(string publicId, UpdateProjectRequest updateProjectRequest)
+        {
+            var result = await projectService.Update(publicId, updateProjectRequest);
 
             return ToApiResult(result);
         }

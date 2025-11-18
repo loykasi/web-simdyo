@@ -7,17 +7,21 @@ const { isVerifying, isVerifySuccess, confirmEmail } = useAuth();
 confirmEmail(token, email);
 </script>
 <template>
-    <UCard variant="subtle" class="mx-auto w-[400px]">
+    <UCard
+        variant="outline"
+        class="mt-8 mx-auto max-w-md"
+    >
         <template v-if="isVerifying">
-            <h2 class="text-center text-xl font-bold mb-4">Verifing</h2>
-            <UProgress />
+            <h1 class="text-2xl font-bold text-center">Verifing</h1>
+            <UProgress class="mt-2" />
         </template>
         <template v-else-if="isVerifySuccess">
-            <h2 class="text-center text-xl font-bold mb-4">Verified!</h2>
-            <p class="text-center">You have successfully verified account.</p>
+            <h1 class="text-2xl font-bold text-center">Verified!</h1>
+            <div class="mt-2 text-center">Your email has been verified.</div>
+            <div class="text-center">Your can now sign in to your account.</div>
         </template>
         <template v-else>
-            <h2 class="text-center text-xl font-bold mb-4">Failed to verify!</h2>
+            <h1 class="text-2xl font-bold text-center">Something went wrong!</h1>
             <p class="text-center">Check the link again.</p>
         </template>
     </UCard>

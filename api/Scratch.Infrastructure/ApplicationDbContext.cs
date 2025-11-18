@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Scratch.Infrastructure
 {
-    public class ApplicationDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext: IdentityDbContext<User, Role, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -63,5 +63,6 @@ namespace Scratch.Infrastructure
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectLike> ProjectLikes { get; set; }
         public DbSet<ProjectComment> ProjectComments { get; set; }
+        public DbSet<UserBan> UserBans { get; set; }
     }
 }

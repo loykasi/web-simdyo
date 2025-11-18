@@ -8,7 +8,15 @@ export function useProject() {
         });
     }
 
+    async function update(publicId: string, payload: FormData) {
+        return useAPI<ProjectResponse>(`projects/${publicId}`, {
+            method: "PUT",
+            body: payload
+        });
+    }
+
     return {
         upload,
+        update
     }
 }

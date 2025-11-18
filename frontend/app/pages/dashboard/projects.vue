@@ -1,33 +1,34 @@
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
-import type { TableColumn, TableRow } from '@nuxt/ui'
-import type { Row } from '@tanstack/vue-table'
+import { h, resolveComponent } from 'vue';
+import type { TableColumn, TableRow } from '@nuxt/ui';
+import type { Row } from '@tanstack/vue-table';
+import type { Pagination } from '~/types/pagination.type';
+import type { ProjectResponse } from '~/types/project.type';
 
-const toast = useToast()
-const UButton = resolveComponent('UButton')
-const UCheckbox = resolveComponent('UCheckbox')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
+const toast = useToast();
+const UButton = resolveComponent('UButton');
+const UCheckbox = resolveComponent('UCheckbox');
+const UDropdownMenu = resolveComponent('UDropdownMenu');
 
-type User = {
-  id: string
-  joinedDate: string
-  email: string
-}
+const pageSize = 10;
+let abortController = new AbortController();
+const currentPage = ref(1);
 
-const data = ref<User[]>([
-  {
-    id: '4600',
-    joinedDate: '2024-03-11T15:30:00',
-    email: 'james.anderson@example.com',
-  },
-  {
-    id: '4599',
-    joinedDate: '2024-03-11T10:10:00',
-    email: 'mia.white@example.com',
-  }
-])
+const { data: userPagination, pending, refresh } = await useLazyAsyncData(
+	"projects",
+	() => useAPI<Pagination<ProjectResponse>>(`projects`, {
+		method: "GET",
+        query: {
+            pageNumber: currentPage.value,
+            limit: pageSize,
+        },
+        signal: abortController.signal
+	}), {
+        server: false,
+    }
+);
 
-const columns: TableColumn<User>[] = [
+const columns: TableColumn<ProjectResponse>[] = [
     {
         id: 'select',
         header: ({ table }) =>
@@ -47,10 +48,22 @@ const columns: TableColumn<User>[] = [
         })
     },
     {
-        accessorKey: 'joinedDate',
+        accessorKey: 'publicId',
+        header: 'Public ID'
+    },
+    {
+        accessorKey: 'title',
+        header: 'Title'
+    },
+    {
+        accessorKey: 'category',
+        header: 'Category'
+    },
+    {
+        accessorKey: 'createdAt',
         header: 'Joined Date',
         cell: ({ row }) => {
-        return new Date(row.getValue('joinedDate')).toLocaleString('en-US', {
+        return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
             day: 'numeric',
             month: 'short',
             hour: '2-digit',
@@ -58,10 +71,6 @@ const columns: TableColumn<User>[] = [
             hour12: false
         })
         }
-    },
-    {
-        accessorKey: 'email',
-        header: 'Email'
     },
     {
         id: 'actions',
@@ -92,39 +101,41 @@ const columns: TableColumn<User>[] = [
     }
 ]
 
-function getRowItems(row: Row<User>) {
-  return [
-    {
-      type: 'label',
-      label: 'Actions'
-    },
-    {
-      label: 'Ban',
-      onSelect() {
-        toast.add({
-          title: 'Success!',
-          color: 'success',
-          icon: 'i-lucide-circle-check'
-        })
-      }
-    }
-  ]
+function getRowItems(row: Row<ProjectResponse>) {
+    return [
+        {
+            type: 'label',
+            label: 'Actions'
+        },
+        {
+            label: 'Ban',
+            onSelect() {
+                toast.add({
+                    title: 'Success!',
+                    color: 'success',
+                    icon: 'i-lucide-circle-check'
+                })
+            }
+        }
+    ]
 }
 
 const table = useTemplateRef('table')
 
-const rowSelection = ref<Record<string, boolean>>({})
-
-function onSelect(e: Event, row: TableRow<User>) {
-  /* If you decide to also select the column you can do this  */
-  row.toggleSelected(!row.getIsSelected())
+function onSelect(e: Event, row: TableRow<ProjectResponse>) {
+    row.toggleSelected(!row.getIsSelected())
 }
 
 const globalFilter = ref('')
-const pagination = ref({
-    pageIndex: 0,
-    pageSize: 5
-})
+
+async function updatePage(page: number) {
+    if (pending.value) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+    currentPage.value = page;
+    refresh();
+}
 </script>
 
 <template>
@@ -154,9 +165,7 @@ const pagination = ref({
 
             <UTable
                 ref="table"
-                v-model:row-selection="rowSelection"
-                v-model:global-filter="globalFilter" 
-                :data="data"
+                :data="userPagination?.items"
                 :columns="columns"
                 @select="onSelect"
                 :ui="{
@@ -170,10 +179,10 @@ const pagination = ref({
                     {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
                 </div>
                 <UPagination
-                    :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
-                    :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-                    :total="table?.tableApi?.getFilteredRowModel().rows.length"
-                    @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
+                    :default-page="currentPage"
+                    :items-per-page="pageSize"
+                    :total="userPagination?.total"
+                    @update:page="updatePage"
                 />
             </div>
         </template>

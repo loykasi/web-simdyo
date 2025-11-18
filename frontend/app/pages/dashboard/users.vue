@@ -1,0 +1,266 @@
+<script setup lang="ts">
+import { h, resolveComponent } from 'vue';
+import type { TableColumn, TableRow } from '@nuxt/ui';
+import type { Row } from '@tanstack/vue-table';
+import type { UserResponse } from '~/types/user.type';
+import type { Pagination } from '~/types/pagination.type';
+import { UBadge } from '#components';
+import UserBanModal from '~/components/dashboard/UserBanModal.vue';
+import { useAuthStore } from '~/stores/auth.store';
+import { useAdminUsersStore } from '~/stores/admin/adminUsers.store';
+
+const overlay = useOverlay();
+const modal = overlay.create(UserBanModal);
+
+const { user: authUser } = useAuthStore();
+
+const toast = useToast();
+const UButton = resolveComponent('UButton');
+const UCheckbox = resolveComponent('UCheckbox');
+const UDropdownMenu = resolveComponent('UDropdownMenu');
+
+const {
+    users,
+    pending,
+    pageSize,
+    fetch: fetchUsers,
+    update: updateUsers
+} = useAdminUsersStore();
+
+let abortController = new AbortController();
+const currentPage = ref(1);
+
+// const { data: userPagination, pending, refresh } = await useLazyAsyncData(
+// 	"users",
+// 	() => useAPI<Pagination<UserResponse>>(`users`, {
+// 		method: "GET",
+//         query: {
+//             pageNumber: currentPage.value,
+//             limit: pageSize,
+//         },
+//         signal: abortController.signal
+// 	}), {
+//         server: false,
+//         deep: true
+//     }
+// );
+
+const columns: TableColumn<UserResponse>[] = [
+    {
+        id: 'select',
+        header: ({ table }) =>
+        h(UCheckbox, {
+            modelValue: table.getIsSomePageRowsSelected()
+            ? 'indeterminate'
+            : table.getIsAllPageRowsSelected(),
+            'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+            table.toggleAllPageRowsSelected(!!value),
+            'aria-label': 'Select all'
+        }),
+        cell: ({ row }) =>
+        h(UCheckbox, {
+            modelValue: row.getIsSelected(),
+            'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
+            'aria-label': 'Select row'
+        })
+    },
+    {
+        accessorKey: 'id',
+        header: 'ID'
+    },
+    {
+        accessorKey: 'username',
+        header: 'Username'
+    },
+    {
+        accessorKey: 'email',
+        header: 'Email'
+    },
+    {
+        accessorKey: 'createdAt',
+        header: 'Joined Date',
+        cell: ({ row }) => {
+        return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        })
+        }
+    },
+    {
+        accessorKey: 'isBanned',
+        header: 'Ban status',
+        cell: ({ row }) => {
+            const isBanned = row.getValue('isBanned') as boolean;
+            const color = isBanned ? 'error' : 'success';
+            const label = isBanned ? 'Ban' : 'Active'
+
+            return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
+        }
+    },
+    {
+        id: 'actions',
+        cell: ({ row }) => {
+        return h(
+            'div',
+            { class: 'text-right' },
+            h(
+            UDropdownMenu,
+            {
+                content: {
+                align: 'end'
+                },
+                items: getRowItems(row),
+                'aria-label': 'Actions dropdown'
+            },
+            () =>
+                h(UButton, {
+                icon: 'i-lucide-ellipsis-vertical',
+                color: 'neutral',
+                variant: 'ghost',
+                class: 'ml-auto',
+                'aria-label': 'Actions dropdown'
+                })
+            )
+        )
+        }
+    }
+]
+
+function getRowItems(row: Row<UserResponse>) {
+    return [
+        {
+            type: 'label',
+            label: 'Actions'
+        },
+        row.original.isBanned ? {
+            label: 'Unban',
+            onSelect() {
+                unBan(row.original);
+            }
+        } : {
+            label: 'Ban',
+            onSelect() {
+                openBanModal(row.original);
+            }
+        }
+    ]
+}
+
+async function openBanModal(user: UserResponse) {
+    if (user.username == authUser.value?.username) {
+        toast.add({
+            title: 'Fail!',
+            description: 'Cannot ban yourself!',
+            color: 'warning',
+        })
+        return;
+    }
+    const instance = modal.open({
+        user: user
+    });
+}
+
+async function unBan(user: UserResponse) {
+    updateBanStatus(user.id, false);
+
+    // console.log(userPagination.value);
+
+    useAPI(`admin/users/${user.id}/ban`, {
+        method: "DELETE"
+    }).then(() => {
+        
+    }).catch(() => {
+        updateBanStatus(user.id, true);
+    })
+}
+
+function updateBanStatus(id: string, status: boolean) {
+    updateUsers((p) => {
+        const target = p.items?.find(u => u.id == id);
+        if (target !== undefined)
+            target.isBanned = status;
+
+        return p;
+    });
+}
+
+const table = useTemplateRef('table')
+
+const rowSelection = ref<Record<string, boolean>>({})
+
+function onSelect(e: Event, row: TableRow<UserResponse>) {
+    row.toggleSelected(!row.getIsSelected())
+}
+
+const globalFilter = ref('')
+
+callOnce(async () => {
+    fetchUsers(currentPage.value, abortController.signal);
+}, {
+    mode: 'navigation'
+})
+
+async function updatePage(page: number) {
+    if (pending.value) {
+        abortController.abort();
+    }
+    
+    currentPage.value = page;
+    abortController = new AbortController();
+    fetchUsers(currentPage.value, abortController.signal);
+}
+</script>
+
+<template>
+    <UDashboardPanel id="users" resizable >
+        <template #header>
+            <UDashboardNavbar title="Users" />
+        </template>
+
+        <template v-if="!pending" #body>
+            <div class="flex w-full items-center justify-between">
+                <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
+
+                <UButton
+                    v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
+                    label="Delete"
+                    color="error"
+                    variant="subtle"
+                    icon="i-lucide-trash"
+                >
+                    <template #trailing>
+                        <UKbd>
+                            {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length }}
+                        </UKbd>
+                    </template>
+                </UButton>
+            </div>
+
+            <UTable
+                ref="table"
+                :data="users.items"
+                :columns="columns"
+                @select="onSelect"
+                :ui="{
+                    thead: 'border-t border-(--ui-border-accented)'
+                }"
+            />
+                
+            <div class="flex items-center justify-between border-t border-accented py-3.5">
+                <div class="text-sm text-muted">
+                    {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
+                    {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
+                </div>
+                <UPagination
+                    :default-page="currentPage"
+                    :items-per-page="pageSize"
+                    :total="users?.total"
+                    @update:page="updatePage"
+                />
+            </div>
+        </template>
+    </UDashboardPanel>
+</template>

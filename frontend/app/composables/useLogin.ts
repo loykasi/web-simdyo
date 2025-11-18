@@ -2,41 +2,17 @@ import { useAuthStore } from "~/stores/auth.store";
 import type { LoginRequest, LoginResponse, User } from "~/types/auth.type";
 
 export function useLogin() {
-    const isLoginSuccess = ref(false);
-
     async function login(request: LoginRequest) {
-        const toast = useToast();
         const { user, setExpiresAt } = useAuthStore();
-        useAPI<LoginResponse>("auth/login", {
+        return useAPI<LoginResponse>("auth/login", {
             method: "POST",
             body: request
-        }).then((res) => {
-            user.value = {
-                email: res.email,
-                username: res.username
-            } as User;
-            
-            setExpiresAt(res.expiresAt);
-            isLoginSuccess.value = true;
-            
-            toast.add({
-                title: "Success",
-                description: "You have successfully logged in!",
-                color: "success",
-            })
-        }).catch((err) => {
-            console.log("error: " + err);
-            toast.add({
-                title: "Failed",
-                description: "Something wrong!",
-                color: "error",
-            })
-        })
+        });
     }
 
-    async function fetchProfile()
-    {
+    async function fetchProfile() {
         const { user } = useAuthStore();
+
         useAPI<User>("auth/profile", {
             method: "GET",
         }).then(res => {
@@ -44,9 +20,9 @@ export function useLogin() {
                 email: res.email,
                 username: res.username
             } as User;
-            console.log("Fetch profile successful");
+            // console.log("Fetch profile successful");
         }).catch(err => {
-            console.log("Fetch profile failed");
+            // console.log(err)
         });
     }
 
@@ -57,7 +33,9 @@ export function useLogin() {
             method: "POST"
         });
         user.value = null;
+
+        navigateTo('/');
     }
 
-    return { isLoginSuccess, login, fetchProfile, logout }
+    return { login, fetchProfile, logout }
 }

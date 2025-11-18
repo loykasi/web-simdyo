@@ -57,8 +57,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             <UFormField label="Confirm Password" name="confirm" required>
                 <UInput v-model="state.confirmPassword" type="password" required class="w-full" />
             </UFormField>
-
-            <UButton type="submit">Change</UButton>
+            
+            <div>
+                <UButton type="submit" class="px-4">Change</UButton>
+            </div>
         </UForm>
     </UCard>
 </template>

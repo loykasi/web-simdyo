@@ -7,60 +7,50 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Scratch.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddComment : Migration
+    public partial class AddUserBan : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ProjectComments",
+                name: "UserBans",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    ParentId = table.Column<int>(type: "integer", nullable: true),
-                    ProjectId = table.Column<int>(type: "integer", nullable: false),
+                    Reason = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RepliedUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectComments", x => x.Id);
+                    table.PrimaryKey("PK_UserBans", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectComments_AspNetUsers_RepliedUserId",
-                        column: x => x.RepliedUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ProjectComments_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UserBans_AspNetUsers_ByUserId",
+                        column: x => x.ByUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectComments_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_UserBans_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectComments_ProjectId",
-                table: "ProjectComments",
-                column: "ProjectId");
+                name: "IX_UserBans_ByUserId",
+                table: "UserBans",
+                column: "ByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectComments_RepliedUserId",
-                table: "ProjectComments",
-                column: "RepliedUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectComments_UserId",
-                table: "ProjectComments",
+                name: "IX_UserBans_UserId",
+                table: "UserBans",
                 column: "UserId");
         }
 
@@ -68,7 +58,7 @@ namespace Scratch.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProjectComments");
+                name: "UserBans");
         }
     }
 }

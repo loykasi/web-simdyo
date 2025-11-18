@@ -22,5 +22,8 @@ export default defineNuxtConfig({
   ],
   routeRules: {
     '/create': { ssr: false },
+    '/confirm-email': { ssr: false },
+    '/projects/**/edit': { ssr: false },
+    '/dashboard/**': { ssr: false },
   }
 })

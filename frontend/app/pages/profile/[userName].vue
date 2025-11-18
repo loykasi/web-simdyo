@@ -7,13 +7,15 @@ const route = useRoute();
 const username = route.params.username as string;
 
 const { getProfileDetail } = useAccount();
-const { data: profile } = await useAsyncData("profile", () => getProfileDetail(username));
-const { data: projectsResponse } = await useAsyncData(
+const { data: profile, pending: profilePending } = await useLazyAsyncData(`${username}`, () => getProfileDetail(username));
+const { data: projectsResponse, pending: projectsPending } = await useLazyAsyncData(
 	`${username}.projects`,
 	() => useAPI<ProjectsResponse>(`projects/users/${username}`, {
 		method: "GET",
 	})
 );
+
+console.log(profile.value);
 
 const isFetchTrash = ref(false);
 const deletedProjects = ref<ProjectsResponse>();
@@ -55,27 +57,57 @@ function getTabVariant(type: tabType) {
 	}
 	return "outline";
 }
+
+const headTitle = computed(() => profile.value ? profile.value.username : route.fullPath);
+useHead({
+	title: headTitle,
+})
 </script>
 <template>
     <UPage>
-        <UPageHeader title="Author Username" />
+		<template v-if="profilePending">
+			<div class="h-[105px] border-b border-default py-8">
+				<USkeleton class="w-40 h-full" />
+			</div>
+		</template>
+		<template v-else>
+			<UPageHeader :title="profile?.username" />
+		</template>
 
         <UCard class="mt-4">
 			<table>
-				<tbody>
-					<tr>
-						<td class="pe-8 py-1.5 font-medium text-default">Username</td>
-						<td>{{ profile?.username }}</td>
-					</tr>
-					<tr>
-						<td class="pe-8 py-1.5 font-medium text-default">Email</td>
-						<td>{{ profile?.email }}</td>
-					</tr>
-					<tr>
-						<td class="pe-8 py-1.5 font-medium text-default">Total projects</td>
-						<td>{{ profile?.totalProject }}</td>
-					</tr>
-				</tbody>
+				<template v-if="profilePending">
+					<tbody>
+						<tr>
+							<td class="pe-8 py-1.5 font-medium text-default">Username</td>
+							<td><USkeleton class="w-20 h-6" /></td>
+						</tr>
+						<tr>
+							<td class="pe-8 py-1.5 font-medium text-default">Email</td>
+							<td><USkeleton class="w-20 h-6" /></td>
+						</tr>
+						<tr>
+							<td class="pe-8 py-1.5 font-medium text-default">Total projects</td>
+							<td><USkeleton class="w-20 h-6" /></td>
+						</tr>
+					</tbody>
+				</template>
+				<template v-else>
+					<tbody>
+						<tr>
+							<td class="pe-8 py-1.5 font-medium text-default">Username</td>
+							<td>{{ profile?.username }}</td>
+						</tr>
+						<tr>
+							<td class="pe-8 py-1.5 font-medium text-default">Email</td>
+							<td>{{ profile?.email }}</td>
+						</tr>
+						<tr>
+							<td class="pe-8 py-1.5 font-medium text-default">Total projects</td>
+							<td>{{ profile?.totalProject }}</td>
+						</tr>
+					</tbody>
+				</template>
 			</table>
         </UCard>
 
@@ -104,17 +136,31 @@ function getTabVariant(type: tabType) {
 		</div>
         
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-			<ProjectCard
-				v-if="tab === 'all'"
-				v-for="project in projectsResponse?.projects"
-				:project="project"
-			/>
+			<template v-if="projectsPending">
+				<div
+				v-for="item in 10"
+				:key="item"
+				class="rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
+				>
+					<USkeleton class="aspect-square w-full" />
+					<div class="p-4">
+						<USkeleton class="w-full h-[84px]" />
+					</div>
+				</div>
+			</template>
+			<template v-else>
+				<ProjectCard
+					v-if="tab === 'all'"
+					v-for="project in projectsResponse?.projects"
+					:project="project"
+				/>
 
-			<ProjectCard
-				v-if="tab === 'trash'"
-				v-for="project in deletedProjects?.projects"
-				:project="project"
-			/>
+				<ProjectCard
+					v-if="tab === 'trash'"
+					v-for="project in deletedProjects?.projects"
+					:project="project"
+				/>
+			</template>
         </div>
     </UPage>
 </template>

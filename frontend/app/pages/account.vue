@@ -3,12 +3,12 @@
 const items = [
   {
     label: 'Account',
-    icon: 'i-lucide-user',
+    icon: 'material-symbols:person-outline',
     slot: 'account'
   },
   {
     label: 'Password',
-    icon: 'i-lucide-lock',
+    icon: 'material-symbols:lock-outline',
     slot: 'password'
   }
 ];

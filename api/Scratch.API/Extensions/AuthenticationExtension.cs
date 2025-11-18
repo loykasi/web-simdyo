@@ -10,9 +10,9 @@ namespace Scratch.API.Extensions;
 
 public static class AuthenticationExtension
 {
-    public static void AddAuth(this IServiceCollection services, IConfiguration configuration)
+    public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddIdentity<User, IdentityRole<Guid>>(options =>
+        services.AddIdentity<User, Role>(options =>
         {
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;

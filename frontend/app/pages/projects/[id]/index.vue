@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GamePlayer from '~/components/project/GamePlayer.vue';
 import { useAuthStore } from '~/stores/auth.store';
 import type { ProjectResponse } from '~/types/project.type';
 
@@ -8,7 +9,7 @@ const projectId = route.params.id as string;
 
 const { likeProject, unlikeProject } = useLikeProject();
 
-const { data: project, status: fetchProjectStatus } = await useAsyncData(
+const { data: project, status } = await useAsyncData(
 	`project.${projectId}`,
 	() => useAPI<ProjectResponse>(`projects/${projectId}`, {
 		method: "GET",
@@ -18,6 +19,12 @@ const { data: project, status: fetchProjectStatus } = await useAsyncData(
         lazy: true
     }
 );
+
+const isPending = computed(() => ["idle", "pending"].includes(status.value));
+
+watchEffect(() => {
+    console.log(status.value)
+})
 
 const { data: likeCount } = await useAsyncData(
 	`project.${projectId}.likeCount`,
@@ -110,44 +117,28 @@ async function restoreProject() {
     })
 }
 
-//////
-
-const unityCanvas = ref<HTMLIFrameElement>();
-
-function handleUnityMessage(event: any) {
-    if (event.data?.type === 'unityLoaded') {
-        console.log('✅ Unity WebGL loaded!', event.origin);
-
-        if (unityCanvas.value?.contentWindow) {
-            unityCanvas.value.contentWindow.postMessage(
-                { type: 'loadProject', url: project.value?.projectLink },
-                '*'
-            )
-        }
-    }
+async function editProject() {
+    navigateTo(`/projects/${projectId}/edit`);
 }
 
-onMounted(() => {
-    window.addEventListener('message', handleUnityMessage)
-})
 
-onBeforeUnmount(() => {
-    window.removeEventListener('message', handleUnityMessage)
+const headTitle = computed(() => project.value ? project.value.title : route.fullPath);
+useHead({
+	title: headTitle,
 })
 </script>
 <template>
     <UPage>
-        <template v-if="fetchProjectStatus === 'pending' || fetchProjectStatus === 'idle'">
+        <template v-if="isPending">
             Loading...
         </template>
-        <template v-else-if="fetchProjectStatus === 'success' && project">
+        <template v-else-if="project">
             <div class="flex justify-between my-4">
                 <h1 class="text-3xl font-semibold">{{ project.title }}</h1>
                 <div class="flex gap-x-3">
                     <template v-if="isAuthor()">
                         <UButton
                             v-if="project.deletedAt === null"
-                            size="xl"
                             color="error"
                             @click="deleteProject"
                             :loading="statusLoading"
@@ -156,28 +147,29 @@ onBeforeUnmount(() => {
                         </UButton>
                         <UButton
                             v-else
-                            size="xl"
                             color="error"
                             @click="restoreProject"
                             :loading="statusLoading"
                         >
                             Restore
                         </UButton>
+
+                        <UButton
+                            color="secondary"
+                            :loading="statusLoading"
+                            @click="editProject"
+                        >
+                            Edit
+                        </UButton>
                     </template>
                     <!-- <UButton size="xl" color="error">Report</UButton>
                     <UButton size="xl">See inside</UButton> -->
+                    <UButton color="warning">Report</UButton>
                 </div>
             </div>
             
             <div class="aspect-[16/9] w-full bg-blue-800 mb-4">
-                <!-- <iframe
-                    ref="unityCanvas"
-                    src="/game-build/index.html"
-                    width="100%"
-                    height="100%"
-                    class="size-full border-none"
-                    loading="lazy"
-                ></iframe> -->
+                <GamePlayer :project-link="project.projectLink" />
             </div>
 
             <UCard class="mt-4">

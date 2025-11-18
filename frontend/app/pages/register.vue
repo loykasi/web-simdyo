@@ -4,11 +4,17 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import { useAuth } from '~/composables/useAuth';
 import type { RegisterRequest } from '~/types/auth.type';
 
+const toast = useToast();
+
+const form = useTemplateRef("form");
+const isRegisterSuccess = ref(false);
+const showPassword = ref(false);
+
 const schema = z.object({
-    username: z.string('Invalid username'),
+    username: z.string('Username is required'),
     email: z.email('Invalid email'),
-    password: z.string('Invalid password').min(6, 'Must be at least 6 characters'),
-    confirmPassword: z.string('Invalid')
+    password: z.string('Password is required').min(6, 'Must be at least 6 characters'),
+    confirmPassword: z.string('Required')
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -21,36 +27,53 @@ const state = reactive<Partial<Schema>>({
   password: undefined
 })
 
-const showPassword = ref(false);
-const showConfirmPassword = ref(false);
-
-const email = ref("");
-const { isRegisterSuccess, register } = useAuth();
+const { register } = useAuth();
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const payload: RegisterRequest = {
         username: event.data.username,
         email: event.data.email,
         password: event.data.password,
     };
-    email.value = payload.email;
-    register(payload);
+    register(payload)
+    .then((res) => {
+        isRegisterSuccess.value = true;
+    }).catch((err) => {
+        if (err.data[0].code === "User.UsernameDuplicate") {
+            const errors = [];
+            errors.push({ name: "username", message: "Username taken! Try another" });
+            form.value?.setErrors(errors);
+        }
+
+        if (err.data[0].code === "User.EmailDuplicate") {
+            const errors = [];
+            errors.push({ name: "email", message: "Email already in use" });
+            form.value?.setErrors(errors);
+        }
+    })
 }
 </script>
 <template>
-    <UCard variant="subtle" class="mx-auto w-[400px]">
-        <template #header>
-            <h1 class="text-2xl font-bold text-center">Register</h1>
-        </template>
+    <template v-if="!isRegisterSuccess">
+        <UCard
+            variant="outline"
+            class="mt-8 mx-auto max-w-md"
+            :ui="{
+                header: 'flex flex-col text-center'
+            }"
+        >
+            <template #header>
+                <h1 class="text-2xl font-bold text-center">Create accout</h1>
+                <p class="mt-1 text-base">Join CodeVizdoo, create and share your projects.</p>
+            </template>
 
-        <div class="w-full">
-            <template v-if="!isRegisterSuccess">
-                <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+            <div class="w-full">
+                <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
                     <UFormField label="Username" name="username">
-                        <UInput v-model="state.username" placeholder="Username" class="w-full mt-3" />
+                        <UInput v-model="state.username" placeholder="Username" class="w-full mt-1" />
                     </UFormField>
 
                     <UFormField label="Email" name="email">
-                        <UInput v-model="state.email" placeholder="Email address" class="w-full mt-3" />
+                        <UInput v-model="state.email" placeholder="Email address" class="w-full mt-1" />
                     </UFormField>
 
                     <UFormField label="Password" name="password">
@@ -58,7 +81,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                             v-model="state.password"
                             placeholder="Password"
                             :type="showPassword ? 'text' : 'password'"
-                            class="w-full mt-3"
+                            class="w-full mt-1"
                         >
                             <template #trailing>
                             <UButton
@@ -66,7 +89,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                                 variant="link"
                                 size="sm"
                                 :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                                :aria-label="showPassword ? 'Hide password' : 'showPassword password'"
+                                :aria-label="showPassword ? 'Hide password' : 'show password'"
                                 :aria-pressed="showPassword"
                                 aria-controls="password"
                                 @click="showPassword = !showPassword"
@@ -79,34 +102,50 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                         <UInput
                             v-model="state.confirmPassword"
                             placeholder="Type password again"
-                            :type="showConfirmPassword ? 'text' : 'password'"
-                            class="w-full mt-3"
+                            :type="showPassword ? 'text' : 'password'"
+                            class="w-full mt-1"
                         >
                             <template #trailing>
                             <UButton
                                 color="neutral"
                                 variant="link"
                                 size="sm"
-                                :icon="showConfirmPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                                :aria-label="showConfirmPassword ? 'Hide password' : 'showConfirmPassword password'"
-                                :aria-pressed="showConfirmPassword"
+                                :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                                :aria-label="showPassword ? 'Hide password' : 'show password'"
+                                :aria-pressed="showPassword"
                                 aria-controls="password"
-                                @click="showConfirmPassword = !showConfirmPassword"
+                                @click="showPassword = !showPassword"
                             />
                             </template>
                         </UInput>
                     </UFormField>
 
                     <UButton type="submit" class="flex w-full py-2 justify-center">
-                        Register
+                        Continue
                     </UButton>
                 </UForm>
+            </div>
+        </UCard>
+    </template>
+
+    <template v-else>
+        <UCard
+            variant="outline"
+            class="mt-8 mx-auto max-w-md"
+            :ui="{
+                header: 'flex flex-col text-center'
+            }"
+        >
+            <template #header>
+                <h1 class="text-2xl font-bold text-center">Check your email</h1>
             </template>
-            <template v-else>
-                <div class="flex justify-center items-center">
-                    We have sent a verification email to {{ email }}.
+
+            <div class="w-full">
+                <div class="flex flex-col justify-center items-center">
+                    <div>A verification email was sent to <span>{{ state.email }}</span></div>
+                    <div>Click on the link in that email to verify your account.</div>
                 </div>
-            </template>
-        </div>
-    </UCard>
+            </div>
+        </UCard>
+    </template>
 </template>

@@ -8,7 +8,12 @@ namespace Scratch.Infrastructure.Respositories
     {
         private const int _defaultLimit = 20;
 
-        public async Task<List<ProjectCommentResponse>> GetComments(int projectId, int? limit = null, int? lastId = null, int? parentId = null)
+        public async Task<int> Count()
+        {
+            return await dbContext.ProjectComments.Select(p => p.Id).CountAsync();
+        }
+
+        public async Task<Pagination<ProjectCommentResponse>> GetComments(int projectId, int? limit = null, int? lastId = null, int? parentId = null)
         {
             IQueryable<ProjectComment> query = dbContext.ProjectComments
                         .Include(p => p.User)
@@ -24,6 +29,8 @@ namespace Scratch.Infrastructure.Respositories
                 query = query.Where(p => p.ParentId == parentId).OrderBy(p => p.Id);
             }
 
+            int total = await query.Select(p => p.Id).CountAsync();
+
             if (lastId != null)
             {
                 if (isDescending)
@@ -38,7 +45,7 @@ namespace Scratch.Infrastructure.Respositories
             
             int size = (limit == null || limit == 0) ? _defaultLimit : limit.Value;
 
-            return await query.Take(size)
+            var items = await query.Take(size)
                             .Select(p =>
                                 new ProjectCommentResponse
                                 (
@@ -52,6 +59,16 @@ namespace Scratch.Infrastructure.Respositories
                                 )
                             )
                             .ToListAsync();
+
+            Pagination<ProjectCommentResponse> response = new()
+            {
+                Total = total,
+                Size = items.Count,
+                LastId = items.Count == 0 ? null : items[items.Count - 1].Id,
+                Items = items
+            };
+
+            return response;
         }
 
         public async Task<ProjectComment> Get(int id)

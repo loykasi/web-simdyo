@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import type { ProjectComment } from '~/types/projectComment.type';
+import type { Pagination } from '~/types/pagination.type';
 import { useAuthStore } from '~/stores/auth.store';
 import type { AddProjectCommentRequest } from '../../types/projectComment.type';
 import CommentItem from './CommentItem.vue';
 
+const pageSize = 10;
+
 const { isLoggedIn } = useAuthStore();
 const route = useRoute();
 const projectId = route.params.id as string;
-const commentCount = ref(0);
+// const commentCount = ref(0);
 
-const { data: comments, status } = await useAsyncData(
+const { data: pagination, status } = await useAsyncData(
 	`project.${projectId}.comments`,
-	() => useAPI<ProjectComment[]>(`projects/${projectId}/comments`, {
+	() => useAPI<Pagination<ProjectComment>>(`projects/${projectId}/comments`, {
 		method: "GET",
         query: {
-            limit: 2,
+            limit: pageSize,
         }
 
 	}),
@@ -23,13 +26,14 @@ const { data: comments, status } = await useAsyncData(
     }
 );
 
-watchEffect(() => {
-    if (status.value == 'success') {
-        if (comments.value != undefined) {
-            commentCount.value = comments.value.length;
-        }
-    }
-});
+// watchEffect(() => {
+//     if (status.value == 'success') {
+//         console.log(pagination.value);
+//         // if (comments.value != undefined) {
+//         //     commentCount.value = comments.value.length;
+//         // }
+//     }
+// });
 
 async function addComment(payload: AddProjectCommentRequest) {
     useAPI<ProjectComment>(`projects/${projectId}/comments`, {
@@ -37,13 +41,13 @@ async function addComment(payload: AddProjectCommentRequest) {
         body: payload
 	})
     .then(res => {
-        if (comments.value != undefined) {
+        if (pagination.value != undefined) {
             console.log(res);
 
             if (res.parentId == null) {
-                comments.value.unshift(res);
+                pagination.value.items.unshift(res);
             } else {
-                const comment = comments.value.find(c => c.id == res.parentId);
+                const comment = pagination.value.items.find(c => c.id == res.parentId);
                 if (comment!.replies == undefined) {
                     comment!.replies = [];
                 }
@@ -65,14 +69,14 @@ async function deleteComment(commendId: number, parentId: number | null) {
         }
 	})
     .then(res => {
-        if (comments.value != undefined) {
+        if (pagination.value != undefined) {
 
             console.log(commendId + " | " + parentId);
             if (parentId == null) {
-                comments.value = comments.value.filter(c => c.id != commendId);
-                commentCount.value--;
+                pagination.value.items = pagination.value.items.filter(c => c.id != commendId);
+                pagination.value.size--;
             } else {
-                const comment = comments.value.find(c => c.id == parentId);
+                const comment = pagination.value.items.find(c => c.id == parentId);
                 if (comment!.replies != undefined) {
                     comment!.replies = comment!.replies.filter(c => c.id != commendId);
                     comment!.totalReplies--;
@@ -87,24 +91,24 @@ async function deleteComment(commendId: number, parentId: number | null) {
 }
 
 async function loadComments() {
-    if (comments.value == undefined) return;
+    if (pagination.value == undefined) return;
 
-    const lastId = comments.value[commentCount.value - 1]?.id;
+    const lastId = pagination.value.items[pagination.value.size - 1]?.id;
     
-    useAPI<ProjectComment[]>(`projects/${projectId}/comments`, {
+    useAPI<Pagination<ProjectComment>>(`projects/${projectId}/comments`, {
 		method: "GET",
         query: {
-            limit: 2,
+            limit: pageSize,
             lastId: lastId,
         }
 	})
     .then(res => {
-        if (comments.value == undefined) return;
+        if (pagination.value == undefined) return;
 
-        comments.value = comments.value.slice(0, commentCount.value);
+        pagination.value.items = pagination.value.items.slice(0, pagination.value.size);
         
-        comments.value = [...comments.value, ...res];
-        commentCount.value = comments.value.length;
+        pagination.value.items = [...pagination.value.items, ...res.items];
+        pagination.value.size = pagination.value.items.length;
     })
     .catch(err => {
         console.log(err);
@@ -116,14 +120,14 @@ function loadReplies(id: number) {
     const parentId = id;
     let lastId = null;
 
-    const comment = comments.value?.find(c => c.id == id);
+    const comment = pagination.value?.items.find(c => c.id == id);
     if (comment == undefined) return;
 
     if (comment.replyCount > 0) {
         lastId = comment.replies[comment.replyCount - 1]?.id;
     }
     
-    useAPI<ProjectComment[]>(`projects/${projectId}/comments`, {
+    useAPI<Pagination<ProjectComment>>(`projects/${projectId}/comments`, {
 		method: "GET",
         query: {
             limit: limit,
@@ -139,7 +143,7 @@ function loadReplies(id: number) {
         } else {
             comment.replies = comment.replies.slice(0, comment.replyCount);
         }
-        comment.replies = [...comment.replies, ...res];
+        comment.replies = [...comment.replies, ...res.items];
         comment.replyCount = comment.replies.length;
 
         console.log(comment.replyCount);
@@ -156,7 +160,7 @@ function loadReplies(id: number) {
             <ProjectCommentForm v-if="isLoggedIn" v-on:add-comment="addComment" />
             <div class="mt-8">
                 <div
-                    v-for="comment in comments"
+                    v-for="comment in pagination?.items"
                 >
                     <CommentItem
                         :comment="comment"
@@ -195,6 +199,7 @@ function loadReplies(id: number) {
                 </div>
             </div>
             <UButton
+                v-if="pagination?.size != pagination?.total"
                 class="w-full justify-center px-6 mt-4 font-semibold"
                 @click="loadComments"
             >

@@ -28,7 +28,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnectionString"));
 });
 
-builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddAuthorization(builder.Configuration);
 builder.Services.SetupCors();
 builder.Services.SetupServices();
 
@@ -47,6 +48,9 @@ if (app.Environment.IsDevelopment())
     {
         options.WithTitle("API");
     });
+
+    await app.SeedRolesAndPermissions();
+    await app.SeedAdmin();
 }
 
 app.UseCors("AllowOrigins");

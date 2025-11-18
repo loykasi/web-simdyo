@@ -1,6 +1,15 @@
+interface ErrorType {
+	errors: Record<string, string[]>;
+}
+
 export function useAPI<T>(
     url: string, 
-    userOptions: { method?: string, body?: any, query?: Record<string, any> | undefined } = {}
+    userOptions: {
+        method?: string,
+        body?: any,
+        query?: Record<string, any> | undefined,
+        signal?: AbortSignal,
+    } = {}
 ) {
     const config = useRuntimeConfig();
 
@@ -9,6 +18,7 @@ export function useAPI<T>(
         method: userOptions.method as any || "GET",
         body: userOptions.body,
         query: userOptions.query,
+        signal: userOptions.signal,
         credentials: "include",
         retry: 1,
         retryStatusCodes: [401],
@@ -26,6 +36,11 @@ export function useAPI<T>(
                     console.error("Token expired");
                 }
             }
+
+            const statusCode = response.status || 500;
+			const statusMessage = response.statusText || '';
+
+            // throw createError({ statusCode: statusCode, statusMessage: statusMessage })
         }
     })
 }

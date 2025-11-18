@@ -17,18 +17,18 @@ namespace Scratch.Application.Services
         ICurrentUserService currentUserService
     ) : IProjectCommentService
     {
-        public async Task<Result<List<ProjectCommentResponse>>> GetComments(string projectPublicId, int? limit = null, int? lastId = null, int? parentId = null)
+        public async Task<Result<Pagination<ProjectCommentResponse>>> GetComments(string projectPublicId, int? limit = null, int? lastId = null, int? parentId = null)
         {
             if (!DecodeId(projectPublicId, out int projectId))
             {
-                return Result.NotFound<List<ProjectCommentResponse>>
+                return Result.NotFound<Pagination<ProjectCommentResponse>>
                 (
                     new Error("Project.InvalidPublicId", "Invalid Public Id.")
                 );
             }
 
-            List<ProjectCommentResponse> comments = await unitOfWork.ProjectCommentRepository.GetComments(projectId, limit, lastId, parentId);
-            return Result.Success(comments);
+            var response = await unitOfWork.ProjectCommentRepository.GetComments(projectId, limit, lastId, parentId);
+            return Result.Success(response);
         }
 
         public async Task<Result<ProjectCommentResponse>> Add(string projectPublicId, AddCommentRequest addCommentRequest)

@@ -1,14 +1,64 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Extensions;
+using Scratch.Domain.Responses;
 
 namespace Scratch.Infrastructure.Respositories
 {
     public class ProjectRepository(ApplicationDbContext dbContext) : IProjectRepository
     {
-        public async Task<IEnumerable<Project>> GetProjects()
+        private const int _defaultLimit = 20;
+
+        private async Task<int> Count()
         {
-            return await GetAvailable().Include(p => p.User).ToListAsync();
+            return await GetAvailable().Select(p => p.Id).CountAsync();
+        }
+
+        public async Task<Pagination<ProjectResponse>> GetProjectsCursor(int? cursor = null, int? limit = null)
+        {
+            int size = (!limit.HasValue || limit == 0) ? _defaultLimit : limit.Value;
+
+            IQueryable<Project> query = GetAvailable().OrderByDescending(p => p.Id);
+            
+            if (cursor.HasValue)
+            {
+                query = query.Where(p => p.Id < cursor);
+            }
+
+            var items = await query.Take(size).Include(p => p.User).ToListAsync();
+
+            Pagination<ProjectResponse> pagination = new()
+            {
+                Total = await Count(),
+                Size = items.Count,
+                LastId = items.Count == 0 ? null : items[items.Count - 1].Id,
+                Items = [.. items.Select(p => p.ToProjectResponse())]
+            };
+            return pagination;
+        }
+
+        public async Task<Pagination<ProjectResponse>> GetProjectsOffset(int? page = null, int? limit = null)
+        {
+            int pageSize = limit ?? _defaultLimit;
+            int currentPage = page ?? 1;
+            int offset = (currentPage - 1) * pageSize;
+
+            IQueryable<Project> query = GetAvailable().OrderByDescending(p => p.Id);
+
+            var items = await query.Skip(offset)
+                                    .Take(pageSize)
+                                    .Include(p => p.User)
+                                    .ToListAsync();
+
+            Pagination<ProjectResponse> pagination = new()
+            {
+                Total = await query.CountAsync(),
+                Size = items.Count,
+                LastId = items.Count == 0 ? null : items[items.Count - 1].Id,
+                Items = [.. items.Select(p => p.ToProjectResponse())]
+            };
+            return pagination;
         }
 
         public async Task<int> GetUserProjectCount(Guid id)

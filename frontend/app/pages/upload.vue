@@ -73,6 +73,14 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
             })
         })
 }
+
+function createObjectUrl(file: File): string {
+    return URL.createObjectURL(file)
+}
+
+useHead({
+  title: 'Upload',
+})
 </script>
 <template>
     <UPage>
@@ -86,19 +94,49 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
                             <UFileUpload
                                 v-model="state.thumbnailFile"
                                 accept="image/*"
-                                label="Drop your image here"
-                                :interactive="false"
-                                class="aspect-square mt-2"
+                                v-slot="{ open, removeFile }"
+                                class="relative aspect-square mt-2 flex flex-col items-center justify-center bg-default border border-default rounded-lg focus-visible:outline-2"
                             >
-                                <template #actions="{ open }">
+                                <img
+                                    v-if="state.thumbnailFile"
+                                    :src="createObjectUrl(state.thumbnailFile)"
+                                    class="size-full"
+                                />
+                                <div
+                                    v-if="state.thumbnailFile"
+                                    class="absolute size-full flex flex-col items-center justify-center gap-3 rounded-lg transition bg-black/50 opacity-0 hover:opacity-100"
+                                >
                                     <UButton
-                                        label="Upload image"
-                                        icon="i-lucide-upload"
+                                        label="Change image"
                                         color="neutral"
                                         variant="outline"
                                         @click="open()"
                                     />
-                                </template>
+
+                                    <UButton
+                                        label="Remove image"
+                                        color="warning"
+                                        variant="link"
+                                        @click="removeFile()"
+                                        class="underline"
+                                    />
+                                </div>
+                                <div
+                                    v-else
+                                    class="absolute size-full flex flex-col items-center justify-center gap-3 rounded-lg"
+                                >
+                                    <UAvatar
+                                        size="lg"
+                                        icon="material-symbols:upload"
+                                    />
+
+                                    <UButton
+                                        label="Update image"
+                                        color="neutral"
+                                        variant="outline"
+                                        @click="open()"
+                                    />
+                                </div>
                             </UFileUpload>
                         </UFormField>
                     </div>
@@ -106,6 +144,7 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
                         <UFormField label="Select file" name="projectFile">
                             <UFileUpload
                                 v-model="state.projectFile"
+                                icon="material-symbols:upload"
                                 accept="zip/*"
                                 position="inside"
                                 layout="list"
@@ -116,7 +155,7 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
                                 <template #actions="{ open }">
                                     <UButton
                                         label="Upload project"
-                                        icon="i-lucide-upload"
+                                        icon="material-symbols:upload"
                                         color="neutral"
                                         variant="outline"
                                         @click="open()"

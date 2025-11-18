@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scratch.Application.Interfaces.Repositories;
@@ -11,12 +12,17 @@ using System.Text;
 
 namespace Scratch.Infrastructure.Processors;
 
-public class AuthTokenProcessor(IOptions<JwtOptions> options, IHttpContextAccessor httpContextAccessor) : IAuthTokenProcessor
+public class AuthTokenProcessor
+(
+    IOptions<JwtOptions> options,
+    IHttpContextAccessor httpContextAccessor,
+    UserManager<User> userManager
+) : IAuthTokenProcessor
 {
     private readonly JwtOptions _jwtOptions = options.Value;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-    public (string token, DateTime expiresAtUTC) GenerateJwtToken(User user)
+    public async Task<(string token, DateTime expiresAtUTC)> GenerateJwtToken(User user)
     {
         var signingKey = new SymmetricSecurityKey
         (
@@ -29,12 +35,15 @@ public class AuthTokenProcessor(IOptions<JwtOptions> options, IHttpContextAccess
             SecurityAlgorithms.HmacSha256
         );
 
-        var claims = new[]
-        {
+        var roles = await userManager.GetRolesAsync(user);
+
+        Claim[] claims =
+        [
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-        };
+            new Claim(ClaimTypes.Email, user.Email!),
+            ..roles.Select(r => new Claim(ClaimTypes.Role, r))
+        ];
 
         var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationTimeInMinutes);
 

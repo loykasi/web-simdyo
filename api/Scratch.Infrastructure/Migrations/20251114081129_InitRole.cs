@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Scratch.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitRole : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -178,6 +178,7 @@ namespace Scratch.Infrastructure.Migrations
                     ThumbnailLink = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     LikeCount = table.Column<int>(type: "integer", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -188,6 +189,42 @@ namespace Scratch.Infrastructure.Migrations
                         name: "FK_Projects_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: true),
+                    ProjectId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RepliedUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectComments_AspNetUsers_RepliedUserId",
+                        column: x => x.RepliedUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjectComments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectComments_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -258,6 +295,21 @@ namespace Scratch.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectComments_ProjectId",
+                table: "ProjectComments",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComments_RepliedUserId",
+                table: "ProjectComments",
+                column: "RepliedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComments_UserId",
+                table: "ProjectComments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectLikes_ProjectId",
                 table: "ProjectLikes",
                 column: "ProjectId");
@@ -266,6 +318,12 @@ namespace Scratch.Infrastructure.Migrations
                 name: "IX_ProjectLikes_UserId",
                 table: "ProjectLikes",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_DeletedAt",
+                table: "Projects",
+                column: "DeletedAt",
+                filter: "\"DeletedAt\" IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_UserId",
@@ -290,6 +348,9 @@ namespace Scratch.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ProjectComments");
 
             migrationBuilder.DropTable(
                 name: "ProjectLikes");

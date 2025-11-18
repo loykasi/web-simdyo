@@ -1,4 +1,5 @@
 ﻿using Scratch.Domain.Entities;
+using Scratch.Domain.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace Scratch.Application.Interfaces.Repositories
 {
     public interface IProjectRepository
     {
-        Task<IEnumerable<Project>> GetProjects();
+        Task<Pagination<ProjectResponse>> GetProjectsOffset(int? cursor = null, int ? limit = null);
+        Task<Pagination<ProjectResponse>> GetProjectsCursor(int? page = null, int ? limit = null);
         Task<int> GetUserProjectCount(Guid id);
         Task<IEnumerable<Project>> GetUserProjects(Guid id);
         Task<IEnumerable<Project>> GetUserDeletedProjects(Guid id);

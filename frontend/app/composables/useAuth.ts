@@ -2,24 +2,11 @@ import type { RegisterRequest, ResetPasswordRequest } from "~/types/auth.type";
 
 export function useAuth() {
 
-    const isRegisterSuccess = ref(false);
-
     async function register(request: RegisterRequest) {
-        const toast = useToast();
-        useAPI("auth/register", {
+        return useAPI("auth/register", {
             method: "POST",
             body: request
-        }).then((res) => {
-            console.log("success: " + res);
-            isRegisterSuccess.value = true;
-        }).catch((err) => {
-            console.log("error: " + err);
-            toast.add({
-                title: "Failed",
-                description: "Something wrong!",
-                color: "error",
-            })
-        })
+        });
     }
 
     const isVerifying = ref(true);
@@ -59,7 +46,6 @@ export function useAuth() {
     }
 
     return {
-        isRegisterSuccess,
         register,
         isVerifying,
         isVerifySuccess,

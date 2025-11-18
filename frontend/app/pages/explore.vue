@@ -1,29 +1,81 @@
 <script setup lang="ts">
-import type { ProjectsResponse } from '~/types/project.type';
+import type { Pagination } from '~/types/pagination.type';
+import type { ProjectResponse, ProjectsResponse } from '~/types/project.type';
 
-const { data: projectsResponse } = await useAsyncData(
+const pageSize = 6;
+const loading = ref(false);
+
+const { data: pagination, pending } = await useLazyAsyncData(
 	"projects",
-	() => useAPI<ProjectsResponse>(`projects`, {
+	() => useAPI<Pagination<ProjectResponse>>(`projects`, {
 		method: "GET",
+    query: {
+      limit: pageSize,
+    }
 	})
 );
+
+function showMore() {
+  loading.value = true;
+  useAPI<Pagination<ProjectResponse>>(`projects`, {
+		method: "GET",
+    query: {
+      limit: pageSize,
+      lastId: pagination.value?.lastId
+    }
+	})
+  .then(res => {
+    if (pagination.value == undefined) return;
+
+    pagination.value.items = [...pagination.value.items, ...res.items];
+    pagination.value.size += res.size;
+    pagination.value.lastId = res.lastId;
+    pagination.value.total = res.total;
+  })
+  .catch()
+  .finally(() => {
+    loading.value = false;
+  })
+}
+
+useHead({
+  title: 'Explorer',
+})
 </script>
 
 <template>
   <UPage>
-    <UPageHeader title="Explorer" />
+    <h1 class="my-6 font-bold text-4xl">Explorer</h1>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-		<ProjectCard
-			v-for="project in projectsResponse?.projects"
-			:project="project"
-		/>
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
+      <template v-if="pending">
+        <div
+          v-for="item in pageSize"
+          :key="item"
+          class="rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
+        >
+          <USkeleton class="aspect-square w-full" />
+          <div class="p-4">
+            <USkeleton class="w-full h-[84px]" />
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <ProjectCard
+          v-for="project in pagination?.items"
+          :project="project"
+        />
+      </template>
     </div>
 
     <UButton
+      v-if="pagination?.size != pagination?.total"
       type="submit"
       size="lg"
-      class="w-full mt-8 flex justify-center items-center"
+      color="secondary"
+      :loading="loading"
+      class="mx-auto w-md mt-8 flex justify-center items-center"
+      @click="showMore"
     >
       Show more
     </UButton>

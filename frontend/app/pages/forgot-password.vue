@@ -29,21 +29,24 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 </script>
 <template>
-    <UCard variant="subtle" class="mx-auto w-[400px]">
+    <UCard
+        variant="outline"
+        class="mt-8 mx-auto max-w-md"
+    >
         <template #header>
             <h1 class="text-2xl font-bold text-center">Forgot password</h1>
+            <h2 class="mt-4 text-center text-gray-400">Enter your email and a reset password link will be sent to your email.</h2>
         </template>
 
         <template v-if="!isSendSuccess">
             <div class="w-full">
-                <h2 class="text-center text-gray-400">Enter your email and a reset password link will be sent to your email.</h2>
-                <UForm :schema="schema" :state="state" class="mt-4 space-y-4" @submit="onSubmit">
+                <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
                     <UFormField label="Email" name="email">
-                        <UInput v-model="state.email" placeholder="Email address" class="w-full mt-3" />
+                        <UInput v-model="state.email" placeholder="Email address" class="w-full mt-1" />
                     </UFormField>
 
                     <UButton type="submit" class="flex w-full py-2 justify-center">
-                        Submit
+                        continue
                     </UButton>
                 </UForm>
             </div>

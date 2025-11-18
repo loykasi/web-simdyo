@@ -5,7 +5,6 @@ const links = ref<ButtonProps[]>([
   {
     label: 'Start Creating',
     to: '/create',
-    icon: 'i-lucide-square-play'
   }
 ])
 </script>
