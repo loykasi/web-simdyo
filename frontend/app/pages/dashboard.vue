@@ -11,6 +11,10 @@ const items: NavigationMenuItem[] = [{
     icon: 'material-symbols:view-object-track-outline',
     to: '/dashboard/projects'
 }, {
+    label: 'Project reports',
+    icon: 'material-symbols:view-object-track-outline',
+    to: '/dashboard/project-reports'
+}, {
     label: 'Settings',
     icon: 'material-symbols:settings-outline',
     to: '/account'

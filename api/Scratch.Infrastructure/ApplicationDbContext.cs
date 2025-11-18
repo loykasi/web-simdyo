@@ -64,5 +64,6 @@ namespace Scratch.Infrastructure
         public DbSet<ProjectLike> ProjectLikes { get; set; }
         public DbSet<ProjectComment> ProjectComments { get; set; }
         public DbSet<UserBan> UserBans { get; set; }
+        public DbSet<ProjectReport> ProjectReports { get; set; }
     }
 }

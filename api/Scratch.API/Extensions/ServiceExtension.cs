@@ -23,6 +23,7 @@ public static class ServiceExtension
         services.AddScoped<IProjectCommentService, ProjectCommentService>();
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IUserBanService, UserBanService>();
+        services.AddScoped<IProjectReportService, ProjectReportService>();
 
         services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
         services.AddScoped<IEmailSender, EmailSender>();

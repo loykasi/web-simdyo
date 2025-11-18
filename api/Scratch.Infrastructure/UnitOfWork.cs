@@ -15,6 +15,7 @@ namespace Scratch.Infrastructure
         public IProjectLikeRepository ProjectLikeRepository { get; }
         public IProjectCommentRepository ProjectCommentRepository { get; }
         public IUserBanRepository UserBanRepository { get; }
+        public IProjectReportRepository ProjectReportRepository { get; }
 
         public UnitOfWork(ApplicationDbContext dbContext, UserManager<User> userManager)
         {
@@ -24,6 +25,7 @@ namespace Scratch.Infrastructure
             ProjectLikeRepository = new ProjectLikeRepository(dbContext);
             ProjectCommentRepository = new ProjectCommentRepository(dbContext);
             UserBanRepository = new UserBanRepository(dbContext);
+            ProjectReportRepository = new ProjectReportRepository(dbContext);
         }
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

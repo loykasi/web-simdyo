@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GamePlayer from '~/components/project/GamePlayer.vue';
+import ReportModal from '~/components/project/ReportModal.vue';
 import { useAuthStore } from '~/stores/auth.store';
 import type { ProjectResponse } from '~/types/project.type';
 
@@ -164,7 +165,7 @@ useHead({
                     </template>
                     <!-- <UButton size="xl" color="error">Report</UButton>
                     <UButton size="xl">See inside</UButton> -->
-                    <UButton color="warning">Report</UButton>
+                    <ReportModal :project="project" />
                 </div>
             </div>
             
