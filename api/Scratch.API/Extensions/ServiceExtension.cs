@@ -24,6 +24,8 @@ public static class ServiceExtension
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IUserBanService, UserBanService>();
         services.AddScoped<IProjectReportService, ProjectReportService>();
+        services.AddScoped<IProjectBanService, ProjectBanService>();
+        services.AddScoped<IProjectCategoryService, ProjectCategoryService>();
 
         services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
         services.AddScoped<IEmailSender, EmailSender>();

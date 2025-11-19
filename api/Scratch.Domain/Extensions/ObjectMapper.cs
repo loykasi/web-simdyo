@@ -1,4 +1,5 @@
-﻿using Scratch.Domain.Entities;
+﻿using Scratch.Domain.Dto;
+using Scratch.Domain.Entities;
 using Scratch.Domain.Responses;
 
 namespace Scratch.Domain.Extensions
@@ -12,14 +13,26 @@ namespace Scratch.Domain.Extensions
                     project.PublicId,
                     project.Name,
                     project.Description,
-                    project.Category,
+                    project.Category.Name,
                     project.FileLink,
                     project.ThumbnailLink,
                     project.User.UserName,
                     project.LikeCount,
+                    project.IsBanned,
                     project.CreatedAt.ToString("o"),
                     project.DeletedAt.HasValue ? project.DeletedAt.Value.ToString("o") : null
                 );
+        }
+
+        public static ProjectCategoryDto ToProjectCategoryDto(this ProjectCategory category)
+        {
+            return new ProjectCategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                CreatedAt = category.CreatedAt.ToString("o"),
+                UpdatedAt = category.UpdatedAt.ToString("o")
+            };
         }
     }
 }

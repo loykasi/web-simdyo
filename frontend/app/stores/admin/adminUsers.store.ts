@@ -25,7 +25,6 @@ export const useAdminUsersStore = () => {
         users.value = update({...users.value} as Pagination<UserResponse>);
     }
     
-
     return {
         users,
         pending,

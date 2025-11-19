@@ -1,15 +1,12 @@
 ﻿using Scratch.Domain.Entities;
 using Scratch.Domain.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Scratch.Application.Interfaces.Repositories
 {
     public interface IProjectRepository
     {
+        Task<Pagination<ProjectResponse>> GetAllProjects(int? page = null, int? limit = null);
+
         Task<Pagination<ProjectResponse>> GetProjectsOffset(int? cursor = null, int ? limit = null);
         Task<Pagination<ProjectResponse>> GetProjectsCursor(int? page = null, int ? limit = null);
         Task<int> GetUserProjectCount(Guid id);

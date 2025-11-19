@@ -91,11 +91,11 @@ const columns: TableColumn<UserResponse>[] = [
     },
     {
         accessorKey: 'isBanned',
-        header: 'Ban status',
+        header: 'Status',
         cell: ({ row }) => {
             const isBanned = row.getValue('isBanned') as boolean;
             const color = isBanned ? 'error' : 'success';
-            const label = isBanned ? 'Ban' : 'Active'
+            const label = isBanned ? 'Ban' : 'Active';
 
             return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
         }

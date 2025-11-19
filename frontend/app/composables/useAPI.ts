@@ -34,6 +34,7 @@ export function useAPI<T>(
                 } catch (error) {
                     options.retry = false;
                     console.error("Token expired");
+                    navigateTo("/");
                 }
             }
 

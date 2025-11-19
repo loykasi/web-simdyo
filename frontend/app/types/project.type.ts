@@ -15,6 +15,7 @@ export interface ProjectResponse {
     thumbnailLink: string;
     username: string;
     likeCount: number;
+    isBanned: boolean;
     createdAt: string;
     deletedAt: string | null;
 }

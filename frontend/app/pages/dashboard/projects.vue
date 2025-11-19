@@ -4,29 +4,42 @@ import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Row } from '@tanstack/vue-table';
 import type { Pagination } from '~/types/pagination.type';
 import type { ProjectResponse } from '~/types/project.type';
+import ProjectBanModal from '~/components/dashboard/ProjectBanModal.vue';
+import { UBadge } from '#components';
+import { useAdminProjectsStore } from '~/stores/admin/adminProjects.store';
+
+const overlay = useOverlay();
+const modal = overlay.create(ProjectBanModal);
 
 const toast = useToast();
 const UButton = resolveComponent('UButton');
 const UCheckbox = resolveComponent('UCheckbox');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
 
-const pageSize = 10;
+const {
+    projects,
+    pending,
+    pageSize,
+    fetch: fetchProjects,
+    update: updateProjects
+} = useAdminProjectsStore();
+
 let abortController = new AbortController();
 const currentPage = ref(1);
 
-const { data: userPagination, pending, refresh } = await useLazyAsyncData(
-	"projects",
-	() => useAPI<Pagination<ProjectResponse>>(`projects`, {
-		method: "GET",
-        query: {
-            pageNumber: currentPage.value,
-            limit: pageSize,
-        },
-        signal: abortController.signal
-	}), {
-        server: false,
-    }
-);
+// const { data: userPagination, pending, refresh } = await useLazyAsyncData(
+// 	"projects",
+// 	() => useAPI<Pagination<ProjectResponse>>(`admin/projects`, {
+// 		method: "GET",
+//         query: {
+//             pageNumber: currentPage.value,
+//             limit: pageSize,
+//         },
+//         signal: abortController.signal
+// 	}), {
+//         server: false,
+//     }
+// );
 
 const columns: TableColumn<ProjectResponse>[] = [
     {
@@ -73,27 +86,48 @@ const columns: TableColumn<ProjectResponse>[] = [
         }
     },
     {
+        accessorKey: 'deletedAt',
+        header: 'Public status',
+        cell: ({ row }) => {
+            const isPublic = row.getValue('deletedAt') == null;
+            const color = isPublic ? 'success' : 'error';
+            const label = isPublic ? 'Public' : 'Trash';
+
+            return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
+        }
+    },
+    {
+        accessorKey: 'isBanned',
+        header: 'Status',
+        cell: ({ row }) => {
+            const isBanned = row.getValue('isBanned') as boolean;
+            const color = isBanned ? 'error' : 'success';
+            const label = isBanned ? 'Ban' : 'Active'
+
+            return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
+        }
+    },
+    {
         id: 'actions',
         cell: ({ row }) => {
         return h(
             'div',
             { class: 'text-right' },
             h(
-            UDropdownMenu,
-            {
-                content: {
-                align: 'end'
+                UDropdownMenu,
+                {
+                    content: {
+                    align: 'end'
+                    },
+                    items: getRowItems(row),
+                    'aria-label': 'Actions dropdown'
                 },
-                items: getRowItems(row),
-                'aria-label': 'Actions dropdown'
-            },
-            () =>
-                h(UButton, {
-                icon: 'i-lucide-ellipsis-vertical',
-                color: 'neutral',
-                variant: 'ghost',
-                class: 'ml-auto',
-                'aria-label': 'Actions dropdown'
+                () => h(UButton, {
+                    icon: 'i-lucide-ellipsis-vertical',
+                    color: 'neutral',
+                    variant: 'ghost',
+                    class: 'ml-auto',
+                    'aria-label': 'Actions dropdown'
                 })
             )
         )
@@ -107,17 +141,44 @@ function getRowItems(row: Row<ProjectResponse>) {
             type: 'label',
             label: 'Actions'
         },
-        {
+        row.original.isBanned ? {
+            label: 'Unban',
+            onSelect() {
+                unBan(row.original);
+            }
+        } : {
             label: 'Ban',
             onSelect() {
-                toast.add({
-                    title: 'Success!',
-                    color: 'success',
-                    icon: 'i-lucide-circle-check'
-                })
+                openBanModal(row.original);
             }
         }
     ]
+}
+
+async function openBanModal(project: ProjectResponse) {
+    const instance = modal.open({
+        project: project
+    });
+}
+
+async function unBan(project: ProjectResponse) {
+    useAPI(`admin/projects/${project.publicId}/ban`, {
+        method: "DELETE"
+    }).then(() => {
+        
+    }).catch(() => {
+        updateBanStatus(project.publicId, true);
+    })
+}
+
+function updateBanStatus(id: string, status: boolean) {
+    updateProjects((p) => {
+        const target = p.items?.find(u => u.publicId == id);
+        if (target !== undefined)
+            target.isBanned = status;
+
+        return p;
+    });
 }
 
 const table = useTemplateRef('table')
@@ -128,13 +189,20 @@ function onSelect(e: Event, row: TableRow<ProjectResponse>) {
 
 const globalFilter = ref('')
 
+callOnce(async () => {
+    fetchProjects(currentPage.value, abortController.signal);
+}, {
+    mode: 'navigation'
+})
+
 async function updatePage(page: number) {
     if (pending.value) {
         abortController.abort();
     }
-    abortController = new AbortController();
+    
     currentPage.value = page;
-    refresh();
+    abortController = new AbortController();
+    fetchProjects(currentPage.value, abortController.signal);
 }
 </script>
 
@@ -144,7 +212,7 @@ async function updatePage(page: number) {
             <UDashboardNavbar title="Users" />
         </template>
 
-        <template #body>
+        <template v-if="!pending" #body>
             <div class="flex w-full items-center justify-between">
                 <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
 
@@ -165,7 +233,7 @@ async function updatePage(page: number) {
 
             <UTable
                 ref="table"
-                :data="userPagination?.items"
+                :data="projects?.items"
                 :columns="columns"
                 @select="onSelect"
                 :ui="{
@@ -181,7 +249,7 @@ async function updatePage(page: number) {
                 <UPagination
                     :default-page="currentPage"
                     :items-per-page="pageSize"
-                    :total="userPagination?.total"
+                    :total="projects?.total"
                     @update:page="updatePage"
                 />
             </div>

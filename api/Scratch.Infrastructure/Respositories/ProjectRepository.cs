@@ -10,6 +10,29 @@ namespace Scratch.Infrastructure.Respositories
     {
         private const int _defaultLimit = 20;
 
+        public async Task<Pagination<ProjectResponse>> GetAllProjects(int? page = null, int? limit = null)
+        {
+            int pageSize = limit ?? _defaultLimit;
+            int currentPage = page ?? 1;
+            int offset = (currentPage - 1) * pageSize;
+
+            IQueryable<Project> query = dbContext.Projects.OrderByDescending(p => p.Id);
+
+            var items = await query.Skip(offset)
+                                    .Take(pageSize)
+                                    .Include(p => p.User)
+                                    .Include(p => p.Category)
+                                    .ToListAsync();
+
+            Pagination<ProjectResponse> pagination = new()
+            {
+                Total = await query.CountAsync(),
+                Size = items.Count,
+                Items = [.. items.Select(p => p.ToProjectResponse())]
+            };
+            return pagination;
+        }
+
         private async Task<int> Count()
         {
             return await GetAvailable().Select(p => p.Id).CountAsync();
@@ -26,7 +49,10 @@ namespace Scratch.Infrastructure.Respositories
                 query = query.Where(p => p.Id < cursor);
             }
 
-            var items = await query.Take(size).Include(p => p.User).ToListAsync();
+            var items = await query.Take(size)
+                                    .Include(p => p.User)
+                                    .Include(p => p.Category)
+                                    .ToListAsync();
 
             Pagination<ProjectResponse> pagination = new()
             {
@@ -49,6 +75,7 @@ namespace Scratch.Infrastructure.Respositories
             var items = await query.Skip(offset)
                                     .Take(pageSize)
                                     .Include(p => p.User)
+                                    .Include(p => p.Category)
                                     .ToListAsync();
 
             Pagination<ProjectResponse> pagination = new()
@@ -68,21 +95,28 @@ namespace Scratch.Infrastructure.Respositories
 
         public async Task<IEnumerable<Project>> GetUserProjects(Guid id)
         {
-            return await GetAvailable().Include(p => p.User)
-                                    .Where(p => p.UserId == id)
+            return await GetAvailable().Where(p => p.UserId == id)
+                                    .Include(p => p.User)
+                                    .Include(p => p.Category)
+                                    .AsNoTracking()
                                     .ToListAsync();
         }
 
         public async Task<IEnumerable<Project>> GetUserDeletedProjects(Guid id)
         {
-            return await GetDeleted().Include(p => p.User)
-                                    .Where(p => p.UserId == id)
+            return await GetDeleted().Where(p => p.UserId == id)
+                                    .Include(p => p.User)
+                                    .Include(p => p.Category)
+                                    .AsNoTracking()
                                     .ToListAsync();
         }
 
         public async Task<Project> GetById(int id)
         {
-            return await dbContext.Projects.Include(p => p.User).FirstAsync(p => p.Id == id);
+            return await dbContext.Projects
+                                    .Include(p => p.User)
+                                    .Include(p => p.Category)
+                                    .FirstAsync(p => p.Id == id);
         }
 
         public void Add(Project project)

@@ -18,6 +18,12 @@ namespace Scratch.Application.Services
         IPublicIdService publicIdService
     ) : IProjectService
     {
+        public async Task<Result<Pagination<ProjectResponse>>> GetAll(int? page = null, int? limit = null)
+        {
+            var response = await unitOfWork.ProjectRepository.GetAllProjects(page, limit);
+            return Result.Success(response);
+        }
+
         public async Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(
             int? cursor = null,
             int? page = null,
@@ -148,11 +154,20 @@ namespace Scratch.Application.Services
                 );
             }
 
+            var category = await unitOfWork.ProjectCategoryRepository.GetByName(addProjectRequest.Category);
+            if (category == null)
+            {
+                return Result.NotFound<ProjectResponse>
+                (
+                    new Error("Category.Invalid", "Invalid category")
+                );
+            }
+
             Project project = new()
             {
                 Name = addProjectRequest.Title,
                 Description = addProjectRequest.Description,
-                Category = addProjectRequest.Category,
+                Category = category,
                 User = user
             };
             unitOfWork.ProjectRepository.Add(project);
@@ -206,9 +221,18 @@ namespace Scratch.Application.Services
                 );
             }
 
+            var category = await unitOfWork.ProjectCategoryRepository.GetByName(updateProjectRequest.Category);
+            if (category == null)
+            {
+                return Result.NotFound<ProjectResponse>
+                (
+                    new Error("Category.Invalid", "Invalid category")
+                );
+            }
+            
             project.Name = updateProjectRequest.Title;
             project.Description = updateProjectRequest.Description;
-            project.Category = updateProjectRequest.Category;
+            project.Category = category;
 
             string name = project.PublicId;
 

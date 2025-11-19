@@ -10,6 +10,8 @@ namespace Scratch.Application.Abstracts
         IProjectCommentRepository ProjectCommentRepository { get; }
         IUserBanRepository UserBanRepository { get; }
         IProjectReportRepository ProjectReportRepository { get; }
+        IProjectBanRepository ProjectBanRepository { get; }
+        IProjectCategoryRepository ProjectCategoryRepository { get; }
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }

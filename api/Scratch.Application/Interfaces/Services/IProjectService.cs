@@ -7,6 +7,7 @@ namespace Scratch.Application.Interfaces.Repositories
 {
     public interface IProjectService
     {
+        Task<Result<Pagination<ProjectResponse>>> GetAll(int? page = null, int? limit = null);
         Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(int? lastId = null, int? page = null, int? limit = null);
         Task<Result<ProjectsResponse>> GetUserProjects(string userName);
         Task<Result<ProjectsResponse>> GetUserTrashAsync();
