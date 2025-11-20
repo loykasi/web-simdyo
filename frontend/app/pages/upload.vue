@@ -2,12 +2,19 @@
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { useProject } from '~/composables/useProject';
-import type { UploadProjectRequest } from '~/types/project.type';
+import type { ProjectCategory } from '~/types/projectCategory.type';
 
 const toast = useToast();
 const { upload } = useProject();
 
-const categories = ref(['Default', 'Game', 'Prototype', 'Simulation', 'Animation']);
+const { data: categories, pending: categoryPending } = await useLazyAsyncData(
+	"projectCategories",
+	() => useAPI<ProjectCategory[]>(`projects/categories`, {
+		method: "GET"
+	})
+);
+
+// const categories = ref(['Default', 'Game', 'Prototype', 'Simulation', 'Animation']);
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 
@@ -177,7 +184,14 @@ useHead({
                         </UFormField>
 
                         <UFormField label="Category" name="category">
-                            <USelect v-model="state.category" :items="categories" class="w-full mt-2" />
+                            <USelect
+                                v-model="state.category"
+                                :items="categories"
+                                labelKey="name"
+                                valueKey="name"
+                                :loading="categoryPending"
+                                class="w-full mt-2"
+                            />
                         </UFormField>
                     </div>
                 </div>

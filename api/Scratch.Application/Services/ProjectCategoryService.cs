@@ -2,6 +2,7 @@
 using Scratch.Application.Interfaces.Services;
 using Scratch.Domain.Dto;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Extensions;
 using Scratch.Domain.Requests;
 using Scratch.Domain.Results;
 
@@ -19,7 +20,7 @@ namespace Scratch.Application.Services
             return Result.Success(result);
         }
 
-        public async Task<Result> Add(AddProjectCategoryRequest payload)
+        public async Task<Result<ProjectCategoryDto>> Add(AddProjectCategoryRequest payload)
         {
             ProjectCategory category = new()
             {
@@ -29,16 +30,16 @@ namespace Scratch.Application.Services
             unitOfWork.ProjectCategoryRepository.Add(category);
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success();
+            return Result.Success(category.ToProjectCategoryDto());
         }
 
-        public async Task<Result> Update(int id, UpdateProjectCategoryRequest payload)
+        public async Task<Result<ProjectCategoryDto>> Update(int id, UpdateProjectCategoryRequest payload)
         {
             var category = await unitOfWork.ProjectCategoryRepository.GetById(id);
 
             if (category == null)
             {
-                return Result.NotFound
+                return Result.NotFound<ProjectCategoryDto>
                 (
                     new Error("Category.NotFound", $"No category with id: {id}")
                 );
@@ -47,7 +48,7 @@ namespace Scratch.Application.Services
             category.Name = payload.Name;
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success();
+            return Result.Success(category.ToProjectCategoryDto());
         }
 
 
