@@ -10,8 +10,8 @@ namespace Scratch.Application.Interfaces.Repositories
         Task<Pagination<ProjectResponse>> GetProjectsOffset(int? cursor = null, int ? limit = null);
         Task<Pagination<ProjectResponse>> GetProjectsCursor(int? page = null, int ? limit = null);
         Task<int> GetUserProjectCount(Guid id);
-        Task<IEnumerable<Project>> GetUserProjects(Guid id);
-        Task<IEnumerable<Project>> GetUserDeletedProjects(Guid id);
+        Task<IEnumerable<ProjectResponse>> GetUserProjects(Guid id);
+        Task<IEnumerable<ProjectResponse>> GetUserDeletedProjects(Guid id);
         Task<Project> GetById(int id);
         void Add(Project project);
         Task<int> GetProjectLike(int id);

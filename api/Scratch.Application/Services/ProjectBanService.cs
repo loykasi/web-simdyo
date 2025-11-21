@@ -45,14 +45,13 @@ namespace Scratch.Application.Services
                 );
             }
 
-            project.IsBanned = true;
-
             ProjectBan ban = new()
             {
                 Reason = payload.Reason,
                 Description = payload.Description,
                 Project = project,
-                ByUser = user
+                ByUser = user,
+                IsActive = true
             };
 
             unitOfWork.ProjectBanRepository.Add(ban);
@@ -96,7 +95,6 @@ namespace Scratch.Application.Services
                 return Result.Success();
             }
 
-            project.IsBanned = false;
             ban.IsActive = false;
             ban.RevokedByUser = user;
             

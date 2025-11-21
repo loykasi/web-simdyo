@@ -12,17 +12,19 @@ export function useLogin() {
 
     async function fetchProfile() {
         const { user } = useAuthStore();
+        const headers = useRequestHeaders(['cookie'])
 
         useAPI<User>("auth/profile", {
             method: "GET",
+            headers: headers
         }).then(res => {
             user.value = {
                 email: res.email,
                 username: res.username
             } as User;
-            // console.log("Fetch profile successful");
+            console.log("Fetch profile successful");
         }).catch(err => {
-            // console.log(err)
+            console.log("Fetch profile failed")
         });
     }
 

@@ -18,7 +18,7 @@ namespace Scratch.Domain.Extensions
                     project.ThumbnailLink,
                     project.User.UserName,
                     project.LikeCount,
-                    project.IsBanned,
+                    false,
                     project.CreatedAt.ToString("o"),
                     project.DeletedAt.HasValue ? project.DeletedAt.Value.ToString("o") : null
                 );

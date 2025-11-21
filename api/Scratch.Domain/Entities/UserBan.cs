@@ -13,6 +13,8 @@
         public required User ByUser { get; set; }
 
         public bool IsActive { get; set; }
+        public Guid? RevokedByUserId { get; set; }
+        public User? RevokedByUser { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

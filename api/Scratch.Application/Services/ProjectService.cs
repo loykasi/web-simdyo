@@ -56,7 +56,7 @@ namespace Scratch.Application.Services
 
             var projects = await unitOfWork.ProjectRepository.GetUserProjects(user.Id);
 
-            var dto = projects.Select(p => p.ToProjectResponse()).ToList();
+            var dto = projects.ToList();
 
             return Result.Success
             (
@@ -79,7 +79,7 @@ namespace Scratch.Application.Services
 
             var projects = await unitOfWork.ProjectRepository.GetUserDeletedProjects(user.Id);
 
-            var dto = projects.Select(p => p.ToProjectResponse()).ToList();
+            var dto = projects.ToList();
 
             return Result.Success
             (
@@ -106,39 +106,71 @@ namespace Scratch.Application.Services
                 );
             }
 
-            if (!project.DeletedAt.HasValue)
-            {
-                return Result.Success(project.ToProjectResponse());
-            }
+            //if (project.DeletedAt.HasValue)
+            //{
+            //    return Result.Success(project.ToProjectResponse());
+            //}
 
-            if (!currentUserService.HasValidAccessToken())
+            //return Result.Success(project.ToProjectResponse());
+
+            var isBanned = await unitOfWork.ProjectBanRepository.GetBanStatus(project.Id);
+
+            if (currentUserService.HasValidAccessToken())
             {
+                string userID = currentUserService.GetUserID();
+                var user = await userManager.FindByIdAsync(userID);
+
+                if (isBanned)
+                {
+                    return Result.Success
+                    (
+                        new ProjectResponse
+                        (
+                            project.PublicId,
+                            project.Name,
+                            project.Description,
+                            project.Category.Name,
+                            string.Empty,
+                            string.Empty,
+                            project.User.UserName,
+                            project.LikeCount,
+                            true,
+                            project.CreatedAt.ToString("o"),
+                            project.DeletedAt.HasValue ? project.DeletedAt.Value.ToString("o") : null
+                        )
+                    );
+                }
+
+                if (user == null)
+                {
+                    return Result.NotFound<ProjectResponse>
+                    (
+                        new Error("Profile.InvalidUserToken", "Invalid token")
+                    );
+                }
+
+                if (project.UserId == user.Id)
+                {
+                    return Result.Success(project.ToProjectResponse());
+                }
+
                 return Result.NotFound<ProjectResponse>
                 (
                     new Error("Project.NotFound", $"No project with id: {publicId}.")
                 );
             }
-
-            string userID = currentUserService.GetUserID();
-            var user = await userManager.FindByIdAsync(userID);
-
-            if (user == null)
+            else
             {
-                return Result.NotFound<ProjectResponse>
-                (
-                    new Error("Profile.InvalidUserToken", "Invalid token")
-                );
-            }
+                if (project.DeletedAt.HasValue || isBanned)
+                {
+                    return Result.NotFound<ProjectResponse>
+                    (
+                        new Error("Project.NotFound", $"No project with id: {publicId}.")
+                    );
+                }
 
-            if (project.UserId == user.Id)
-            {
                 return Result.Success(project.ToProjectResponse());
             }
-
-            return Result.NotFound<ProjectResponse>
-            (
-                new Error("Project.NotFound", $"No project with id: {publicId}.")
-            );
         }
 
         public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)

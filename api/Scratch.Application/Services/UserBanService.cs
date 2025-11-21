@@ -68,7 +68,17 @@ namespace Scratch.Application.Services
         }
 
         public async Task<Result> RevokeBan(Guid userId)
-        {            
+        {
+            string adminId = currentUserService.GetUserID();
+            var admin = await userManager.FindByIdAsync(adminId);
+            if (admin == null)
+            {
+                return Result.NotFound
+                (
+                    new Error("Users.NotFound", "Invalid token")
+                );
+            }
+
             var userBan = await unitOfWork.UserBanRepository.GetByUserId(userId);
 
             if (userBan == null)
@@ -77,6 +87,7 @@ namespace Scratch.Application.Services
             }
 
             userBan.IsActive = false;
+            userBan.RevokedByUser = admin;
 
             await unitOfWork.SaveChangesAsync();
 

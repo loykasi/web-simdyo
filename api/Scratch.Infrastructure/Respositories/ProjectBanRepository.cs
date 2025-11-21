@@ -1,4 +1,5 @@
-﻿using Scratch.Application.Interfaces.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
 
 namespace Scratch.Infrastructure.Respositories
@@ -9,6 +10,11 @@ namespace Scratch.Infrastructure.Respositories
         {
             return dbContext.ProjectBans.Where(b => b.ProjectId == projectId && b.IsActive == true)
                                         .FirstOrDefault();
+        }
+
+        public async Task<bool> GetBanStatus(int projectId)
+        {
+            return await dbContext.ProjectBans.AnyAsync(b => b.ProjectId == projectId && b.IsActive == true);
         }
 
         public void Add(ProjectBan projectBan)

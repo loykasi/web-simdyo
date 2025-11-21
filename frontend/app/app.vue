@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const { fetchProfile } = useLogin();
-onMounted(() => {
+// onMounted(() => {
+// 	fetchProfile();
+// })
+
+await callOnce(async () => {
 	fetchProfile();
 })
 

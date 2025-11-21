@@ -16,26 +16,52 @@ namespace Scratch.Infrastructure.Respositories
             int currentPage = page ?? 1;
             int offset = (currentPage - 1) * pageSize;
 
-            IQueryable<Project> query = dbContext.Projects.OrderByDescending(p => p.Id);
+            IQueryable<Project> query = dbContext.Projects;
 
-            var items = await query.Skip(offset)
-                                    .Take(pageSize)
-                                    .Include(p => p.User)
-                                    .Include(p => p.Category)
-                                    .ToListAsync();
+            int total = await query.CountAsync();
 
-            Pagination<ProjectResponse> pagination = new()
+            var items = await query.OrderByDescending(p => p.Id)
+                .Skip(offset)
+                .Take(pageSize)
+                .Include(p => p.User)
+                .Include(p => p.Category)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.PublicId,
+                    p.Name,
+                    p.Description,
+                    Category = p.Category.Name,
+                    p.FileLink,
+                    p.ThumbnailLink,
+                    Username = p.User.UserName,
+                    p.LikeCount,
+                    IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+                    p.CreatedAt,
+                    p.DeletedAt
+                })
+                .ToListAsync();
+
+            var responseItems = items.Select(p => new ProjectResponse(
+                                            p.PublicId,
+                                            p.Name,
+                                            p.Description,
+                                            p.Category,
+                                            p.FileLink,
+                                            p.ThumbnailLink,
+                                            p.Username,
+                                            p.LikeCount,
+                                            p.IsBanned,
+                                            p.CreatedAt.ToString("o"),
+                                            p.DeletedAt?.ToString("o")
+                                        )).ToList();
+
+            return new Pagination<ProjectResponse>
             {
-                Total = await query.CountAsync(),
+                Total = total,
                 Size = items.Count,
-                Items = [.. items.Select(p => p.ToProjectResponse())]
+                Items = responseItems
             };
-            return pagination;
-        }
-
-        private async Task<int> Count()
-        {
-            return await GetAvailable().Select(p => p.Id).CountAsync();
         }
 
         public async Task<Pagination<ProjectResponse>> GetProjectsCursor(int? cursor = null, int? limit = null)
@@ -43,25 +69,53 @@ namespace Scratch.Infrastructure.Respositories
             int size = (!limit.HasValue || limit == 0) ? _defaultLimit : limit.Value;
 
             IQueryable<Project> query = GetAvailable().OrderByDescending(p => p.Id);
-            
+
+            int total = await query.CountAsync();
+
             if (cursor.HasValue)
             {
                 query = query.Where(p => p.Id < cursor);
             }
 
             var items = await query.Take(size)
-                                    .Include(p => p.User)
-                                    .Include(p => p.Category)
+                                    .Select(p => new
+                                    {
+                                        p.Id,
+                                        p.PublicId,
+                                        p.Name,
+                                        p.Description,
+                                        Category = p.Category.Name,
+                                        p.FileLink,
+                                        p.ThumbnailLink,
+                                        Username = p.User.UserName,
+                                        p.LikeCount,
+                                        IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+                                        p.CreatedAt,
+                                        p.DeletedAt
+                                    })
                                     .ToListAsync();
 
-            Pagination<ProjectResponse> pagination = new()
+            var responseItems = items.Select(p => new ProjectResponse(
+                                            p.PublicId,
+                                            p.Name,
+                                            p.Description,
+                                            p.Category,
+                                            p.FileLink,
+                                            p.ThumbnailLink,
+                                            p.Username,
+                                            p.LikeCount,
+                                            p.IsBanned,
+                                            p.CreatedAt.ToString("o"),
+                                            p.DeletedAt?.ToString("o")
+                                        )).ToList();
+
+            return new Pagination<ProjectResponse>
             {
-                Total = await Count(),
+                Total = total,
                 Size = items.Count,
                 LastId = items.Count == 0 ? null : items[items.Count - 1].Id,
-                Items = [.. items.Select(p => p.ToProjectResponse())]
+                Items = responseItems
             };
-            return pagination;
         }
 
         public async Task<Pagination<ProjectResponse>> GetProjectsOffset(int? page = null, int? limit = null)
@@ -70,22 +124,51 @@ namespace Scratch.Infrastructure.Respositories
             int currentPage = page ?? 1;
             int offset = (currentPage - 1) * pageSize;
 
-            IQueryable<Project> query = GetAvailable().OrderByDescending(p => p.Id);
+            IQueryable<Project> query = GetAvailable();
 
-            var items = await query.Skip(offset)
-                                    .Take(pageSize)
-                                    .Include(p => p.User)
-                                    .Include(p => p.Category)
-                                    .ToListAsync();
+            int total = await query.CountAsync();
 
-            Pagination<ProjectResponse> pagination = new()
+            var items = await query.OrderByDescending(p => p.Id)
+                .Skip(offset)
+                .Take(pageSize)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.PublicId,
+                    p.Name,
+                    p.Description,
+                    Category = p.Category.Name,
+                    p.FileLink,
+                    p.ThumbnailLink,
+                    Username = p.User.UserName,
+                    p.LikeCount,
+                    IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+                    p.CreatedAt,
+                    p.DeletedAt
+                })
+                .ToListAsync();
+
+            var responseItems = items.Select(p => new ProjectResponse(
+                                            p.PublicId,
+                                            p.Name,
+                                            p.Description,
+                                            p.Category,
+                                            p.FileLink,
+                                            p.ThumbnailLink,
+                                            p.Username,
+                                            p.LikeCount,
+                                            p.IsBanned,
+                                            p.CreatedAt.ToString("o"),
+                                            p.DeletedAt?.ToString("o")
+                                        )).ToList();
+
+            return new Pagination<ProjectResponse>
             {
-                Total = await query.CountAsync(),
+                Total = total,
                 Size = items.Count,
-                LastId = items.Count == 0 ? null : items[items.Count - 1].Id,
-                Items = [.. items.Select(p => p.ToProjectResponse())]
+                LastId = items.LastOrDefault()?.Id,
+                Items = responseItems
             };
-            return pagination;
         }
 
         public async Task<int> GetUserProjectCount(Guid id)
@@ -93,21 +176,45 @@ namespace Scratch.Infrastructure.Respositories
             return await dbContext.Projects.Where(p => p.UserId == id).CountAsync();
         }
 
-        public async Task<IEnumerable<Project>> GetUserProjects(Guid id)
+        public async Task<IEnumerable<ProjectResponse>> GetUserProjects(Guid id)
         {
             return await GetAvailable().Where(p => p.UserId == id)
                                     .Include(p => p.User)
                                     .Include(p => p.Category)
-                                    .AsNoTracking()
+                                    .Select(p => new ProjectResponse(
+                                            p.PublicId,
+                                            p.Name,
+                                            p.Description,
+                                            p.Category.Name,
+                                            p.FileLink,
+                                            p.ThumbnailLink,
+                                            p.User.UserName,
+                                            p.LikeCount,
+                                            dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+                                            p.CreatedAt.ToString("o"),
+                                            p.DeletedAt.HasValue ? p.DeletedAt.Value.ToString("o") : null
+                                        ))
                                     .ToListAsync();
         }
 
-        public async Task<IEnumerable<Project>> GetUserDeletedProjects(Guid id)
+        public async Task<IEnumerable<ProjectResponse>> GetUserDeletedProjects(Guid id)
         {
             return await GetDeleted().Where(p => p.UserId == id)
                                     .Include(p => p.User)
                                     .Include(p => p.Category)
-                                    .AsNoTracking()
+                                    .Select(p => new ProjectResponse(
+                                            p.PublicId,
+                                            p.Name,
+                                            p.Description,
+                                            p.Category.Name,
+                                            p.FileLink,
+                                            p.ThumbnailLink,
+                                            p.User.UserName,
+                                            p.LikeCount,
+                                            dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+                                            p.CreatedAt.ToString("o"),
+                                            p.DeletedAt.HasValue ? p.DeletedAt.Value.ToString("o") : null
+                                        ))
                                     .ToListAsync();
         }
 

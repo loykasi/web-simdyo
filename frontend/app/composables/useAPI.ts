@@ -9,6 +9,7 @@ export function useAPI<T>(
         body?: any,
         query?: Record<string, any> | undefined,
         signal?: AbortSignal,
+        headers?: any
     } = {}
 ) {
     const config = useRuntimeConfig();
@@ -16,6 +17,7 @@ export function useAPI<T>(
     return $fetch<T>(url, {
         baseURL: `${config.public.baseUrl}`,
         method: userOptions.method as any || "GET",
+        headers: userOptions.headers,
         body: userOptions.body,
         query: userOptions.query,
         signal: userOptions.signal,
