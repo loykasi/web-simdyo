@@ -23,18 +23,18 @@ namespace Scratch.API.Controllers
         }
 
         [HttpGet("users/{userName}")]
-        public async Task<IActionResult> GetUsersProjects(string userName)
+        public async Task<IActionResult> GetUsersProjects(string userName, [FromQuery] int? page, [FromQuery] int? limit)
         {
-            var result = await projectService.GetUserProjects(userName);
+            var result = await projectService.GetUserProjects(userName, page, limit);
 
             return ToApiResult(result);
         }
 
         [HttpGet("users/trash")]
         [Authorize]
-        public async Task<IActionResult> GetUsersTrash()
+        public async Task<IActionResult> GetUsersTrash([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var result = await projectService.GetUserTrashAsync();
+            var result = await projectService.GetUserTrashAsync(page, limit);
 
             return ToApiResult(result);
         }

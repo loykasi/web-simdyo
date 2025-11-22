@@ -19,6 +19,8 @@
         public int LikeCount { get; set; }
         public ICollection<ProjectLike> ProjectLikes { get; set; }
 
+        public ICollection<ProjectBan> ProjectBans { get; set; }
+
         public DateTime? DeletedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

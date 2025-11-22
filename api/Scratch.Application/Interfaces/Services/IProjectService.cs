@@ -9,8 +9,8 @@ namespace Scratch.Application.Interfaces.Repositories
     {
         Task<Result<Pagination<ProjectResponse>>> GetAll(int? page = null, int? limit = null);
         Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(int? lastId = null, int? page = null, int? limit = null);
-        Task<Result<ProjectsResponse>> GetUserProjects(string userName);
-        Task<Result<ProjectsResponse>> GetUserTrashAsync();
+        Task<Result<Pagination<ProjectResponse>>> GetUserProjects(string userName, int? page, int? limit);
+        Task<Result<Pagination<ProjectResponse>>> GetUserTrashAsync(int? page = null, int? limit = null);
         Task<Result<ProjectResponse>> Get(string id);
         Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest);
         Task<Result<ProjectResponse>> Update(string publicId, UpdateProjectRequest updateProjectRequest);

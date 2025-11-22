@@ -27,20 +27,6 @@ const {
 let abortController = new AbortController();
 const currentPage = ref(1);
 
-// const { data: userPagination, pending, refresh } = await useLazyAsyncData(
-// 	"projects",
-// 	() => useAPI<Pagination<ProjectResponse>>(`admin/projects`, {
-// 		method: "GET",
-//         query: {
-//             pageNumber: currentPage.value,
-//             limit: pageSize,
-//         },
-//         signal: abortController.signal
-// 	}), {
-//         server: false,
-//     }
-// );
-
 const columns: TableColumn<ProjectResponse>[] = [
     {
         id: 'select',

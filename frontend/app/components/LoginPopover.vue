@@ -13,6 +13,10 @@ const loading = ref(false);
 const error = ref("");
 const open = ref(false);
 
+const isLogged = useCookie("isLogged", {
+	default: () => false,
+});
+
 const schema = z.object({
 	username: z.string('Invalid username'),
 	password: z.string('Invalid password').min(6, 'Must be at least 6 characters')
@@ -39,6 +43,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 		};
 		
 		isLoginSuccess.value = true;
+		isLogged.value = true;
 
 		toast.add({
 			title: `Welcome, ${res.username}`,

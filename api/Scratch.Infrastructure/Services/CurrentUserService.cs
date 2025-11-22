@@ -37,10 +37,20 @@ namespace Scratch.Infrastructure.Services
         public string GetUserID()
         {
             string token = _cookieService.Get("ACCESS_TOKEN");
-            token ??= "";
-            ClaimsPrincipal claims = _authTokenProcessor.ValidateToken(token);
-            string id = claims.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            return id;
+            if (string.IsNullOrEmpty(token))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                ClaimsPrincipal claims = _authTokenProcessor.ValidateToken(token);
+                return claims.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
     }
 }

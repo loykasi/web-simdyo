@@ -8,6 +8,10 @@ const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
 const projectId = route.params.id as string;
 
+const isLogged = useCookie("isLogged", {
+    default: () => false
+});
+
 const { likeProject, unlikeProject } = useLikeProject();
 
 const { data: project, status } = await useAsyncData(
@@ -23,10 +27,6 @@ const { data: project, status } = await useAsyncData(
 
 const isPending = computed(() => ["idle", "pending"].includes(status.value));
 
-watchEffect(() => {
-    console.log(status.value)
-})
-
 const { data: likeCount } = await useAsyncData(
 	`project.${projectId}.likeCount`,
 	() => useAPI<number>(`projects/${projectId}/like`, {
@@ -34,15 +34,23 @@ const { data: likeCount } = await useAsyncData(
 	})
 );
 
-const { data: likeStatus } = useAsyncData(
-	`project.${projectId}.likeStatus`,
-	() => useAPI<boolean>(`projects/${projectId}/like-status`, {
-		method: "GET",
-	}),
-    {
-        server: false
-    }
-);
+const likeStatus = ref(false);
+
+if (isLogged.value) {
+    useAsyncData(
+        `project.${projectId}.likeStatus`,
+        () => useAPI<boolean>(`projects/${projectId}/like-status`, {
+            method: "GET",
+        }),
+        {
+            server: false,
+            transform: (data) => {
+                console.log("fetch like status");
+                likeStatus.value = data;
+            }
+        }
+    );
+}
 
 async function like() {
     if (likeStatus.value) {
@@ -190,7 +198,7 @@ useHead({
                             <NuxtTime :datetime="project.createdAt"></NuxtTime>
                         </span>
                     </div>
-                    <div class="flex items-center gap-x-4">
+                    <div class="flex items-center gap-x-2">
                         <ClientOnly>
                             <UButton color="neutral" variant="ghost" >
                                 <div class="flex items-center" @click="like">
@@ -204,6 +212,18 @@ useHead({
                                     <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
                                 </div>
                             </UButton>
+                            <!-- <UButton color="neutral" variant="ghost" >
+                                <div class="flex items-center" @click="like">
+                                    <template v-if="likeStatus">
+                                        <UIcon name="material-symbols:kid-star" class="block size-5" />
+                                    </template>
+                                    <template v-else>
+                                        <UIcon name="material-symbols:kid-star-outline" class="block size-5" />
+                                    </template>
+                                    
+                                    <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
+                                </div>
+                            </UButton> -->
                         </ClientOnly>
                     </div>
                 </div>
@@ -231,7 +251,14 @@ useHead({
                                         <tbody>
                                             <tr>
                                                 <td class="pe-4 py-1.5 font-medium text-default">Author</td>
-                                                <td>{{ project.username }}</td>
+                                                <td>
+                                                    <NuxtLink
+                                                        :to="`/profile/${project.username}`"
+                                                        class="underline"
+                                                    >
+                                                        {{ project.username }}
+                                                    </NuxtLink>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="pe-4 py-1.5 font-medium text-default">Category</td>

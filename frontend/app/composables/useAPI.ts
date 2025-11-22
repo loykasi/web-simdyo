@@ -13,6 +13,9 @@ export function useAPI<T>(
     } = {}
 ) {
     const config = useRuntimeConfig();
+    const isLogged = useCookie("isLogged", {
+        default: () => false
+    });
 
     return $fetch<T>(url, {
         baseURL: `${config.public.baseUrl}`,
@@ -33,10 +36,15 @@ export function useAPI<T>(
                         method: "POST",
                         credentials: "include",
                     });
+                    console.error("Token refreshed");
                 } catch (error) {
                     options.retry = false;
                     console.error("Token expired");
-                    navigateTo("/");
+                    
+                    if (isLogged.value) {
+                        isLogged.value = false;
+                        navigateTo("/");
+                    }
                 }
             }
 

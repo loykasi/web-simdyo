@@ -74,7 +74,7 @@ namespace Scratch.Application.Services
                 Content = addCommentRequest.Content,
                 User = user,
                 Project = project,
-                ParentId = addCommentRequest.ParentId,
+                ParentCommentId = addCommentRequest.ParentId,
                 RepliedUser = repliedUser ?? null,
             };
             
@@ -87,7 +87,7 @@ namespace Scratch.Application.Services
                 (
                     comment.Id,
                     comment.Content,
-                    comment.ParentId,
+                    comment.ParentCommentId,
                     comment.User.UserName,
                     comment.RepliedUser != null ? comment.RepliedUser.UserName : null,
                     comment.CreatedAt.ToString("o"),

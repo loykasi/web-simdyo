@@ -3,7 +3,6 @@ import type { LoginRequest, LoginResponse, User } from "~/types/auth.type";
 
 export function useLogin() {
     async function login(request: LoginRequest) {
-        const { user, setExpiresAt } = useAuthStore();
         return useAPI<LoginResponse>("auth/login", {
             method: "POST",
             body: request
@@ -12,7 +11,7 @@ export function useLogin() {
 
     async function fetchProfile() {
         const { user } = useAuthStore();
-        const headers = useRequestHeaders(['cookie'])
+        const headers = useRequestHeaders(['cookie']); 
 
         useAPI<User>("auth/profile", {
             method: "GET",
@@ -30,12 +29,16 @@ export function useLogin() {
 
     async function logout() {
         const { user } = useAuthStore();
+        const isLogged = useCookie("isLogged", {
+            default: () => false
+        });
 
         useAPI("auth/logout", {
             method: "POST"
         });
         user.value = null;
 
+        isLogged.value = false;
         navigateTo('/');
     }
 

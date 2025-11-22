@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import UserProjects from '~/components/profile/UserProjects.vue';
+import UserTrash from '~/components/profile/UserTrash.vue';
 import { useAuthStore } from '~/stores/auth.store';
-import type { ProjectsResponse } from '~/types/project.type';
+import type { Pagination } from '~/types/pagination.type';
+import type { ProjectResponse } from '~/types/project.type';
 
 const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
@@ -8,17 +11,7 @@ const username = route.params.username as string;
 
 const { getProfileDetail } = useAccount();
 const { data: profile, pending: profilePending } = await useLazyAsyncData(`${username}`, () => getProfileDetail(username));
-const { data: projectsResponse, pending: projectsPending } = await useLazyAsyncData(
-	`${username}.projects`,
-	() => useAPI<ProjectsResponse>(`projects/users/${username}`, {
-		method: "GET",
-	})
-);
 
-console.log(profile.value);
-
-const isFetchTrash = ref(false);
-const deletedProjects = ref<ProjectsResponse>();
 
 type tabType = "all" | "trash";
 
@@ -26,22 +19,12 @@ const tab = ref<tabType>("all");
 
 function toTrashTab() {
 	tab.value = 'trash';
-	if (!isFetchTrash.value) {
-		isFetchTrash.value = true;
-		useAPI<ProjectsResponse>("projects/users/trash", {
-			method: "GET",
-		})
-		.then(res => {
-			deletedProjects.value = res;
-		})
-		.catch(err => {
-			console.log(err);
-		})
-	}
+	console.log(tab.value);
 }
 
 function toAllTab() {
 	tab.value = 'all';
+	console.log(tab.value);
 }
 
 function getTabColor(type: tabType) {
@@ -135,32 +118,35 @@ useHead({
 			</div>
 		</div>
         
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-			<template v-if="projectsPending">
+		<UserProjects v-if="tab === 'all'" />
+		<UserTrash v-if="tab === 'trash'" />
+        <!-- <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+			<template v-if="projectPagePending">
 				<div
-				v-for="item in 10"
+				v-for="item in pageSize"
 				:key="item"
 				class="rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
 				>
 					<USkeleton class="aspect-square w-full" />
-					<div class="p-4">
-						<USkeleton class="w-full h-[84px]" />
+					<div class="p-4 h-[84px]">
+						<USkeleton class="size-full" />
 					</div>
 				</div>
 			</template>
 			<template v-else>
 				<ProjectCard
 					v-if="tab === 'all'"
-					v-for="project in projectsResponse?.projects"
+					v-for="project in projectPage?.items"
 					:project="project"
 				/>
 
 				<ProjectCard
 					v-if="tab === 'trash'"
-					v-for="project in deletedProjects?.projects"
+					v-for="project in trashPage?.items"
 					:project="project"
 				/>
 			</template>
-        </div>
+        </div> -->
+		
     </UPage>
 </template>

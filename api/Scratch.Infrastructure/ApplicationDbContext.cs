@@ -27,6 +27,12 @@ namespace Scratch.Infrastructure
             builder.Entity<Project>()
                 .HasIndex(p => p.DeletedAt)
                 .HasFilter("\"DeletedAt\" IS NULL");
+
+            builder.Entity<ProjectComment>()
+                .HasOne(c => c.ParentComment)
+                .WithMany(c => c.Replies)
+                .HasForeignKey(c => c.ParentCommentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public override int SaveChanges()

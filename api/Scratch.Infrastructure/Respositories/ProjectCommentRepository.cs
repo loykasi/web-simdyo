@@ -22,11 +22,11 @@ namespace Scratch.Infrastructure.Respositories
             bool isDescending = parentId == null;
             if (isDescending)
             {
-                query = query.Where(p => p.ParentId == null).OrderByDescending(p => p.Id);
+                query = query.Where(p => p.ParentCommentId == null).OrderByDescending(p => p.Id);
             }
             else
             {
-                query = query.Where(p => p.ParentId == parentId).OrderBy(p => p.Id);
+                query = query.Where(p => p.ParentCommentId == parentId).OrderBy(p => p.Id);
             }
 
             int total = await query.Select(p => p.Id).CountAsync();
@@ -51,11 +51,11 @@ namespace Scratch.Infrastructure.Respositories
                                 (
                                     p.Id,
                                     p.Content,
-                                    p.ParentId,
+                                    p.ParentCommentId,
                                     p.User.UserName,
                                     p.RepliedUser != null ? p.RepliedUser.UserName : null,
                                     p.CreatedAt.ToString("o"),
-                                    dbContext.ProjectComments.Where(c => c.ParentId == p.Id).Select(c => c.Id).Count()
+                                    dbContext.ProjectComments.Where(c => c.ParentCommentId == p.Id).Select(c => c.Id).Count()
                                 )
                             )
                             .ToListAsync();
@@ -83,7 +83,7 @@ namespace Scratch.Infrastructure.Respositories
 
         public async Task Delete(int id)
         {
-            await dbContext.ProjectComments.Where(c => c.Id == id || c.ParentId == id).ExecuteDeleteAsync();
+            await dbContext.ProjectComments.Where(c => c.Id == id || c.ParentCommentId == id).ExecuteDeleteAsync();
         }
     }
 }

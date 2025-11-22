@@ -96,7 +96,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                     />
                 </UFormField>
 
-                <UFormField label="Tell use more specific" name="description" >
+                <UFormField label="Tell us more specific" name="description" >
                     <UTextarea v-model="state.description" placeholder="Description" class="w-full mt-1" />
                 </UFormField>
 

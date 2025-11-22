@@ -43,48 +43,38 @@ namespace Scratch.Application.Services
             return Result.Success(response);
         }
 
-        public async Task<Result<ProjectsResponse>> GetUserProjects(string userName)
+        public async Task<Result<Pagination<ProjectResponse>>> GetUserProjects(string userName, int? page, int? limit)
         {
             var user = await userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                return Result.NotFound<ProjectsResponse>
+                return Result.NotFound<Pagination<ProjectResponse>>
                 (
                     new Error("Profile.NotFound", "Invalid token")
                 );
             }
 
-            var projects = await unitOfWork.ProjectRepository.GetUserProjects(user.Id);
+            var result = await unitOfWork.ProjectRepository.GetUserProjects(user.Id, page, limit);
 
-            var dto = projects.ToList();
-
-            return Result.Success
-            (
-                new ProjectsResponse(dto)
-            );
+            return Result.Success(result);
         }
 
-        public async Task<Result<ProjectsResponse>> GetUserTrashAsync()
+        public async Task<Result<Pagination<ProjectResponse>>> GetUserTrashAsync(int? page, int? limit)
         {
             string userID = currentUserService.GetUserID();
             var user = await userManager.FindByIdAsync(userID);
 
             if (user == null)
             {
-                return Result.NotFound<ProjectsResponse>
+                return Result.NotFound<Pagination<ProjectResponse>>
                 (
                     new Error("Profile.NotFound", "Invalid token")
                 );
             }
 
-            var projects = await unitOfWork.ProjectRepository.GetUserDeletedProjects(user.Id);
+            var result = await unitOfWork.ProjectRepository.GetUserDeletedProjects(user.Id, page, limit);
 
-            var dto = projects.ToList();
-
-            return Result.Success
-            (
-                new ProjectsResponse(dto)
-            );
+            return Result.Success(result);
         }
 
         public async Task<Result<ProjectResponse>> Get(string publicId)
@@ -106,21 +96,13 @@ namespace Scratch.Application.Services
                 );
             }
 
-            //if (project.DeletedAt.HasValue)
-            //{
-            //    return Result.Success(project.ToProjectResponse());
-            //}
-
-            //return Result.Success(project.ToProjectResponse());
-
             var isBanned = await unitOfWork.ProjectBanRepository.GetBanStatus(project.Id);
+            string userId = currentUserService.GetUserID();
 
-            if (currentUserService.HasValidAccessToken())
+            if (!string.IsNullOrEmpty(userId))
             {
-                string userID = currentUserService.GetUserID();
-                var user = await userManager.FindByIdAsync(userID);
-
-                if (isBanned)
+                var user = await userManager.FindByIdAsync(userId);
+                if (user != null && project.UserId == user.Id && isBanned)
                 {
                     return Result.Success
                     (
@@ -141,36 +123,18 @@ namespace Scratch.Application.Services
                     );
                 }
 
-                if (user == null)
-                {
-                    return Result.NotFound<ProjectResponse>
-                    (
-                        new Error("Profile.InvalidUserToken", "Invalid token")
-                    );
-                }
+                return Result.Success(project.ToProjectResponse());
+            }
 
-                if (project.UserId == user.Id)
-                {
-                    return Result.Success(project.ToProjectResponse());
-                }
-
+            if (project.DeletedAt.HasValue || isBanned)
+            {
                 return Result.NotFound<ProjectResponse>
                 (
                     new Error("Project.NotFound", $"No project with id: {publicId}.")
                 );
             }
-            else
-            {
-                if (project.DeletedAt.HasValue || isBanned)
-                {
-                    return Result.NotFound<ProjectResponse>
-                    (
-                        new Error("Project.NotFound", $"No project with id: {publicId}.")
-                    );
-                }
 
-                return Result.Success(project.ToProjectResponse());
-            }
+            return Result.Success(project.ToProjectResponse());
         }
 
         public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)

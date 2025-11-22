@@ -6,7 +6,10 @@ namespace Scratch.Domain.Entities
     {
         public int Id { get; set; }
         public string Content { get; set; } = string.Empty;
-        public int? ParentId { get; set; } = null;
+        
+        public int? ParentCommentId { get; set; } = null;
+        public ProjectComment? ParentComment { get; set; }
+        public ICollection<ProjectComment> Replies { get; set; } = new List<ProjectComment>();
 
         public int ProjectId { get; set; }
         public Project Project { get; set; } = null!;
