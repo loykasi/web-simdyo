@@ -16,41 +16,31 @@ namespace Scratch.API.Extensions
             if (adminRole is null)
             {
                 await roleManager.CreateAsync(adminRole = new Role(Roles.Admin));
-
-                await roleManager.AddClaimAsync(
-                    adminRole,
-                    new Claim(CustomClaimType.Permission, Permissions.ProjectsRead)
-                );
-
-                await roleManager.AddClaimAsync(
-                    adminRole,
-                    new Claim(CustomClaimType.Permission, Permissions.ProjectsUpdate)
-                );
-
-                await roleManager.AddClaimAsync(
-                    adminRole,
-                    new Claim(CustomClaimType.Permission, Permissions.ProjectsDelete)
-                );
             }
 
-            var memberRole = await roleManager.FindByNameAsync(Roles.Member);
-            if (memberRole is null)
+            var claims = await roleManager.GetClaimsAsync(adminRole);
+
+            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.DashboardAccess);
+            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageUsers);
+            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageProjects);
+            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageProjectReport);
+            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageCategories);
+        }
+
+        private static async Task AddPermissionClaim
+        (
+            RoleManager<Role> roleManager,
+            IList<Claim>? claims,
+            Role role,
+            string permission
+        )
+        {
+            var claim = new Claim(CustomClaimType.Permission, permission);
+            if (claims == null || !claims.Contains(claim))
             {
-                await roleManager.CreateAsync(memberRole = new Role(Roles.Member));
-
                 await roleManager.AddClaimAsync(
-                    memberRole,
-                    new Claim(CustomClaimType.Permission, Permissions.ProjectsRead)
-                );
-
-                await roleManager.AddClaimAsync(
-                    memberRole,
-                    new Claim(CustomClaimType.Permission, Permissions.ProjectsUpdate)
-                );
-
-                await roleManager.AddClaimAsync(
-                    memberRole,
-                    new Claim(CustomClaimType.Permission, Permissions.ProjectsDelete)
+                    role,
+                    claim
                 );
             }
         }

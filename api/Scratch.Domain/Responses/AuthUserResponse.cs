@@ -1,9 +1,10 @@
 ﻿namespace Scratch.Domain.Responses
 {
-    public record ProfileResponse
+    public record AuthUserResponse
     (
         string Username,
         string Email,
-        bool IsBanned
+        bool IsBanned,
+        string[] Permissions
     );
 }

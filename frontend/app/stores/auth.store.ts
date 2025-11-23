@@ -1,7 +1,7 @@
-import type { User } from "~/types/auth.type"
+import type { AuthUser } from "~/types/auth.type"
 
 export const useAuthStore = () => {
-    const user = useState<User | null>("userData", () => null);
+    const user = useState<AuthUser | null>("userData", () => null);
     const expiresAt = useState<Date | null>("expiresAt", () => null);
     const refreshTokenTimeout = useState<NodeJS.Timeout | null>("refreshTokenTimeout", () => null);
 
@@ -36,11 +36,16 @@ export const useAuthStore = () => {
         startRefreshTokenTimer();
     }
 
+    function isPermitted(permissions: string[]) {
+        return permissions.every(p => user.value?.permissions.includes(p))
+    }
+
     return {
         user,
         isLoggedIn,
         startRefreshTokenTimer,
         stopRefreshTokenTimer,
-        setExpiresAt
+        setExpiresAt,
+        isPermitted
     }
 }

@@ -225,24 +225,25 @@ namespace Scratch.Application.Services
             await emailSender.Send(user.UserName!, user.Email!, "Reset Password", body);
         }
 
-        public async Task<Result<ProfileResponse>> GetProfile()
+        public async Task<Result<AuthUserResponse>> GetCurrentUser()
         {
             string userID = currentUserService.GetUserID();
             
             var user = await userManager.FindByIdAsync(userID);
             if (user == null)
             {
-                return Result.NotFound<ProfileResponse>
+                return Result.NotFound<AuthUserResponse>
                 (
                     new Error("Profile.NotFound", "Invalid token")
                 );
             }
 
             bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
+            var permissions = await unitOfWork.UserRespository.GetUserPermissionsAsync(user);
 
             return Result.Success
             (
-                new ProfileResponse(user.UserName!, user.Email!, isBanned)
+                new AuthUserResponse(user.UserName!, user.Email!, isBanned, permissions)
             );
         }
 
@@ -273,7 +274,7 @@ namespace Scratch.Application.Services
             var user = await userManager.FindByIdAsync(userID);
             if (user == null)
             {
-                return Result.NotFound<ProfileResponse>
+                return Result.NotFound<AuthUserResponse>
                 (
                     new Error("Profile.NotFound", "Invalid token")
                 );

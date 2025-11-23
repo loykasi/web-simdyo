@@ -1,5 +1,5 @@
 import { useAuthStore } from "~/stores/auth.store";
-import type { LoginRequest, LoginResponse, User } from "~/types/auth.type";
+import type { LoginRequest, LoginResponse, AuthUser } from "~/types/auth.type";
 
 export function useLogin() {
     async function login(request: LoginRequest) {
@@ -13,14 +13,14 @@ export function useLogin() {
         const { user } = useAuthStore();
         const headers = useRequestHeaders(['cookie']); 
 
-        useAPI<User>("auth/profile", {
+        useAPI<AuthUser>("auth/profile", {
             method: "GET",
             headers: headers
         }).then(res => {
             user.value = {
                 email: res.email,
                 username: res.username
-            } as User;
+            } as AuthUser;
             console.log("Fetch profile successful");
         }).catch(err => {
             console.log("Fetch profile failed")

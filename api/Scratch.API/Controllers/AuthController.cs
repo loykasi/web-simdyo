@@ -77,10 +77,10 @@ namespace Scratch.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("profile")]
-        public async Task<IActionResult> GetProfile()
+        [Route("user")]
+        public async Task<IActionResult> GetCurrentUser()
         {
-            var result = await accountService.GetProfile();
+            var result = await accountService.GetCurrentUser();
 
             return ToApiResult(result);
         }

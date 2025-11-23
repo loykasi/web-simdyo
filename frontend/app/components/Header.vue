@@ -4,7 +4,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import { useAuthStore } from '~/stores/auth.store';
 
 const route = useRoute()
-const { isLoggedIn, user } = useAuthStore();
+const { isLoggedIn, isPermitted } = useAuthStore();
 
 const items = computed<NavigationMenuItem[]>(() => [
 	{
@@ -24,7 +24,13 @@ const items = computed<NavigationMenuItem[]>(() => [
 			label: 'Upload',
 			to: '/upload'
 		}
-	] : [])
+	] : []),
+	...(isPermitted(["dashboard_access"]) ? [ 
+		{
+			label: 'Dashboard',
+			to: '/dashboard/users'
+		}
+	] : []),
 ]);
 </script>
 

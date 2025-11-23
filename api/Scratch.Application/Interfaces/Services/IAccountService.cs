@@ -12,7 +12,7 @@ namespace Scratch.Application.Interfaces.Repositories
         Task<Result> RefreshTokenAsync(string? refreshToken);
         Task<Result> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
         Task<Result> ResetPassword(ResetPasswordRequest resetPasswordRequest);
-        Task<Result<ProfileResponse>> GetProfile();
+        Task<Result<AuthUserResponse>> GetCurrentUser();
         Task<Result> LogOut();
         Task<Result> ChangePassword(ChangePasswordRequest changePasswordRequest);
         Task<Result<AccountDetailResponse>> GetProfileDetail(string userName);

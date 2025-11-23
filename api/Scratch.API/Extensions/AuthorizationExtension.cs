@@ -11,9 +11,9 @@ public static class AuthorizationExtension
         services.AddAuthorization();
         services.AddTransient<IClaimsTransformation, PermissionClaimsTransformation>();
 
-        services.AddAuthorizationBuilder()
-            .AddPolicy(Permissions.ProjectsRead, policy => policy.RequirePermission(Permissions.ProjectsRead))
-            .AddPolicy(Permissions.ProjectsUpdate, policy => policy.RequirePermission(Permissions.ProjectsUpdate))
-            .AddPolicy(Permissions.ProjectsDelete, policy => policy.RequirePermission(Permissions.ProjectsDelete));
+        //services.AddAuthorizationBuilder()
+        //    .AddPolicy(Permissions.ProjectsRead, policy => policy.RequirePermission(Permissions.ProjectsRead))
+        //    .AddPolicy(Permissions.ProjectsUpdate, policy => policy.RequirePermission(Permissions.ProjectsUpdate))
+        //    .AddPolicy(Permissions.ProjectsDelete, policy => policy.RequirePermission(Permissions.ProjectsDelete));
     }
 }

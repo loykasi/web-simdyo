@@ -39,7 +39,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 	.then((res) => {
 		user.value = {
 			email: res.email,
-			username: res.username
+			username: res.username,
+			permissions: res.permissions
 		};
 		
 		isLoginSuccess.value = true;

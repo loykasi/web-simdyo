@@ -20,9 +20,11 @@ export interface LoginResponse {
     username: string;
     email: string;
     expiresAt: string;
+    permissions: string[]
 }
 
-export interface User {
+export interface AuthUser {
     username: string,
     email: string,
+    permissions: string[]
 }
