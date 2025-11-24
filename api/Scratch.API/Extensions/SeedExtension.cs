@@ -35,9 +35,9 @@ namespace Scratch.API.Extensions
             string permission
         )
         {
-            var claim = new Claim(CustomClaimType.Permission, permission);
-            if (claims == null || !claims.Contains(claim))
+            if (claims == null || !claims.Any(c => c.Value.Equals(permission)))
             {
+                var claim = new Claim(CustomClaimType.Permission, permission);
                 await roleManager.AddClaimAsync(
                     role,
                     claim

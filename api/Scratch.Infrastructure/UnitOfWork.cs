@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Scratch.Application.Abstracts;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
+using Scratch.Application.Services;
 using Scratch.Domain.Entities;
 using Scratch.Infrastructure.Respositories;
 
@@ -18,6 +20,7 @@ namespace Scratch.Infrastructure
         public IProjectReportRepository ProjectReportRepository { get; }
         public IProjectBanRepository ProjectBanRepository { get; }
         public IProjectCategoryRepository ProjectCategoryRepository { get; }
+        public IRoleRepository RoleRepository { get; }
 
         public UnitOfWork(ApplicationDbContext dbContext, UserManager<User> userManager)
         {
@@ -30,6 +33,7 @@ namespace Scratch.Infrastructure
             ProjectReportRepository = new ProjectReportRepository(dbContext);
             ProjectBanRepository = new ProjectBanRepository(dbContext);
             ProjectCategoryRepository = new ProjectCategoryRepository(dbContext);
+            RoleRepository = new RoleRepository(dbContext);
         }
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

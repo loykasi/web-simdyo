@@ -1,4 +1,5 @@
 ﻿using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 
 namespace Scratch.Application.Abstracts
 {
@@ -12,6 +13,7 @@ namespace Scratch.Application.Abstracts
         IProjectReportRepository ProjectReportRepository { get; }
         IProjectBanRepository ProjectBanRepository { get; }
         IProjectCategoryRepository ProjectCategoryRepository { get; }
+        IRoleRepository RoleRepository { get; }
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
