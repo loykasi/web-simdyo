@@ -114,12 +114,14 @@ namespace Scratch.Application.Services
 
             await userManager.UpdateAsync(user);
 
+            var permissions = await unitOfWork.UserRespository.GetUserPermissionsAsync(user);
+
             cookieService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
             cookieService.SetToken("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
 
             return Result.Success
             (
-                new LoginResponse(user.UserName!, user.Email!, expiration.ToString("o"))
+                new LoginResponse(user.UserName!, user.Email!, expiration.ToString("o"), permissions)
             );
         }
 

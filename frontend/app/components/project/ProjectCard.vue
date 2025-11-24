@@ -20,14 +20,16 @@ defineProps<{
         <div class="p-2">
             <NuxtLink
                 :to="`/projects/${project.publicId}`"
-                class="text-base text-primary block line-clamp-1 font-bold hover:underline"
+                class="text-base text-primary line-clamp-1 font-bold hover:underline"
             >
                 {{ project.title }}
             </NuxtLink>
             <NuxtLink
                 :to="`/profile/${project.username}`"
                 class="mt-1 text-sm text-secondary hover:underline"
-            >{{ project.username }}</NuxtLink>
+            >
+                {{ project.username }}
+            </NuxtLink>
             <div class="">
                 <div class="flex items-center gap-2 text-muted">
                     <UIcon name="material-symbols:favorite-outline" class="size-4" />

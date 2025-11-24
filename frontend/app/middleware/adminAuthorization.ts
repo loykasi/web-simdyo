@@ -1,9 +1,9 @@
 import { useAuthStore } from "~/stores/auth.store"
 
 export default defineNuxtRouteMiddleware((to, from) => {
-    const { isLoggedIn, user } = useAuthStore();
+    const { isLoggedIn, user, isPermitted } = useAuthStore();
 
-    if (!isLoggedIn.value && !user.value?.permissions.includes("dashboard_access")) {
+    if (!isLoggedIn.value || !isPermitted(["dashboard_access"])) {
         return navigateTo('/');
     }
 })

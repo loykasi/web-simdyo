@@ -5,7 +5,11 @@ export default defineNuxtPlugin(async () => {
     const { user } = useAuthStore();
 
     async function getUser() {
-        if (user.value) {
+        const isLogged = useCookie("isLogged", {
+            default: () => false
+        });
+        
+        if (user.value || !isLogged.value) {
             return;
         }
 
@@ -19,9 +23,6 @@ export default defineNuxtPlugin(async () => {
                 permissions: res.permissions
             } as AuthUser;
             
-            const isLogged = useCookie("isLogged", {
-                default: () => false
-            });
             isLogged.value = true;
             console.log("SUCCESS get current user");
         }).catch(err => {

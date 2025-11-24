@@ -48,21 +48,19 @@ const items = computed<NavigationMenuItem[]>(() => [
 
 		<template #right>
 			<UColorModeButton />
-			<ClientOnly>
-				<template v-if="isLoggedIn">
-					<AccountDropdown />
-				</template>
-				<template v-else>
-					<LoginPopover />
+			<template v-if="isLoggedIn">
+				<AccountDropdown />
+			</template>
+			<template v-else>
+				<LoginPopover />
 
-					<UButton
-						to="/register"
-						variant="subtle"
-					>
-						Register
-					</UButton>
-				</template>
-			</ClientOnly>
+				<UButton
+					to="/register"
+					variant="subtle"
+				>
+					Register
+				</UButton>
+			</template>
 		</template>
 	</UHeader>
 </template>

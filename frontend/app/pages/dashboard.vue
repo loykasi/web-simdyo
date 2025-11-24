@@ -70,6 +70,7 @@ const items: NavigationMenuItem[] = menu
 
 definePageMeta({
   layout: 'admin',
+  middleware: ['admin-authorization']
 });
 </script>
 

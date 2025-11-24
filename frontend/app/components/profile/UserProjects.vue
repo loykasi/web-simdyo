@@ -58,8 +58,9 @@ async function updatePage(page: number) {
         </template>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 flex justify-end">
         <UPagination
+            v-if="projectPage?.size != projectPage?.total"
             :default-page="currentPage"
             :items-per-page="pageSize"
             :total="projectPage?.total"

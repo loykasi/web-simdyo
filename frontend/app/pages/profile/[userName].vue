@@ -2,8 +2,6 @@
 import UserProjects from '~/components/profile/UserProjects.vue';
 import UserTrash from '~/components/profile/UserTrash.vue';
 import { useAuthStore } from '~/stores/auth.store';
-import type { Pagination } from '~/types/pagination.type';
-import type { ProjectResponse } from '~/types/project.type';
 
 const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
@@ -19,12 +17,10 @@ const tab = ref<tabType>("all");
 
 function toTrashTab() {
 	tab.value = 'trash';
-	console.log(tab.value);
 }
 
 function toAllTab() {
 	tab.value = 'all';
-	console.log(tab.value);
 }
 
 function getTabColor(type: tabType) {
