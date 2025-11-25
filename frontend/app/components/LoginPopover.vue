@@ -112,7 +112,7 @@ const showPassword = ref(false);
 					</div>
 						
 					<div>
-						<ULink to="/forgotPassword" @click="() => {open = false}">Forgot password?</ULink>
+						<ULink to="/forgot-password" @click="() => {open = false}">Forgot password?</ULink>
 					</div>
 
 					<UButton type="submit" :loading="loading">

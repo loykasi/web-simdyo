@@ -26,6 +26,10 @@ const menu = [{
   to: '/dashboard/project-categories',
   permissions: ['manage_categories']
 }, {
+  label: 'Roles',
+  icon: 'material-symbols:category-outline-rounded',
+  to: '/dashboard/roles',
+}, {
   label: 'Settings',
   icon: 'material-symbols:settings-outline',
   to: '/account'

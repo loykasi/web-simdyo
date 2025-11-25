@@ -3,7 +3,6 @@ import { h, resolveComponent } from 'vue';
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Row } from '@tanstack/vue-table';
 import type { UserResponse } from '~/types/user.type';
-import type { Pagination } from '~/types/pagination.type';
 import { UBadge } from '#components';
 import UserBanModal from '~/components/dashboard/UserBanModal.vue';
 import { useAuthStore } from '~/stores/auth.store';
@@ -29,21 +28,6 @@ const {
 
 let abortController = new AbortController();
 const currentPage = ref(1);
-
-// const { data: userPagination, pending, refresh } = await useLazyAsyncData(
-// 	"users",
-// 	() => useAPI<Pagination<UserResponse>>(`users`, {
-// 		method: "GET",
-//         query: {
-//             pageNumber: currentPage.value,
-//             limit: pageSize,
-//         },
-//         signal: abortController.signal
-// 	}), {
-//         server: false,
-//         deep: true
-//     }
-// );
 
 const columns: TableColumn<UserResponse>[] = [
     {
@@ -75,6 +59,15 @@ const columns: TableColumn<UserResponse>[] = [
     {
         accessorKey: 'email',
         header: 'Email'
+    },
+    {
+        accessorKey: 'roles',
+        header: 'Roles',
+        cell: ({ row }) => {
+            const roles = row.getValue('roles') as string[];
+
+            return h(UBadge, { class: 'capitalize', variant: 'subtle', color: 'neutral' }, () => roles[0])
+        }
     },
     {
         accessorKey: 'createdAt',
@@ -145,6 +138,12 @@ function getRowItems(row: Row<UserResponse>) {
             onSelect() {
                 openBanModal(row.original);
             }
+        },
+        {
+            label: 'Set role',
+            onSelect() {
+                openRoleModal(row.original);
+            }
         }
     ]
 }
@@ -165,8 +164,6 @@ async function openBanModal(user: UserResponse) {
 
 async function unBan(user: UserResponse) {
     updateBanStatus(user.id, false);
-
-    // console.log(userPagination.value);
 
     useAPI(`admin/users/${user.id}/ban`, {
         method: "DELETE"
@@ -211,6 +208,21 @@ async function updatePage(page: number) {
     currentPage.value = page;
     abortController = new AbortController();
     fetchUsers(currentPage.value, abortController.signal);
+}
+
+
+// roles
+
+const roleModalOpen = ref(false);
+const selectedUser = ref<UserResponse>();
+
+async function openRoleModal(user: UserResponse) {
+    roleModalOpen.value = true;
+    selectedUser.value = user;
+}
+
+async function closeRoleModal() {
+    roleModalOpen.value = false;
 }
 </script>
 
@@ -261,6 +273,12 @@ async function updatePage(page: number) {
                     @update:page="updatePage"
                 />
             </div>
+
+            <DashboardUserRoleModal
+                :open="roleModalOpen"
+                :user="selectedUser"
+                v-on:close="closeRoleModal"
+            />
         </template>
     </UDashboardPanel>
 </template>

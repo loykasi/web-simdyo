@@ -4,8 +4,6 @@ using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.DTO;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Responses;
-using Scratch.Domain.Results;
 using System.Data;
 
 namespace Scratch.Infrastructure.Respositories
@@ -70,6 +68,20 @@ namespace Scratch.Infrastructure.Respositories
             .ToArrayAsync();
 
             return permissions;
+        }
+
+        public async Task SetUserRole(User user, string[] roles)
+        {
+            //await dbContext.UserRoles.Where(u => u.UserId == user.Id).ExecuteDeleteAsync();
+
+            var currentRoles = await userManager.GetRolesAsync(user);
+            await userManager.RemoveFromRolesAsync(user, currentRoles);
+            await userManager.AddToRolesAsync(user, roles);
+
+            foreach (var item in roles)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
 }

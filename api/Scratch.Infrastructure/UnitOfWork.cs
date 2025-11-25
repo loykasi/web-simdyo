@@ -22,7 +22,11 @@ namespace Scratch.Infrastructure
         public IProjectCategoryRepository ProjectCategoryRepository { get; }
         public IRoleRepository RoleRepository { get; }
 
-        public UnitOfWork(ApplicationDbContext dbContext, UserManager<User> userManager)
+        public UnitOfWork(
+            ApplicationDbContext dbContext,
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager
+        )
         {
             _dbContext = dbContext;
             UserRespository = new UserRepository(dbContext, userManager);
@@ -33,7 +37,7 @@ namespace Scratch.Infrastructure
             ProjectReportRepository = new ProjectReportRepository(dbContext);
             ProjectBanRepository = new ProjectBanRepository(dbContext);
             ProjectCategoryRepository = new ProjectCategoryRepository(dbContext);
-            RoleRepository = new RoleRepository(dbContext);
+            RoleRepository = new RoleRepository(dbContext, roleManager);
         }
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

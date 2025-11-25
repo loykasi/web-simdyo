@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Dto;
+using Scratch.Domain.Entities;
 using System.Security.Claims;
 
 namespace Scratch.Infrastructure.Respositories
 {
     public class RoleRepository
     (
-        ApplicationDbContext dbContext
+        ApplicationDbContext dbContext,
+        RoleManager<Role> roleManager
     ) : IRoleRepository
     {
         public async Task<RoleDto[]> GetAll()
@@ -21,6 +24,34 @@ namespace Scratch.Infrastructure.Respositories
                     Permissions = dbContext.RoleClaims.Where(c => c.RoleId == r.Id).Select(c => c.ClaimValue!).ToArray()
                 })
                 .ToArrayAsync();
+        }
+
+        public async Task<string[]> GetAllName()
+        {
+            return await dbContext.Roles
+                .Select(r => r.Name!)
+                .ToArrayAsync();
+        }
+
+        public async Task<bool> IsRoleExist(string name)
+        {
+            return await dbContext.Roles.AnyAsync(r => r.Name!.Equals(name));
+        }
+
+        public async Task<Role?> GetRoleById(Guid id)
+        {
+            return await dbContext.Roles.Where(r => r.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task AddRole(Role role)
+        {
+            await roleManager.CreateAsync(role);
+            //dbContext.Roles.Add(role);
+        }
+
+        public async Task DeleteRole(Guid id)
+        {
+            await dbContext.Roles.Where(r => r.Id == id).ExecuteDeleteAsync();
         }
 
         public async Task AddPermissions(Guid roleId, string[] permissions)

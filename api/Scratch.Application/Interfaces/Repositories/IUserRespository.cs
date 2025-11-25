@@ -9,5 +9,6 @@ namespace Scratch.Application.Interfaces.Repositories
         Task<Pagination<UserDto>> Get(int? pageNumber = null, int ? size = null);
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
         Task<string[]> GetUserPermissionsAsync(User user);
+        Task SetUserRole(User user, string[] roles);
     }
 }
