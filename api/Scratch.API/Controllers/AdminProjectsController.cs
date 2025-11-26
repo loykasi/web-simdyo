@@ -1,14 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Services;
+using Scratch.Domain.Authorizations;
 using Scratch.Domain.Requests;
 
 namespace Scratch.API.Controllers
 {
     [Route("api/admin/projects")]
+    [RequirePermission(Permissions.DashboardAccess)]
+    [RequirePermission(Permissions.ManageProjects)]
     public class AdminProjectsController
     (
         IProjectBanService projectBanService,
@@ -16,7 +20,6 @@ namespace Scratch.API.Controllers
     ) : BaseController
     {
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Get([FromQuery] int? page, [FromQuery] int? limit)
         {
             var result = await projectService.GetAll(page, limit);

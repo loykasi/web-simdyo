@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Services;
+using Scratch.Domain.Authorizations;
 using Scratch.Domain.Requests;
 
 namespace Scratch.API.Controllers
@@ -10,7 +12,8 @@ namespace Scratch.API.Controllers
     public class ProjectReportsController(IProjectReportService projectReportService) : BaseController
     {
         [HttpGet("reports")]
-        [Authorize]
+        [RequirePermission(Permissions.DashboardAccess)]
+        [RequirePermission(Permissions.ManageProjectReport)]
         public async Task<IActionResult> Get([FromQuery] int? page, [FromQuery] int? limit)
         {
             var result = await projectReportService.Get(page, limit);

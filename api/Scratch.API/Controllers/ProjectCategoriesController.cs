@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Services;
+using Scratch.Domain.Authorizations;
 using Scratch.Domain.Requests;
 
 namespace Scratch.API.Controllers
@@ -16,6 +18,8 @@ namespace Scratch.API.Controllers
         }
 
         [HttpPost]
+        [RequirePermission(Permissions.DashboardAccess)]
+        [RequirePermission(Permissions.ManageCategories)]
         public async Task<IActionResult> Add(AddProjectCategoryRequest payload)
         {
             var result = await projectCategoryService.Add(payload);
@@ -23,6 +27,8 @@ namespace Scratch.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [RequirePermission(Permissions.DashboardAccess)]
+        [RequirePermission(Permissions.ManageCategories)]
         public async Task<IActionResult> Update(int id, UpdateProjectCategoryRequest payload)
         {
             var result = await projectCategoryService.Update(id, payload);
@@ -30,6 +36,8 @@ namespace Scratch.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [RequirePermission(Permissions.DashboardAccess)]
+        [RequirePermission(Permissions.ManageCategories)]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await projectCategoryService.Delete(id);

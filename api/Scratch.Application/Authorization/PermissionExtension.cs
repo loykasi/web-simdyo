@@ -6,9 +6,9 @@ namespace Scratch.Application.Authorization
     {
         public static void RequirePermission(
             this AuthorizationPolicyBuilder builder,
-            params string[] permission)
+            params string[] permissions)
         {
-            builder.AddRequirements(new PermissionAuthorizationRequirement(permission));
+            builder.AddRequirements(new PermissionAuthorizationRequirement(permissions));
         }
     }
 }

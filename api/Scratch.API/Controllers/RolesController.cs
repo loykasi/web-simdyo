@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Services;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Requests;
@@ -9,6 +11,7 @@ namespace Scratch.API.Controllers
     public class RolesController(IRoleService roleService) : BaseController
     {
         [HttpGet]
+        [RequirePermission(Permissions.ManageRoles, Permissions.ManageUsers)]
         public async Task<IActionResult> GetAllRoles([FromQuery] bool nameOnly)
         {
             if (nameOnly)
@@ -22,6 +25,7 @@ namespace Scratch.API.Controllers
         }
 
         [HttpPost]
+        [RequirePermission(Permissions.ManageRoles)]
         public async Task<IActionResult> AddRole(AddRoleRequest payload)
         {
             var result = await roleService.Add(payload);
@@ -30,6 +34,7 @@ namespace Scratch.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [RequirePermission(Permissions.ManageRoles)]
         public async Task<IActionResult> UpdateRole(Guid id, UpdateRoleRequest payload)
         {
             var result = await roleService.Update(id, payload);
@@ -38,6 +43,7 @@ namespace Scratch.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [RequirePermission(Permissions.ManageRoles)]
         public async Task<IActionResult> DeleteRole(Guid id)
         {
             var result = await roleService.Delete(id);
@@ -46,12 +52,14 @@ namespace Scratch.API.Controllers
         }
 
         [HttpGet("permissions")]
+        [RequirePermission(Permissions.ManageRoles)]
         public IActionResult GetAllPermissions()
         {
             return Ok(Permissions.All);
         }
 
         [HttpPut("{roleId}/permissions")]
+        [RequirePermission(Permissions.ManageRoles)]
         public async Task<IActionResult> UpdateRolePermissions
         (
             Guid roleId,
