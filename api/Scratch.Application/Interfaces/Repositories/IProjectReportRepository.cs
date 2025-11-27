@@ -5,7 +5,7 @@ namespace Scratch.Application.Interfaces.Repositories
 {
     public interface IProjectReportRepository
     {
-        Task<Pagination<ProjectReportDto>> Get(int? page = null, int? limit = null);
+        Task<Pagination<ProjectReportDto>> Get(string? filter, int? page = null, int? limit = null);
         void Add(ProjectReport report);
     }
 }

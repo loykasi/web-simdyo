@@ -4,6 +4,7 @@ import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Row } from '@tanstack/vue-table';
 import type { Pagination } from '~/types/pagination.type';
 import type { ProjectReportResponse } from '~/types/projectReport.type';
+import { debounce } from '~/utilities/debounce';
 
 const toast = useToast();
 const UButton = resolveComponent('UButton');
@@ -14,11 +15,12 @@ const pageSize = 10;
 let abortController = new AbortController();
 const currentPage = ref(1);
 
-const { data: userPagination, pending, refresh } = await useLazyAsyncData(
+const { data: reports, pending, refresh } = await useLazyAsyncData(
 	"projectReports",
 	() => useAPI<Pagination<ProjectReportResponse>>("projects/reports", {
 		method: "GET",
         query: {
+            filter: globalFilter.value,
             page: currentPage.value,
             limit: pageSize,
         },
@@ -126,6 +128,16 @@ async function updatePage(page: number) {
     currentPage.value = page;
     refresh();
 }
+
+
+function applySearchFilter(value: string) {
+    console.log(value);
+    
+    currentPage.value = 1;
+    refresh();
+}
+
+const updateDebouceSearch = debounce(applySearchFilter, 500);
 </script>
 
 <template>
@@ -136,23 +148,39 @@ async function updatePage(page: number) {
 
         <template #body>
             <div class="flex w-full items-center justify-between">
-                <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
+                <UInput
+                    v-model="globalFilter"
+                    class="max-w-sm"
+                    placeholder="Filter..."
+                    v-on:update:model-value="updateDebouceSearch"
+                />
             </div>
 
             <UTable
+                v-if="reports"
                 ref="table"
-                :data="userPagination?.items"
+                :data="reports?.items"
                 :columns="columns"
+                :loading="pending"
                 :ui="{
-                    thead: 'border-t border-(--ui-border-accented)'
+                    base: 'table-fixed border-separate border-spacing-0',
+                    thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+                    tbody: '[&>tr]:last:[&>td]:border-b-0',
+                    th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
+                    td: 'border-b border-default',
+                    separator: 'h-0'
                 }"
             />
-                
-            <div class="flex items-center justify-end border-t border-accented py-3.5">
+
+            <div class="flex items-center justify-between border-t border-accented py-3.5">
+                <div class="text-sm text-muted">
+                    {{ reports?.size || 0 }} of
+                    {{ reports?.total || 0 }} row(s) selected.
+                </div>
                 <UPagination
                     :default-page="currentPage"
                     :items-per-page="pageSize"
-                    :total="userPagination?.total"
+                    :total="reports?.total"
                     @update:page="updatePage"
                 />
             </div>

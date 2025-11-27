@@ -11,13 +11,23 @@ namespace Scratch.Infrastructure.Respositories
     {
         private const int _defaultLimit = 20;
 
-        public async Task<Pagination<ProjectReportDto>> Get(int? page = null, int? limit = null)
+        public async Task<Pagination<ProjectReportDto>> Get(
+            string? filter, int? page = null, int? limit = null)
         {
             int pageSize = limit ?? _defaultLimit;
             int currentPage = page ?? 1;
             int offset = (currentPage - 1) * pageSize;
 
-            var query = dbContext.ProjectReports.OrderByDescending(r => r.CreatedAt).AsNoTracking();
+            string searchTerm = (filter ?? string.Empty).ToLower();
+
+            var query = dbContext.ProjectReports
+                .Where(r =>
+                    r.Reason.ToLower().Contains(searchTerm) ||
+                    r.Project.PublicId.ToLower().Contains(searchTerm) ||
+                    r.ByUser.UserName!.ToLower().Contains(searchTerm)
+                )
+                .OrderByDescending(r => r.CreatedAt)
+                .AsNoTracking();
 
             var items = await query.Skip(offset)
                                     .Take(pageSize)

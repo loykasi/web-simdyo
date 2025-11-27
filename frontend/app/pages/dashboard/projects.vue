@@ -7,6 +7,7 @@ import type { ProjectResponse } from '~/types/project.type';
 import ProjectBanModal from '~/components/dashboard/ProjectBanModal.vue';
 import { UBadge } from '#components';
 import { useAdminProjectsStore } from '~/stores/admin/adminProjects.store';
+import { debounce } from '~/utilities/debounce';
 
 const overlay = useOverlay();
 const modal = overlay.create(ProjectBanModal);
@@ -176,7 +177,7 @@ function onSelect(e: Event, row: TableRow<ProjectResponse>) {
 const globalFilter = ref('')
 
 callOnce(async () => {
-    fetchProjects(currentPage.value, abortController.signal);
+    fetchProjects(globalFilter.value, currentPage.value, abortController.signal);
 }, {
     mode: 'navigation'
 })
@@ -188,8 +189,17 @@ async function updatePage(page: number) {
     
     currentPage.value = page;
     abortController = new AbortController();
-    fetchProjects(currentPage.value, abortController.signal);
+    fetchProjects(globalFilter.value, currentPage.value, abortController.signal);
 }
+
+function applySearchFilter(value: string) {
+    console.log(value);
+    
+    currentPage.value = 1;
+    fetchProjects(globalFilter.value, currentPage.value, abortController.signal);
+}
+
+const updateDebouceSearch = debounce(applySearchFilter, 500);
 </script>
 
 <template>
@@ -198,9 +208,14 @@ async function updatePage(page: number) {
             <UDashboardNavbar title="Users" />
         </template>
 
-        <template v-if="!pending" #body>
+        <template #body>
             <div class="flex w-full items-center justify-between">
-                <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
+                <UInput
+                    v-model="globalFilter"
+                    class="max-w-sm"
+                    placeholder="Filter..."
+                    v-on:update:model-value="updateDebouceSearch"
+                />
 
                 <UButton
                     v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
@@ -218,19 +233,26 @@ async function updatePage(page: number) {
             </div>
 
             <UTable
+                v-if="projects"
                 ref="table"
                 :data="projects?.items"
                 :columns="columns"
+                :loading="pending"
                 @select="onSelect"
                 :ui="{
-                    thead: 'border-t border-(--ui-border-accented)'
+                    base: 'table-fixed border-separate border-spacing-0',
+                    thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+                    tbody: '[&>tr]:last:[&>td]:border-b-0',
+                    th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
+                    td: 'border-b border-default',
+                    separator: 'h-0'
                 }"
             />
                 
             <div class="flex items-center justify-between border-t border-accented py-3.5">
                 <div class="text-sm text-muted">
-                    {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-                    {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
+                    {{ projects?.size || 0 }} of
+                    {{ projects?.total || 0 }} row(s).
                 </div>
                 <UPagination
                     :default-page="currentPage"

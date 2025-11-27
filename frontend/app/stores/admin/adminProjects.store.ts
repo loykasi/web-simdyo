@@ -6,11 +6,12 @@ export const useAdminProjectsStore = () => {
     const pending = useState<boolean>("adminProjectsPending", () => true);
     const pageSize = 10;
 
-    async function fetch(page: number, signal: AbortSignal) {
+    async function fetch(search: string, page: number, signal: AbortSignal) {
         pending.value = true;
         useAPI<Pagination<ProjectResponse>>(`admin/projects`, {
             method: "GET",
             query: {
+                search,
                 page: page,
                 limit: pageSize,
             },

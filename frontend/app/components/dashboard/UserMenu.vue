@@ -10,7 +10,7 @@ const colorMode = useColorMode();
 const { logout } = useLogin();
 const { user } = useAuthStore();
 
-const accountItems = ref<DropdownMenuItem[]>([
+const accountItems = computed<DropdownMenuItem[]>(() => [
     {
         label: 'Profile',
         icon: 'material-symbols:person-outline',
@@ -39,7 +39,7 @@ const accountItems = ref<DropdownMenuItem[]>([
             onSelect(e: Event) {
                 e.preventDefault()
 
-                colorMode.preference = 'light'
+                colorMode.preference = 'light';
             }
         }, {
             label: 'Dark',

@@ -18,9 +18,9 @@ namespace Scratch.Application.Services
         IUnitOfWork unitOfWork
     ) : IProjectReportService
     {
-        public async Task<Result<Pagination<ProjectReportDto>>> Get(int? page = null, int? limit = null)
+        public async Task<Result<Pagination<ProjectReportDto>>> Get(string? filter, int? page = null, int? limit = null)
         {
-            var pagination = await unitOfWork.ProjectReportRepository.Get(page, limit);
+            var pagination = await unitOfWork.ProjectReportRepository.Get(filter, page, limit);
 
             return Result.Success(pagination);
         }

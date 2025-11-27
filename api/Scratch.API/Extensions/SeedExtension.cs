@@ -20,11 +20,10 @@ namespace Scratch.API.Extensions
 
             var claims = await roleManager.GetClaimsAsync(adminRole);
 
-            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.DashboardAccess);
-            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageUsers);
-            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageProjects);
-            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageProjectReport);
-            await AddPermissionClaim(roleManager, claims, adminRole, Permissions.ManageCategories);
+            foreach (var permission in Permissions.All)
+            {
+                await AddPermissionClaim(roleManager, claims, adminRole, permission);
+            }
         }
 
         private static async Task AddPermissionClaim

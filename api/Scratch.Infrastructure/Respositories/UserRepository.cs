@@ -13,30 +13,43 @@ namespace Scratch.Infrastructure.Respositories
         UserManager<User> userManager
     ) : IUserRespository
     {
-        public async Task<Pagination<UserDto>> Get(int? pageNumber = null, int? size = null)
+        public async Task<Pagination<UserDto>> Get(
+            string? searchTerm,
+            int? pageNumber = null,
+            int? size = null
+        )
         {
             int pageSize = size ?? 10;
             int currentPage = pageNumber ?? 1;
             int offset = (currentPage - 1) * pageSize;
 
-            var users = await dbContext.Users.OrderBy(u => u.CreatedAt)
-                                            .Skip(offset)
-                                            .Take(pageSize)
-                                            .Select(u => new UserDto
-                                            {
-                                                Id = u.Id,
-                                                Username = u.UserName!,
-                                                Email = u.Email!,
-                                                CreatedAt = u.CreatedAt.ToString("o"),
-                                                Roles = (from userRole in dbContext.UserRoles
-                                                         join role in dbContext.Roles on userRole.RoleId equals role.Id
-                                                         where userRole.UserId == u.Id
-                                                         select role.Name).ToArray(),
-                                                IsBanned = (dbContext.UserBans.Any(b => b.UserId == u.Id && b.IsActive == true))
-                                            })
-                                            .ToListAsync();
+            string search = (searchTerm ?? string.Empty).ToLower();
 
-            int count = await dbContext.Users.Select(p => p.Id).CountAsync();
+            var query = dbContext.Users
+                .Where(u =>
+                    u.UserName!.ToLower().Contains(search) ||
+                    u.Email!.ToLower().Contains(search)
+                )
+                .OrderBy(u => u.CreatedAt);
+
+            var users = await query
+                .Skip(offset)
+                .Take(pageSize)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Username = u.UserName!,
+                    Email = u.Email!,
+                    CreatedAt = u.CreatedAt.ToString("o"),
+                    Roles = (from userRole in dbContext.UserRoles
+                                join role in dbContext.Roles on userRole.RoleId equals role.Id
+                                where userRole.UserId == u.Id
+                                select role.Name).ToArray(),
+                    IsBanned = (dbContext.UserBans.Any(b => b.UserId == u.Id && b.IsActive == true))
+                })
+                .ToListAsync();
+
+            int count = await query.CountAsync();
 
             Pagination<UserDto> pagination = new()
             {

@@ -27,7 +27,7 @@ const menu = [{
   permissions: ['manage_categories']
 }, {
   label: 'Roles',
-  icon: 'material-symbols:category-outline-rounded',
+  icon: 'material-symbols:settings-account-box-outline',
   to: '/dashboard/roles',
 }, {
   label: 'Settings',

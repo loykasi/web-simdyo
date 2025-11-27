@@ -7,6 +7,7 @@ import { UBadge } from '#components';
 import UserBanModal from '~/components/dashboard/UserBanModal.vue';
 import { useAuthStore } from '~/stores/auth.store';
 import { useAdminUsersStore } from '~/stores/admin/adminUsers.store';
+import { debounce } from '~/utilities/debounce';
 
 const overlay = useOverlay();
 const modal = overlay.create(UserBanModal);
@@ -17,6 +18,8 @@ const toast = useToast();
 const UButton = resolveComponent('UButton');
 const UCheckbox = resolveComponent('UCheckbox');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
+
+const globalFilter = ref('');
 
 const {
     users,
@@ -192,10 +195,8 @@ function onSelect(e: Event, row: TableRow<UserResponse>) {
     row.toggleSelected(!row.getIsSelected())
 }
 
-const globalFilter = ref('')
-
 callOnce(async () => {
-    fetchUsers(currentPage.value, abortController.signal);
+    fetchUsers(globalFilter.value, currentPage.value, abortController.signal);
 }, {
     mode: 'navigation'
 })
@@ -207,9 +208,17 @@ async function updatePage(page: number) {
     
     currentPage.value = page;
     abortController = new AbortController();
-    fetchUsers(currentPage.value, abortController.signal);
+    fetchUsers(globalFilter.value, currentPage.value, abortController.signal);
 }
 
+function applySearchFilter(value: string) {
+    console.log(value);
+    
+    currentPage.value = 1;
+    fetchUsers(globalFilter.value, currentPage.value, abortController.signal);
+}
+
+const updateDebouceSearch = debounce(applySearchFilter, 500);
 
 // roles
 
@@ -232,9 +241,14 @@ async function closeRoleModal() {
             <UDashboardNavbar title="Users" />
         </template>
 
-        <template v-if="!pending" #body>
+        <template #body>
             <div class="flex w-full items-center justify-between">
-                <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
+                <UInput
+                    v-model="globalFilter"
+                    class="max-w-sm"
+                    placeholder="Filter..."
+                    v-on:update:model-value="updateDebouceSearch"
+                />
 
                 <UButton
                     v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
@@ -252,19 +266,26 @@ async function closeRoleModal() {
             </div>
 
             <UTable
+                v-if="users"
                 ref="table"
                 :data="users.items"
                 :columns="columns"
                 @select="onSelect"
+                :loading="pending"
                 :ui="{
-                    thead: 'border-t border-(--ui-border-accented)'
+                    base: 'table-fixed border-separate border-spacing-0',
+                    thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+                    tbody: '[&>tr]:last:[&>td]:border-b-0',
+                    th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
+                    td: 'border-b border-default',
+                    separator: 'h-0'
                 }"
             />
                 
             <div class="flex items-center justify-between border-t border-accented py-3.5">
                 <div class="text-sm text-muted">
-                    {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-                    {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
+                    {{ users?.size || 0 }} of
+                    {{ users?.total || 0 }} row(s).
                 </div>
                 <UPagination
                     :default-page="currentPage"

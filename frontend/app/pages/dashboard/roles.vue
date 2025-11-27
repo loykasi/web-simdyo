@@ -72,13 +72,13 @@ function updateRole(update: (value: Role[]) => Role[]) {
 
         <template v-if="!pending" #body>
             <div>
-                <div class="px-4 flex w-full items-center font-bold py-2">
+                <div class="px-4 flex w-full items-center font-bold py-2 bg-elevated/50 rounded-lg border border-default">
                     <div>ROLES</div>
                 </div>
                 <div>
                     <div
                         v-for="role in roles"
-                        class="px-4 py-3 flex justify-between border-t border-default rounded-md hover:bg-accented"
+                        class="px-4 py-3 flex justify-between border-b border-default hover:rounded-md hover:bg-elevated/50"
                     >
                         <div class="text-lg">
                             {{ role.name }}

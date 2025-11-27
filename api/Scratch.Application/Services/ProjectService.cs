@@ -18,9 +18,9 @@ namespace Scratch.Application.Services
         IPublicIdService publicIdService
     ) : IProjectService
     {
-        public async Task<Result<Pagination<ProjectResponse>>> GetAll(int? page = null, int? limit = null)
+        public async Task<Result<Pagination<ProjectResponse>>> GetAll(string? filter, int? page = null, int? limit = null)
         {
-            var response = await unitOfWork.ProjectRepository.GetAllProjects(page, limit);
+            var response = await unitOfWork.ProjectRepository.GetAllProjects(filter, page, limit);
             return Result.Success(response);
         }
 

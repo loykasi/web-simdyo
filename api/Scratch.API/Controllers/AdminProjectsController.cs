@@ -20,9 +20,13 @@ namespace Scratch.API.Controllers
     ) : BaseController
     {
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int? page, [FromQuery] int? limit)
+        public async Task<IActionResult> Get(
+            [FromQuery] string? search,
+            [FromQuery] int? page,
+            [FromQuery] int? limit
+        )
         {
-            var result = await projectService.GetAll(page, limit);
+            var result = await projectService.GetAll(search, page, limit);
 
             return ToApiResult(result);
         }

@@ -14,9 +14,10 @@ namespace Scratch.API.Controllers
         [HttpGet("reports")]
         [RequirePermission(Permissions.DashboardAccess)]
         [RequirePermission(Permissions.ManageProjectReport)]
-        public async Task<IActionResult> Get([FromQuery] int? page, [FromQuery] int? limit)
+        public async Task<IActionResult> Get(
+            [FromQuery] string? filter, [FromQuery] int? page, [FromQuery] int? limit)
         {
-            var result = await projectReportService.Get(page, limit);
+            var result = await projectReportService.Get(filter, page, limit);
 
             return ToApiResult(result);
         }

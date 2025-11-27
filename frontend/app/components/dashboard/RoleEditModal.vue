@@ -2,6 +2,7 @@
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import type { Role } from '~/types/role.type';
+import { permissionConfig } from '~/config/permissionConfig';
 
 const toast = useToast();
 const seletedPermissions = new Map<string, boolean>([]);
@@ -92,18 +93,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }).finally(() => {
         emit('close')
     });
-
-    // useAPI<Role>(`roles/${prop.role?.id}/permissions`, {
-    //     method: "PUT",
-    //     body: {
-    //         enables: [],
-    //         disable: []
-    //     }
-    // }).then(() => {
-    //     toast.add({ title: 'Success', description: `Permissions updated`, color: 'success' });
-    // }).catch(() => {
-    //     toast.add({ title: 'Error', description: `Something goes wrong! Try again.`, color: 'error' });
-    // })
 }
 </script>
 
@@ -131,7 +120,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                         <USwitch
                             v-for="permission in permissions"
                             :default-value="role?.permissions.includes(permission)"
-                            :label="permission"
+                            :label="permissionConfig.get(permission)"
                             v-on:update:model-value="(value) => togglePermission(permission, value)"
                         />
                     </div>

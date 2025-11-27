@@ -15,9 +15,10 @@ namespace Scratch.Application.Services
         UserManager<User> userManager
     ): IUserService
     {
-        public async Task<Result<Pagination<UserDto>>> Get(int? pageNumber = null, int? limit = null)
+        public async Task<Result<Pagination<UserDto>>> Get(
+            string? searchTerm, int? pageNumber = null, int? limit = null)
         {
-            var pagination = await unitOfWork.UserRespository.Get(pageNumber, limit);
+            var pagination = await unitOfWork.UserRespository.Get(searchTerm, pageNumber, limit);
             return Result.Success(pagination);
         }
 

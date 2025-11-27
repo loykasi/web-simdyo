@@ -8,6 +8,7 @@ using Scratch.Domain.Requests;
 namespace Scratch.API.Controllers
 {
     [Route("api/roles")]
+    [RequirePermission(Permissions.DashboardAccess)]
     public class RolesController(IRoleService roleService) : BaseController
     {
         [HttpGet]
