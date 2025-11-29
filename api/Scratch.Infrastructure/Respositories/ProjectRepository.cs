@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Extensions;
 using Scratch.Domain.Responses;
-using System.Collections.Generic;
 
 namespace Scratch.Infrastructure.Respositories
 {
@@ -70,11 +68,26 @@ namespace Scratch.Infrastructure.Respositories
             };
         }
 
-        public async Task<Pagination<ProjectResponse>> GetProjectsCursor(int? cursor = null, int? limit = null)
+        public async Task<Pagination<ProjectResponse>> GetProjects(
+            string? search, string? category, int? cursor = null, int? limit = null)
         {
             int size = (!limit.HasValue || limit == 0) ? _defaultLimit : limit.Value;
 
-            IQueryable<Project> query = GetAvailable().OrderByDescending(p => p.Id);
+            string searchTerm = (search ?? string.Empty).ToLower();
+
+            IQueryable<Project> query = GetAvailable()
+                .Include(p => p.Category)
+                .Where(p => p.Name.ToLower().Contains(searchTerm))
+                .OrderByDescending(p => p.Id);
+
+            if (category != null)
+            {
+                query = query
+                    .Where(p =>
+                        p.Category != null &&
+                        p.Category.Name.ToLower().Contains(category)
+                    );
+            }
 
             int total = await query.CountAsync();
 
@@ -120,59 +133,6 @@ namespace Scratch.Infrastructure.Respositories
                 Total = total,
                 Size = items.Count,
                 LastId = items.Count == 0 ? null : items[items.Count - 1].Id,
-                Items = responseItems
-            };
-        }
-
-        public async Task<Pagination<ProjectResponse>> GetProjectsOffset(int? page = null, int? limit = null)
-        {
-            int pageSize = limit ?? _defaultLimit;
-            int currentPage = page ?? 1;
-            int offset = (currentPage - 1) * pageSize;
-
-            IQueryable<Project> query = GetAvailable();
-
-            int total = await query.CountAsync();
-
-            var items = await query.OrderByDescending(p => p.Id)
-                .Skip(offset)
-                .Take(pageSize)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.PublicId,
-                    p.Name,
-                    p.Description,
-                    Category = p.Category.Name,
-                    p.FileLink,
-                    p.ThumbnailLink,
-                    Username = p.User.UserName,
-                    p.LikeCount,
-                    IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
-                    p.CreatedAt,
-                    p.DeletedAt
-                })
-                .ToListAsync();
-
-            var responseItems = items.Select(p => new ProjectResponse(
-                                            p.PublicId,
-                                            p.Name,
-                                            p.Description,
-                                            p.Category,
-                                            p.FileLink,
-                                            p.ThumbnailLink,
-                                            p.Username,
-                                            p.LikeCount,
-                                            p.IsBanned,
-                                            p.CreatedAt.ToString("o"),
-                                            p.DeletedAt?.ToString("o")
-                                        )).ToList();
-
-            return new Pagination<ProjectResponse>
-            {
-                Total = total,
-                Size = items.Count,
-                LastId = items.LastOrDefault()?.Id,
                 Items = responseItems
             };
         }
@@ -333,5 +293,59 @@ namespace Scratch.Infrastructure.Respositories
         {
             return dbContext.Projects.Where(p => p.DeletedAt.HasValue);
         }
+
+
+        //public async Task<Pagination<ProjectResponse>> GetProjectsOffset(int? page = null, int? limit = null)
+        //{
+        //    int pageSize = limit ?? _defaultLimit;
+        //    int currentPage = page ?? 1;
+        //    int offset = (currentPage - 1) * pageSize;
+
+        //    IQueryable<Project> query = GetAvailable();
+
+        //    int total = await query.CountAsync();
+
+        //    var items = await query.OrderByDescending(p => p.Id)
+        //        .Skip(offset)
+        //        .Take(pageSize)
+        //        .Select(p => new
+        //        {
+        //            p.Id,
+        //            p.PublicId,
+        //            p.Name,
+        //            p.Description,
+        //            Category = p.Category.Name,
+        //            p.FileLink,
+        //            p.ThumbnailLink,
+        //            Username = p.User.UserName,
+        //            p.LikeCount,
+        //            IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+        //            p.CreatedAt,
+        //            p.DeletedAt
+        //        })
+        //        .ToListAsync();
+
+        //    var responseItems = items.Select(p => new ProjectResponse(
+        //                                    p.PublicId,
+        //                                    p.Name,
+        //                                    p.Description,
+        //                                    p.Category,
+        //                                    p.FileLink,
+        //                                    p.ThumbnailLink,
+        //                                    p.Username,
+        //                                    p.LikeCount,
+        //                                    p.IsBanned,
+        //                                    p.CreatedAt.ToString("o"),
+        //                                    p.DeletedAt?.ToString("o")
+        //                                )).ToList();
+
+        //    return new Pagination<ProjectResponse>
+        //    {
+        //        Total = total,
+        //        Size = items.Count,
+        //        LastId = items.LastOrDefault()?.Id,
+        //        Items = responseItems
+        //    };
+        //}
     }
 }

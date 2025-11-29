@@ -7,8 +7,8 @@ namespace Scratch.Application.Interfaces.Repositories
     {
         Task<Pagination<ProjectResponse>> GetAllProjects(string? filter, int? page = null, int? limit = null);
 
-        Task<Pagination<ProjectResponse>> GetProjectsOffset(int? cursor = null, int ? limit = null);
-        Task<Pagination<ProjectResponse>> GetProjectsCursor(int? page = null, int ? limit = null);
+        Task<Pagination<ProjectResponse>> GetProjects(string? search, string? category, int? cursor = null, int ? limit = null);
+        //Task<Pagination<ProjectResponse>> GetProjectsCursor(int? page = null, int ? limit = null);
         Task<int> GetUserProjectCount(Guid id);
         Task<Pagination<ProjectResponse>> GetUserProjects(Guid id, int? page, int? limit);
         Task<Pagination<ProjectResponse>> GetUserDeletedProjects(Guid id, int? page, int? limit);

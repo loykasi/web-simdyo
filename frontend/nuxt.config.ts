@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts'
   ],
   routeRules: {
+    // '/explore': { redirect: '/explore/default' },
     '/create': { ssr: false },
     '/confirm-email': { ssr: false },
     '/projects/**/edit': { ssr: false },

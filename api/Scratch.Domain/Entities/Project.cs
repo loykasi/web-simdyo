@@ -10,8 +10,8 @@
         public string FileLink { get; set; } = "";
         public string ThumbnailLink { get; set; } = "";
 
-        public int CategoryId { get; set; } = 1;
-        public required ProjectCategory Category { get; set; }
+        public int? CategoryId { get; set; }
+        public ProjectCategory? Category { get; set; }
 
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;

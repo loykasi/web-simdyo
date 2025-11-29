@@ -48,6 +48,14 @@ namespace Scratch.Infrastructure.Respositories
                                                     .ToListAsync();
         }
 
+        public async Task<List<string>> GetNames()
+        {
+            return await dbContext.ProjectCategories
+                .OrderBy(p => p.Id)
+                .Select(c => c.Name)
+                .ToListAsync();
+        }
+
         public void Add(ProjectCategory projectCategory)
         {
             dbContext.ProjectCategories.Add(projectCategory);

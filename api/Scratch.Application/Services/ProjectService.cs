@@ -25,21 +25,14 @@ namespace Scratch.Application.Services
         }
 
         public async Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(
+            string? search,
+            string? category,
             int? cursor = null,
-            int? page = null,
             int? limit = null
         )
         {
-            Pagination<ProjectResponse> response;
-            if (page.HasValue)
-            {
-                response = await unitOfWork.ProjectRepository.GetProjectsOffset(page, limit);
-            }
-            else
-            {
-                response = await unitOfWork.ProjectRepository.GetProjectsCursor(cursor, limit);
-            }
-                
+            var response = await unitOfWork.ProjectRepository.GetProjects(search, category, cursor, limit);
+
             return Result.Success(response);
         }
 
@@ -150,13 +143,17 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var category = await unitOfWork.ProjectCategoryRepository.GetByName(addProjectRequest.Category);
-            if (category == null)
+            ProjectCategory? category = null;
+            if (addProjectRequest.Category != null)
             {
-                return Result.NotFound<ProjectResponse>
-                (
-                    new Error("Category.Invalid", "Invalid category")
-                );
+                category = await unitOfWork.ProjectCategoryRepository.GetByName(addProjectRequest.Category);
+                if (category == null)
+                {
+                    return Result.NotFound<ProjectResponse>
+                    (
+                        new Error("Category.Invalid", "Invalid category")
+                    );
+                }
             }
 
             Project project = new()

@@ -13,6 +13,13 @@ namespace Scratch.Application.Services
         IUnitOfWork unitOfWork
     ): IProjectCategoryService
     {
+        public async Task<Result<List<string>>> GetNames()
+        {
+            var result = await unitOfWork.ProjectCategoryRepository.GetNames();
+
+            return Result.Success(result);
+        }
+
         public async Task<Result<List<ProjectCategoryDto>>> Get()
         {
             var result = await unitOfWork.ProjectCategoryRepository.Get();

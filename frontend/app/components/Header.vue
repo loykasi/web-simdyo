@@ -2,6 +2,7 @@
 import { UColorModeButton } from '#components';
 import type { NavigationMenuItem } from '@nuxt/ui'
 import { useAuthStore } from '~/stores/auth.store';
+import type { FormSubmitEvent } from '@nuxt/ui';
 
 const route = useRoute()
 const { isLoggedIn, isPermitted } = useAuthStore();
@@ -16,7 +17,7 @@ const items = computed<NavigationMenuItem[]>(() => [
 		to: '/create'
 	},
 	{
-		label: 'Explorer',
+		label: 'Explore',
 		to: '/explore'
 	},
 	...(isLoggedIn.value ? [ 
@@ -32,8 +33,21 @@ const items = computed<NavigationMenuItem[]>(() => [
 		}
 	] : []),
 ]);
-</script>
 
+///
+
+const searchTerm = ref(route.query.q || "");
+
+function onSearch() {
+	navigateTo({
+		path: '/explore',
+		query: {
+			q: searchTerm.value,
+		},
+	})
+}
+
+</script>
 <template>
 	<UHeader>
 		<template #left>
@@ -45,6 +59,22 @@ const items = computed<NavigationMenuItem[]>(() => [
 			</NuxtLink>
 			<UNavigationMenu :items="items" variant="pill" />
 		</template>
+
+		<form @submit.prevent="onSearch" class="flex items-center bg-accented rounded-md">
+			<input
+				id="search"
+				type="text"
+				v-model="searchTerm"
+				placeholder="Search for projects or creators"
+				required
+				class="px-2.5 py-1.5 min-w-sm text-sm"
+			/>
+			<button
+				type="submit"
+				class="flex justify-center items-center px-2 hover:cursor-pointer">
+				<UIcon name="material-symbols:search" class="size-5" />
+			</button>
+		</form>
 
 		<template #right>
 			<UColorModeButton />

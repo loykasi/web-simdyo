@@ -10,7 +10,16 @@ namespace Scratch.API.Controllers
     [Route("api/projects/categories")]
     public class ProjectCategoriesController(IProjectCategoryService projectCategoryService) : BaseController
     {
+        [HttpGet("all")]
+        public async Task<IActionResult> GetNames()
+        {
+            var result = await projectCategoryService.GetNames();
+            return ToApiResult(result);
+        }
+
         [HttpGet]
+        [RequirePermission(Permissions.DashboardAccess)]
+        [RequirePermission(Permissions.ManageCategories)]
         public async Task<IActionResult> Get()
         {
             var result = await projectCategoryService.Get();

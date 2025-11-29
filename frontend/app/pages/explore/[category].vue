@@ -1,18 +1,34 @@
 <script setup lang="ts">
+import CategoryBar from '~/components/explore/CategoryBar.vue';
 import type { Pagination } from '~/types/pagination.type';
-import type { ProjectResponse, ProjectsResponse } from '~/types/project.type';
+import type { ProjectResponse } from '~/types/project.type';
+
+const route = useRoute();
+
+const searchQuery = computed(() => route.query.q || "");
+const categoryQuery = computed(() => (route.params.category as string).toLowerCase());
 
 const pageSize = 6;
 const loading = ref(false);
 
+watchEffect(() => {
+  console.log(categoryQuery.value);
+});
+
+const key = computed(() => `projects-${categoryQuery.value}`);
+
 const { data: pagination, pending } = await useLazyAsyncData(
-	"projects",
+	key,
 	() => useAPI<Pagination<ProjectResponse>>(`projects`, {
 		method: "GET",
     query: {
+      q: searchQuery.value,
+      category: categoryQuery.value,
       limit: pageSize,
     }
-	})
+	}), {
+    watch: [searchQuery, categoryQuery]
+  }
 );
 
 function showMore() {
@@ -21,6 +37,8 @@ function showMore() {
 		method: "GET",
     query: {
       limit: pageSize,
+      q: searchQuery.value,
+      category: categoryQuery.value,
       lastId: pagination.value?.lastId
     }
 	})
@@ -47,8 +65,10 @@ useHead({
   <UPage>
     <h1 class="my-6 font-bold text-4xl">Explorer</h1>
 
-    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
-      <template v-if="pending">
+    <CategoryBar />
+
+    <template v-if="pending && !pagination">
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
         <div
           v-for="item in pageSize"
           :key="item"
@@ -59,15 +79,23 @@ useHead({
             <USkeleton class="w-full h-[84px]" />
           </div>
         </div>
-      </template>
-      <template v-else>
+      </div>
+    </template>
+    <template v-else-if="pagination && pagination.size > 0">
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
         <ProjectCard
           v-for="project in pagination?.items"
           :project="project"
         />
-      </template>
-    </div>
-
+      </div>
+    </template>
+    <template v-else>
+      <UEmpty
+          icon="material-symbols:sad-tab-outline-rounded"
+          title="No results found"
+      />
+    </template>
+    
     <UButton
       v-if="pagination?.size != pagination?.total"
       type="submit"

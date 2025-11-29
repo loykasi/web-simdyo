@@ -9,6 +9,7 @@ namespace Scratch.Application.Interfaces.Repositories
         Task<ProjectCategory?> GetById(int id);
         Task<Pagination<ProjectCategoryDto>> Get(int? page = null, int? limit = null);
         Task<List<ProjectCategoryDto>> Get();
+        Task<List<string>> GetNames();
         void Add(ProjectCategory projectCategory);
         Task Delete(int id);
     }
