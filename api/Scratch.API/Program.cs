@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -7,6 +8,8 @@ using Scratch.API.Extensions;
 using Scratch.API.Handlers;
 using Scratch.Infrastructure;
 using Scratch.Infrastructure.Options;
+using System.Security.Claims;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +36,42 @@ builder.Services.AddAuthorization(builder.Configuration);
 builder.Services.SetupCors();
 builder.Services.SetupServices();
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter("fixed", cfg =>
+    {
+        cfg.PermitLimit = 1;
+        cfg.Window = TimeSpan.FromSeconds(1);
+    });
+
+    options.AddPolicy("per-user", httpContext =>
+    {
+        string? userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            return RateLimitPartition.GetTokenBucketLimiter(
+                userId,
+                _ => new TokenBucketRateLimiterOptions
+                {
+                    TokenLimit = 50,
+                    TokensPerPeriod = 10,
+                    ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+                });
+        }
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            "anonymous",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromSeconds(1)
+            });
+    });
+});
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor();
 
@@ -58,6 +97,7 @@ app.UseExceptionHandler(_ => { });
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();

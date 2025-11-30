@@ -48,7 +48,7 @@ function showMore() {
 }
 
 useHead({
-  title: 'Explorer',
+  title: 'Explore',
 })
 </script>
 

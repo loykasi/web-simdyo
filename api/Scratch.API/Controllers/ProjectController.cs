@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Authorizations;

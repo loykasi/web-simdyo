@@ -25,12 +25,12 @@ namespace Scratch.Application.Services
     {
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest registerRequest)
         {
-            bool isUserExists = await userManager.FindByNameAsync(registerRequest.UserName) != null;
+            bool isUserExists = await userManager.FindByNameAsync(registerRequest.Username) != null;
             if (isUserExists)
             {
                 return Result.Conflict<RegisterResponse>
                 (
-                    new Error("User.UsernameDuplicate", $"User with username: {registerRequest.UserName} already exists")
+                    new Error("User.UsernameDuplicate", $"User with username: {registerRequest.Username} already exists")
                 );
             }
 
@@ -43,7 +43,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            User user = User.Create(registerRequest.Email, registerRequest.UserName);
+            User user = User.Create(registerRequest.Email, registerRequest.Username);
 
             var result = await userManager.CreateAsync(user, registerRequest.Password);
             await userManager.AddToRoleAsync(user, Roles.Member);
@@ -91,7 +91,7 @@ namespace Scratch.Application.Services
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var user = await userManager.FindByNameAsync(loginRequest.UserName);
+            var user = await userManager.FindByNameAsync(loginRequest.Username);
 
             if (user == null
                 || !await userManager.IsEmailConfirmedAsync(user)
