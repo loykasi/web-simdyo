@@ -10,7 +10,7 @@ export interface ProjectResponse {
     publicId: string;
     title: string;
     description: string;
-    category: string;
+    category: string | null;
     projectLink: string;
     thumbnailLink: string;
     username: string;

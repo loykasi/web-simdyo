@@ -18,7 +18,7 @@ confirmEmail(token, email);
         <template v-else-if="isVerifySuccess">
             <h1 class="text-2xl font-bold text-center">Verified!</h1>
             <div class="mt-2 text-center">Your email has been verified.</div>
-            <div class="text-center">Your can now sign in to your account.</div>
+            <div class="text-center">You can now sign in to your account.</div>
         </template>
         <template v-else>
             <h1 class="text-2xl font-bold text-center">Something went wrong!</h1>

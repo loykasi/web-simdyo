@@ -38,14 +38,6 @@ namespace Scratch.Infrastructure.Migrations
                     table.PrimaryKey("PK_ProjectCategories", x => x.Id);
                 });
 
-            migrationBuilder.InsertData(
-                table: "ProjectCategories",
-                columns: new[] { "Id", "Name", "CreatedAt", "UpdatedAt" },
-                values: new object[,]
-                {
-                    { "1", "Default", DateTime.UtcNow, DateTime.UtcNow },
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_CategoryId",
                 table: "Projects",

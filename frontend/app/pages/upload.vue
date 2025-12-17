@@ -9,10 +9,16 @@ const { upload } = useProject();
 
 const { data: categories, pending: categoryPending } = await useLazyAsyncData(
 	"projectCategories",
-	() => useAPI<ProjectCategory[]>(`projects/categories`, {
+	() => useAPI<string[]>(`projects/categories/all`, {
 		method: "GET"
 	})
 );
+
+watchEffect(() => {
+    if (categories.value && categories.value[0] !== "Default") {
+        categories.value = ["Default", ...categories.value];
+    }
+})
 
 // const categories = ref(['Default', 'Game', 'Prototype', 'Simulation', 'Animation']);
 
@@ -61,9 +67,12 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
     const payload = new FormData();
     payload.append("title", event.data.title);
     payload.append("description", event.data.description);
-    payload.append("category", event.data.category);
     payload.append("projectFile", event.data.projectFile);
     payload.append("thumbnailFile", event.data.thumbnailFile);
+
+    if (event.data.category !== "Default") {
+        payload.append("category", event.data.category);
+    }
 
     loading.value = true;
     upload(payload)
@@ -187,8 +196,6 @@ useHead({
                             <USelect
                                 v-model="state.category"
                                 :items="categories"
-                                labelKey="name"
-                                valueKey="name"
                                 :loading="categoryPending"
                                 class="w-full mt-2"
                             />

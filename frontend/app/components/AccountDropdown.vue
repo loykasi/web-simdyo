@@ -17,7 +17,7 @@ const accountItems = ref<DropdownMenuItem[]>([
     to: '/account'
   },
   {
-    label: 'Logout',
+    label: 'Log out',
     icon: 'material-symbols:logout',
     onSelect(e) {
       logout();

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scratch.Infrastructure;
@@ -11,9 +12,11 @@ using Scratch.Infrastructure;
 namespace Scratch.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215144403_UpdateSchema")]
+    partial class UpdateSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -417,31 +420,6 @@ namespace Scratch.Infrastructure.Migrations
                     b.ToTable("BaoCaoDuAn", (string)null);
                 });
 
-            modelBuilder.Entity("Scratch.Domain.Entities.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("RefreshTokenExpriresAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("TokenLamMoi_ThoiHan");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TokenLamMoi", (string)null);
-                });
-
             modelBuilder.Entity("Scratch.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -780,17 +758,6 @@ namespace Scratch.Infrastructure.Migrations
                     b.Navigation("ByUser");
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Scratch.Domain.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("Scratch.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.UserBan", b =>

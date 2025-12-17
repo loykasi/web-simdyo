@@ -33,8 +33,17 @@ namespace Scratch.Infrastructure
                 entity.Property(u => u.AccessFailedCount).HasColumnName("SoLanDangNhapThatBai");
             });
 
+            // REFRESH TOKENS
+            builder.Entity<RefreshToken>(entity =>
+            {
+                entity.ToTable("TokenLamMoi");
+
+                entity.Property(rt => rt.RefreshTokenExpriresAtUTC).HasColumnName("TokenLamMoi_ThoiHan");
+                entity.Property(rt => rt.UserId).HasColumnName("IdNguoiDung");
+            });
+
             // ROLES
-            builder.Entity<IdentityRole>(entity =>
+            builder.Entity<Role>(entity =>
             {
                 entity.ToTable("VaiTro");
 
@@ -44,7 +53,7 @@ namespace Scratch.Infrastructure
             });
 
             // USER ROLES
-            builder.Entity<IdentityUserRole<string>>(entity =>
+            builder.Entity<IdentityUserRole<Guid>>(entity =>
             {
                 entity.ToTable("NguoiDung_VaiTro");
 
@@ -53,7 +62,7 @@ namespace Scratch.Infrastructure
             });
 
             // ROLE CLAIMS
-            builder.Entity<IdentityRoleClaim<string>>(entity =>
+            builder.Entity<IdentityRoleClaim<Guid>>(entity =>
             {
                 entity.ToTable("VaiTroClaim");
 
@@ -63,7 +72,7 @@ namespace Scratch.Infrastructure
             });
 
             // USER CLAIMS
-            builder.Entity<IdentityUserClaim<string>>(entity =>
+            builder.Entity<IdentityUserClaim<Guid>>(entity =>
             {
                 entity.ToTable("NguoiDungClaim");
 
@@ -73,7 +82,7 @@ namespace Scratch.Infrastructure
             });
 
             // USER LOGINS
-            builder.Entity<IdentityUserLogin<string>>(entity =>
+            builder.Entity<IdentityUserLogin<Guid>>(entity =>
             {
                 entity.ToTable("NguoiDungDangNhap");
 
@@ -81,10 +90,12 @@ namespace Scratch.Infrastructure
                 entity.Property(ul => ul.ProviderKey).HasColumnName("KhoaNhaCungCap");
                 entity.Property(ul => ul.ProviderDisplayName).HasColumnName("TenNhaCungCap");
                 entity.Property(ul => ul.UserId).HasColumnName("NguoiDungId");
+
+                entity.HasKey(ul => new { ul.LoginProvider, ul.ProviderKey });
             });
 
             // USER TOKENS
-            builder.Entity<IdentityUserToken<string>>(entity =>
+            builder.Entity<IdentityUserToken<Guid>>(entity =>
             {
                 entity.ToTable("NguoiDungToken");
 
@@ -92,9 +103,16 @@ namespace Scratch.Infrastructure
                 entity.Property(ut => ut.LoginProvider).HasColumnName("NhaCungCap");
                 entity.Property(ut => ut.Name).HasColumnName("Ten");
                 entity.Property(ut => ut.Value).HasColumnName("GiaTri");
+
+                entity.HasKey(ut => new
+                {
+                    ut.UserId,
+                    ut.LoginProvider,
+                    ut.Name
+                });
             });
 
-            // PROJECT LIKES
+            // PROJECT CATEGORIES
             builder.Entity<ProjectCategory>(entity =>
             {
                 entity.ToTable("DanhMucDuAn");
@@ -144,6 +162,20 @@ namespace Scratch.Infrastructure
 
                 entity.Property(p => p.ProjectId).HasColumnName("IdDuAn");
                 entity.Property(p => p.UserId).HasColumnName("IdNguoiDung");
+                entity.Property(u => u.CreatedAt).HasColumnName("NgayTao");
+                entity.Property(u => u.UpdatedAt).HasColumnName("NgayCapNhat");
+            });
+
+            // PROJECT COMMENTS
+            builder.Entity<ProjectComment>(entity =>
+            {
+                entity.ToTable("BinhLuanDuAn");
+
+                entity.Property(p => p.Content).HasColumnName("NoiDung");
+                entity.Property(p => p.ParentCommentId).HasColumnName("IdTraLoi");
+                entity.Property(p => p.ProjectId).HasColumnName("IdDuAn");
+                entity.Property(p => p.UserId).HasColumnName("IdNguoiDung");
+                entity.Property(p => p.RepliedUserId).HasColumnName("IdNguoiTraLoi");
                 entity.Property(u => u.CreatedAt).HasColumnName("NgayTao");
                 entity.Property(u => u.UpdatedAt).HasColumnName("NgayCapNhat");
             });

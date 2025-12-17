@@ -38,6 +38,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     .then((res) => {
         isRegisterSuccess.value = true;
     }).catch((err) => {
+        if (err.data === undefined) {
+            console.log("server error");
+            return;
+        }
         if (err.data[0].code === "User.UsernameDuplicate") {
             const errors = [];
             errors.push({ name: "username", message: "Username taken! Try another" });

@@ -12,6 +12,13 @@ namespace Scratch.API.Extensions
             using var scope = app.Services.CreateScope();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
+            var memberRole = await roleManager.FindByNameAsync(Roles.Member);
+            if (memberRole is null)
+            {
+                await roleManager.CreateAsync(memberRole = new Role(Roles.Member));
+            }
+
+
             var adminRole = await roleManager.FindByNameAsync(Roles.Admin);
             if (adminRole is null)
             {
@@ -19,7 +26,6 @@ namespace Scratch.API.Extensions
             }
 
             var claims = await roleManager.GetClaimsAsync(adminRole);
-
             foreach (var permission in Permissions.All)
             {
                 await AddPermissionClaim(roleManager, claims, adminRole, permission);

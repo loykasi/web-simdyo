@@ -33,6 +33,8 @@ namespace Scratch.Infrastructure
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentCommentId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.UseVietnameseTables();
         }
 
         public override int SaveChanges()
@@ -66,6 +68,7 @@ namespace Scratch.Infrastructure
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectLike> ProjectLikes { get; set; }
         public DbSet<ProjectComment> ProjectComments { get; set; }

@@ -177,7 +177,7 @@ useHead({
                 </div>
             </div>
             
-            <div class="aspect-[16/9] w-full bg-blue-800 mb-4">
+            <div class="aspect-[16/9] w-full mb-4">
                 <GamePlayer :project-link="project.projectLink" />
             </div>
 

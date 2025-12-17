@@ -18,15 +18,15 @@ const isLogged = useCookie("isLogged", {
 });
 
 const schema = z.object({
-	username: z.string('Invalid username'),
+	username: z.string('Invalid username').nonempty("This field is required").min(2, 'Must be at least 2 characters'),
 	password: z.string('Invalid password').min(6, 'Must be at least 6 characters')
 })
 
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-	username: undefined,
-	password: undefined
+	username: "",
+	password: ""
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -51,6 +51,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 			color: 'success'
 		})
 	}).catch((err) => {
+		if (err.data[0].code === "Login.Ban") {
+			error.value = "Account has been suspended due to a violation of community guidelines."
+        }
+
 		if (err.data[0].code === "Login.ValidationFailed") {
 			error.value = "Incorrect username or password"
         }
@@ -76,8 +80,8 @@ const showPassword = ref(false);
 			variant="ghost"
 		/>
 		<template #content>
-			<div class="p-4 min-w-xs">
-				<UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+			<div class="p-4 w-xs">
+				<UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit" :validateOn="[]">
 					<UFormField label="Username" name="username" >
 						<UInput v-model="state.username" placeholder="Username" class="w-full mt-1" />
 					</UFormField>
@@ -103,6 +107,14 @@ const showPassword = ref(false);
 							</template>
 						</UInput>
 					</UFormField>
+						
+					<div>
+						<ULink to="/forgot-password" @click="() => {open = false}">Forgot password?</ULink>
+					</div>
+
+					<UButton type="submit" :loading="loading">
+						Log in
+					</UButton>
 
 					<div
 						v-if="error !== ''"
@@ -110,14 +122,6 @@ const showPassword = ref(false);
 					>
 						{{ error }}
 					</div>
-						
-					<div>
-						<ULink to="/forgot-password" @click="() => {open = false}">Forgot password?</ULink>
-					</div>
-
-					<UButton type="submit" :loading="loading">
-						Submit
-					</UButton>
 				</UForm>
 			</div>
 		</template>

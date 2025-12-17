@@ -104,20 +104,25 @@ namespace Scratch.Application.Services
                 );
             }
 
+            bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
+            if (isBanned)
+            {
+                return Result.Failure<LoginResponse>
+                (
+                    new Error("Login.Ban", $"Account has been banned.")
+                );
+            }
+
             var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user);
-            var refreshToken = authTokenProcessor.GenerateRefreshToken();
+            var refreshToken = authTokenProcessor.GenerateRefreshToken(user);
 
-            var refreshTokenExpirationAtUTC = DateTime.UtcNow.AddDays(7);
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpriresAtUTC = refreshTokenExpirationAtUTC;
-
+            user.RefreshTokens.Add(refreshToken);
             await userManager.UpdateAsync(user);
 
             var permissions = await unitOfWork.UserRespository.GetUserPermissionsAsync(user);
 
             cookieService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
-            cookieService.SetToken("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationAtUTC);
+            cookieService.SetToken("REFRESH_TOKEN", refreshToken.Token, refreshToken.RefreshTokenExpriresAtUTC);
 
             return Result.Success
             (
@@ -133,7 +138,6 @@ namespace Scratch.Application.Services
             }
 
             var user = await unitOfWork.UserRespository.GetUserByRefreshTokenAsync(refreshToken);
-
             if (user == null)
             {
                 cookieService.Delete("ACCESS_TOKEN");
@@ -141,7 +145,16 @@ namespace Scratch.Application.Services
                 return Result.UnAuthorized(new Error("InvalidToken", "Refresh token is invalid."));
             }
 
-            if (user.RefreshTokenExpriresAtUTC < DateTime.UtcNow)
+            var refreshTokenModel = authTokenProcessor.GetRefreshTokenByUser(user, refreshToken);
+            if (refreshTokenModel == null || refreshTokenModel.RefreshTokenExpriresAtUTC < DateTime.UtcNow)
+            {
+                cookieService.Delete("ACCESS_TOKEN");
+                cookieService.Delete("REFRESH_TOKEN");
+                return Result.UnAuthorized(new Error("ExpiredToken", "Refresh token is expired."));
+            }
+
+            bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
+            if (isBanned)
             {
                 cookieService.Delete("ACCESS_TOKEN");
                 cookieService.Delete("REFRESH_TOKEN");
@@ -149,17 +162,12 @@ namespace Scratch.Application.Services
             }
 
             var (jwtToken, expirationDateInUtc) = await authTokenProcessor.GenerateJwtToken(user);
-            var refreshTokenValue = authTokenProcessor.GenerateRefreshToken();
-
-            var refreshTokenExpirationDateInUtc = DateTime.UtcNow.AddDays(7);
-
-            user.RefreshToken = refreshTokenValue;
-            user.RefreshTokenExpriresAtUTC = refreshTokenExpirationDateInUtc;
+            refreshTokenModel = authTokenProcessor.GenerateRefreshToken(user, refreshToken);
 
             await userManager.UpdateAsync(user);
 
             authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
-            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);
 
             return Result.Success();
         }
@@ -259,8 +267,9 @@ namespace Scratch.Application.Services
                 throw new RefreshTokenException("Invalid refresh token");
             }
 
-            user.RefreshToken = string.Empty;
-            user.RefreshTokenExpriresAtUTC = null;
+            await authTokenProcessor.RevokeToken(user, refreshToken);
+            //user.RefreshToken = string.Empty;
+            //user.RefreshTokenExpriresAtUTC = null;
             await userManager.UpdateAsync(user);
 
             cookieService.Delete("ACCESS_TOKEN");

@@ -10,7 +10,18 @@ const projectId = route.params.id as string;
 const toast = useToast();
 const { update } = useProject();
 
-const categories = ref(['Default', 'Game', 'Prototype', 'Simulation', 'Animation']);
+const { data: categories, pending: categoryPending } = await useLazyAsyncData(
+	"projectCategories",
+	() => useAPI<string[]>(`projects/categories/all`, {
+		method: "GET"
+	})
+);
+
+watchEffect(() => {
+    if (categories.value && categories.value[0] !== "Default") {
+        categories.value = ["Default", ...categories.value];
+    }
+})
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 
@@ -63,17 +74,18 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
     const payload = new FormData();
     payload.append("title", event.data.title);
     payload.append("description", event.data.description);
-    payload.append("category", event.data.category);
+
+    if (event.data.category !== "Default") {
+        payload.append("category", event.data.category);
+    }
+
     if (event.data.projectFile !== undefined) {
         payload.append("projectFile", event.data.projectFile);
     }
+
     if (event.data.thumbnailFile !== undefined) {
         payload.append("thumbnailFile", event.data.thumbnailFile);
     }
-
-    // for (const [key, value] of payload.entries()) {
-    //     console.log(`${key}: ${value}`);
-    // }
 
     loading.value = true;
     update(projectId, payload)
@@ -122,7 +134,7 @@ onMounted(() => {
         console.log("run");
         state.title = res.title;
         state.description = res.description;
-        state.category = res.category;
+        state.category = res.category ?? "Default";
         defaultThumbnail.value = res.thumbnailLink;
     }).catch(err => {
 
@@ -148,26 +160,6 @@ useHead({
                 <UForm :schema="schema" :state="state" @submit="onSubmit">
                     <div class="grid grid-cols-3 space-x-12 space-y-4">
                         <div>
-                            <!-- <UFormField label="Select thumbnail" name="thumbnailFile">
-                                <UFileUpload
-                                    v-model="state.thumbnailFile"
-                                    accept="image/*"
-                                    label="Drop your image here"
-                                    :interactive="false"
-                                    class="aspect-square mt-2"
-                                >
-                                    
-                                    <template #actions="{ open }">
-                                        <UButton
-                                            label="Upload image"
-                                            icon="i-lucide-upload"
-                                            color="neutral"
-                                            variant="outline"
-                                            @click="open()"
-                                        />
-                                    </template>
-                                </UFileUpload>
-                            </UFormField> -->
                             <UFormField label="Select thumbnail" name="thumbnailFile">
                                 <UFileUpload
                                     v-model="state.thumbnailFile"
@@ -245,7 +237,7 @@ useHead({
                         </div>
                     </div>
                     <UButton type="submit" class="mt-4" :loading="loading">
-                        Upload
+                        Save
                     </UButton>
                 </UForm>
             </UCard>

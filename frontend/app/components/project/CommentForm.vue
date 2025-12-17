@@ -41,11 +41,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     >
         <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
             <UFormField name="content">
-                <UTextarea v-model="state.content" class="w-full" :maxrows="4" autoresize />
+                <UTextarea
+                    v-model="state.content"
+                    class="w-full min-h-6 field-sizing-content"
+                    :rows="1"
+                    autoresize
+                    placeholder="Add a comment"
+                />
             </UFormField>
 
             <div class="mt-2 flex gap-x-2">
-                <UButton type="submit" :disabled="isContentInvalid">Post</UButton>
+                <UButton type="submit" :disabled="isContentInvalid">Comment</UButton>
                 <UButton color="neutral" variant="ghost" @click="cancleComment">Cancle</UButton>
             </div>
         </UForm>

@@ -214,18 +214,24 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var category = await unitOfWork.ProjectCategoryRepository.GetByName(updateProjectRequest.Category);
-            if (category == null)
-            {
-                return Result.NotFound<ProjectResponse>
-                (
-                    new Error("Category.Invalid", "Invalid category")
-                );
-            }
+            
             
             project.Name = updateProjectRequest.Title;
             project.Description = updateProjectRequest.Description;
-            project.Category = category;
+
+            if (updateProjectRequest.Category != null)
+            {
+                var category = await unitOfWork.ProjectCategoryRepository.GetByName(updateProjectRequest.Category);
+                if (category == null)
+                {
+                    return Result.NotFound<ProjectResponse>
+                    (
+                        new Error("Category.Invalid", "Invalid category")
+                    );
+                }
+
+                project.Category = category;
+            }
 
             string name = project.PublicId;
 

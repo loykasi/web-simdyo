@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scratch.Application.Interfaces.Repositories;
@@ -16,7 +17,8 @@ public class AuthTokenProcessor
 (
     IOptions<JwtOptions> options,
     IHttpContextAccessor httpContextAccessor,
-    UserManager<User> userManager
+    UserManager<User> userManager,
+    ApplicationDbContext dbContext
 ) : IAuthTokenProcessor
 {
     private readonly JwtOptions _jwtOptions = options.Value;
@@ -61,12 +63,56 @@ public class AuthTokenProcessor
         return (jwtToken, expires);
     }
 
-    public string GenerateRefreshToken()
+    public RefreshToken? GetRefreshTokenByUser(User user, string refreshToken)
+    {
+        return dbContext.RefreshTokens
+            .Where(r => r.UserId == user.Id && r.Token == refreshToken)
+            .FirstOrDefault();
+    }
+
+    public RefreshToken GenerateRefreshToken(User user)
     {
         var randomNumber = new byte[64];
         using var randomNumberGenerator = RandomNumberGenerator.Create();
         randomNumberGenerator.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
+
+        RefreshToken refreshToken = new()
+        {
+            Token = Convert.ToBase64String(randomNumber),
+            RefreshTokenExpriresAtUTC = DateTime.UtcNow.AddDays(7),
+            User = user
+        };
+        return refreshToken;
+    }
+
+    public RefreshToken GenerateRefreshToken(User user, string refreshToken)
+    {
+        var refreshTokenModel = dbContext.RefreshTokens
+            .Where(r => r.UserId == user.Id && r.Token == refreshToken)
+            .FirstOrDefault();
+        //var refreshTokenModel = user.RefreshTokens.SingleOrDefault(r => r.Token == refreshToken);
+
+        var randomNumber = new byte[64];
+        using var randomNumberGenerator = RandomNumberGenerator.Create();
+        randomNumberGenerator.GetBytes(randomNumber);
+
+        if (refreshTokenModel == null)
+        {
+            refreshTokenModel = new()
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                RefreshTokenExpriresAtUTC = DateTime.UtcNow.AddDays(7),
+                User = user
+            };
+            user.RefreshTokens.Add(refreshTokenModel);
+
+            return refreshTokenModel;
+        }
+
+        refreshTokenModel.Token = Convert.ToBase64String(randomNumber);
+        refreshTokenModel.RefreshTokenExpriresAtUTC = DateTime.UtcNow.AddDays(7);
+
+        return refreshTokenModel;
     }
 
     public ClaimsPrincipal ValidateToken(string token)
@@ -101,5 +147,12 @@ public class AuthTokenProcessor
                 SameSite = SameSiteMode.Strict
             }
         );
+    }
+
+    public async Task RevokeToken(User user, string refreshToken)
+    {
+        await dbContext.RefreshTokens
+            .Where(r => r.UserId == user.Id && r.Token == refreshToken)
+            .ExecuteDeleteAsync();
     }
 }

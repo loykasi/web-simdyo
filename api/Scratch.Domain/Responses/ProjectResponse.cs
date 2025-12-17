@@ -7,7 +7,7 @@ namespace Scratch.Domain.Responses
         string PublicId,
         string Title,
         string Description,
-        string Category,
+        string? Category,
         string ProjectLink,
         string ThumbnailLink,
         string Username,

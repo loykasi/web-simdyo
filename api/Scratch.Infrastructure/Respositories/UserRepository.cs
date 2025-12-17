@@ -62,7 +62,13 @@ namespace Scratch.Infrastructure.Respositories
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            //var user = await dbContext.Users.FirstOrDefaultAsync(u =>
+            //    u.RefreshToken != null &&
+            //    u.RefreshToken.Equals(refreshToken)
+            //);
+
+            var user = await dbContext.Users
+                .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken));
 
             return user;
         }

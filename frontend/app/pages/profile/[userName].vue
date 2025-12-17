@@ -7,6 +7,8 @@ const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
 const username = route.params.username as string;
 
+console.log(username);
+
 const { getProfileDetail } = useAccount();
 const { data: profile, pending: profilePending } = await useLazyAsyncData(`${username}`, () => getProfileDetail(username));
 

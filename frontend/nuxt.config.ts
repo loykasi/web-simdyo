@@ -26,5 +26,5 @@ export default defineNuxtConfig({
     '/confirm-email': { ssr: false },
     '/projects/**/edit': { ssr: false },
     '/dashboard/**': { ssr: false },
-  }
+  },
 })

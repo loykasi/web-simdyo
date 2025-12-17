@@ -77,20 +77,22 @@ function onSearch() {
 		</form>
 
 		<template #right>
-			<UColorModeButton />
-			<template v-if="isLoggedIn">
-				<AccountDropdown />
-			</template>
-			<template v-else>
-				<LoginPopover />
+			<ClientOnly>
+				<UColorModeButton />
+				<template v-if="isLoggedIn">
+					<AccountDropdown />
+				</template>
+				<template v-else>
+					<LoginPopover />
 
-				<UButton
-					to="/register"
-					variant="subtle"
-				>
-					Register
-				</UButton>
-			</template>
+					<UButton
+						to="/register"
+						variant="subtle"
+					>
+						Register
+					</UButton>
+				</template>
+			</ClientOnly>
 		</template>
 	</UHeader>
 </template>
