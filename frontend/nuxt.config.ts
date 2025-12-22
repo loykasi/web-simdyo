@@ -27,4 +27,16 @@ export default defineNuxtConfig({
     '/projects/**/edit': { ssr: false },
     '/dashboard/**': { ssr: false },
   },
+  nitro: {
+    preset: "cloudflare-pages",
+    cloudflare: {
+      pages: {
+        routes: {
+          exclude: [
+            "/engine/*"
+          ]
+        }
+      }
+    }
+  }
 })

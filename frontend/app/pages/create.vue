@@ -10,7 +10,7 @@ definePageMeta({
 <template>
     <ClientOnly>
         <iframe
-            src="/engine-build/index.html"
+            src="/engine/index.html"
             width="100%"
             height="100%"
             class="w-screen h-screen border-none"
