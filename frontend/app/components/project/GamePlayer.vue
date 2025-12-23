@@ -40,7 +40,7 @@ onBeforeUnmount(() => {
     <tempalate v-else>
         <iframe
             ref="unityCanvas"
-            src="/game-build/index.html"
+            src="/game/index.html"
             width="100%"
             height="100%"
             class="size-full border-none"
