@@ -55,6 +55,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         }
     })
 }
+
+definePageMeta({
+    middleware: ['redirect-if-logged-in']
+})
 </script>
 <template>
     <template v-if="!isRegisterSuccess">

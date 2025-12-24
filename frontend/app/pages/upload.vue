@@ -23,6 +23,7 @@ watchEffect(() => {
 // const categories = ref(['Default', 'Game', 'Prototype', 'Simulation', 'Animation']);
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 2MB
 
 const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -41,8 +42,8 @@ const schema = z.object({
         .instanceof(File, {
             message: 'Please select a file.'
         })
-        .refine((file) => file.size <= MAX_FILE_SIZE, {
-            message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
+        .refine((file) => file.size <= MAX_PROJECT_FILE_SIZE, {
+            message: `The project is too large. Please choose a project smaller than ${formatBytes(MAX_PROJECT_FILE_SIZE)}.`
         }),
     thumbnailFile: z
         .instanceof(File, {
@@ -96,6 +97,10 @@ function createObjectUrl(file: File): string {
 
 useHead({
   title: 'Upload',
+})
+
+definePageMeta({
+    middleware: ['authenticated']
 })
 </script>
 <template>
