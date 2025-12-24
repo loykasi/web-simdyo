@@ -42,7 +42,7 @@ namespace Scratch.Infrastructure.Services
                 DisableDefaultChecksumValidation = true,
             };
 
-            //await _s3Client.PutObjectAsync(request);
+            await _s3Client.PutObjectAsync(request);
 
             return _s3Path + name;
         }
