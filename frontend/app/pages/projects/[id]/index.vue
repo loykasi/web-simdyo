@@ -171,15 +171,19 @@ useHead({
                             Edit
                         </UButton>
                     </template>
+                    <UButton
+                        :to="project.projectLink"
+                        color="secondary"
+                    >
+                        Download
+                    </UButton>
                     <!-- <UButton size="xl" color="error">Report</UButton>
                     <UButton size="xl">See inside</UButton> -->
                     <ReportModal :project="project" />
                 </div>
             </div>
             
-            <div class="aspect-[16/9] w-full mb-4">
-                <GamePlayer :project-link="project.projectLink" />
-            </div>
+            <GamePlayer :project-link="project.projectLink" />
 
             <UCard class="mt-4">
                 <div class="flex items-center justify-between gap-x-3 w-full">
