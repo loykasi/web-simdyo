@@ -25,7 +25,7 @@
   </head>
   <body>
     <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <script src="Build/004c4465b1779adac471f61729c03acf.loader.js"></script>
+    <script src="Build/11c9fbe4f36e7ebedf5e32fb45b98f5b.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
@@ -47,9 +47,9 @@
 
       createUnityInstance(document.querySelector("#unity-canvas"), {
         arguments: [],
-        dataUrl: "Build/ad75ebca795be0277b056f3bad080739.data.unityweb",
-        frameworkUrl: "Build/7873fcf5ae7f697cd478adb975f5546d.framework.js.unityweb",
-        codeUrl: "Build/c87c9da8c48f99eb28aa6dec838d2776.wasm.unityweb",
+        dataUrl: "Build/f76626f85be28ddcede431871e68fa71.data.unityweb",
+        frameworkUrl: "Build/994257dc92fd9b308a998d4bd6114658.framework.js.unityweb",
+        codeUrl: "Build/c216ba9110c7bc161233fdebdcc33b23.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "visual-script",
@@ -64,8 +64,20 @@
       });
 
       window.addEventListener('message', (event) => {
-        if (event.data?.type === 'loadProject') {          
+        if (event.data?.type === 'loadProject') {
           myUnityInstance.SendMessage('GameLoader', 'Load', event.data.url);
+        }
+
+        if (event.data?.type === 'pause') {
+          myUnityInstance.SendMessage('GameCommunication', 'Pause');
+        }
+
+        if (event.data?.type === 'resume') {
+          myUnityInstance.SendMessage('GameCommunication', 'Resume');
+        }
+
+        if (event.data?.type === 'restart') {
+          myUnityInstance.SendMessage('GameCommunication', 'Restart');
         }
       });
     </script>

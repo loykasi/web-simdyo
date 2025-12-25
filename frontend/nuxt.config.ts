@@ -33,7 +33,8 @@ export default defineNuxtConfig({
       pages: {
         routes: {
           exclude: [
-            "/engine/*"
+            "/engine/*",
+            "/game/*"
           ]
         }
       }

@@ -130,162 +130,203 @@ async function editProject() {
     navigateTo(`/projects/${projectId}/edit`);
 }
 
-
 const headTitle = computed(() => project.value ? project.value.title : route.fullPath);
 useHead({
 	title: headTitle,
 })
+
+/////
+
+// use for default width reference
+const containerRef = useTemplateRef<HTMLDivElement>("container-ref");
+
+// scale this for responsive
+const innerContainerRef = useTemplateRef<HTMLDivElement>("inner-container-ref");
+
+const gamePlayerRef = useTemplateRef<HTMLDivElement>("game-player-ref");
+
+const minHeight = 360;
+const headerHeight = 64;
+const titleHeight = 68;
+const controllerHeight = 24;
+let defaultGameCanvasHeight = 0;
+
+onMounted(() => {
+    window.addEventListener("resize", onResize);
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener("resize", onResize);
+})
+
+function onResize(event: Event) {
+    if (!gamePlayerRef.value || !containerRef.value || !innerContainerRef.value) return;
+
+    const defaultGameCanvasHeight = containerRef.value.offsetWidth * 9 / 16;
+    const margin = parseFloat(getComputedStyle(gamePlayerRef.value).marginBottom);
+    const defaultHeight = headerHeight + titleHeight + defaultGameCanvasHeight + controllerHeight + margin;
+
+    const target = event.target as Window;
+    const visibleHeight = Math.max(Math.min(target.innerHeight, defaultHeight), minHeight);
+    const remainingHeight = visibleHeight - headerHeight - titleHeight - controllerHeight - margin;
+    const targetWidth = remainingHeight * 16 / 9;
+    
+    innerContainerRef.value.style.width = `${targetWidth}px`;
+}
 </script>
 <template>
-    <UPage>
-        <template v-if="isPending">
-            Loading...
-        </template>
-        <template v-else-if="project">
-            <div class="flex justify-between my-4">
-                <h1 class="text-3xl font-semibold">{{ project.title }}</h1>
-                <div class="flex gap-x-3">
-                    <template v-if="isAuthor()">
-                        <UButton
-                            v-if="project.deletedAt === null"
-                            color="error"
-                            @click="deleteProject"
-                            :loading="statusLoading"
-                        >
-                            Delete
-                        </UButton>
-                        <UButton
-                            v-else
-                            color="error"
-                            @click="restoreProject"
-                            :loading="statusLoading"
-                        >
-                            Restore
-                        </UButton>
-
-                        <UButton
-                            color="secondary"
-                            :loading="statusLoading"
-                            @click="editProject"
-                        >
-                            Edit
-                        </UButton>
-                    </template>
-                    <UButton
-                        :to="project.projectLink"
-                        color="secondary"
-                    >
-                        Download
-                    </UButton>
-                    <!-- <UButton size="xl" color="error">Report</UButton>
-                    <UButton size="xl">See inside</UButton> -->
-                    <ReportModal :project="project" />
-                </div>
-            </div>
-            
-            <GamePlayer :project-link="project.projectLink" />
-
-            <UCard class="mt-4">
-                <div class="flex items-center justify-between gap-x-3 w-full">
-                    <div class="flex items-center">
-                        <span class="text-dimmed me-2">By</span>
-                        <NuxtLink
-                            :to="`/profile/${project.username}`"
-                            class="hover:underline"
-                        >
-                            <UUser
-                                :name="project.username"
-                                size="lg"
-                            />
-                        </NuxtLink>
-                        <span class="text-dimmed ms-4">
-                            <NuxtTime :datetime="project.createdAt"></NuxtTime>
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-x-2">
-                        <ClientOnly>
-                            <UButton color="neutral" variant="ghost" >
-                                <div class="flex items-center" @click="like">
-                                    <template v-if="likeStatus">
-                                        <UIcon name="material-symbols:favorite" class="block size-5" />
-                                    </template>
-                                    <template v-else>
-                                        <UIcon name="material-symbols:favorite-outline" class="block size-5" />
-                                    </template>
-                                    
-                                    <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
-                                </div>
+    <div ref="container-ref">
+        <div ref="inner-container-ref" class="mx-auto">
+            <template v-if="isPending">
+                Loading...
+            </template>
+            <template v-else-if="project">
+                <div class="flex justify-between my-4">
+                    <h1 class="text-3xl font-semibold">{{ project.title }}</h1>
+                    <div class="flex gap-x-3">
+                        <template v-if="isAuthor()">
+                            <UButton
+                                v-if="project.deletedAt === null"
+                                color="error"
+                                @click="deleteProject"
+                                :loading="statusLoading"
+                            >
+                                Delete
                             </UButton>
-                            <!-- <UButton color="neutral" variant="ghost" >
-                                <div class="flex items-center" @click="like">
-                                    <template v-if="likeStatus">
-                                        <UIcon name="material-symbols:kid-star" class="block size-5" />
-                                    </template>
-                                    <template v-else>
-                                        <UIcon name="material-symbols:kid-star-outline" class="block size-5" />
-                                    </template>
-                                    
-                                    <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
-                                </div>
-                            </UButton> -->
-                        </ClientOnly>
-                    </div>
-                </div>
-            </UCard>
+                            <UButton
+                                v-else
+                                color="error"
+                                @click="restoreProject"
+                                :loading="statusLoading"
+                            >
+                                Restore
+                            </UButton>
 
-            <UCard class="mt-4">
-                <div>
-                    <div>
-                        <span>{{ project.description }}</span>
-                    </div>
-                    <div class="mt-4">
-                        <span
-                            v-on:click="ToggleMoreInformation"
-                            class="underline cursor-pointer"
+                            <UButton
+                                color="secondary"
+                                :loading="statusLoading"
+                                @click="editProject"
+                            >
+                                Edit
+                            </UButton>
+                        </template>
+                        <UButton
+                            :to="project.projectLink"
+                            color="secondary"
                         >
-                            More information
-                        </span>
-                        <UCollapsible
-                            v-model:open="detailOpen"
-                            class="flex flex-col gap-2 mt-2"
-                        >
-                            <template #content>
-                                <div class="border border-dashed border-accented px-4 py-3.5">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td class="pe-4 py-1.5 font-medium text-default">Author</td>
-                                                <td>
-                                                    <NuxtLink
-                                                        :to="`/profile/${project.username}`"
-                                                        class="underline"
-                                                    >
-                                                        {{ project.username }}
-                                                    </NuxtLink>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="pe-4 py-1.5 font-medium text-default">Category</td>
-                                                <td>{{ project.category }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </template>
-                        </UCollapsible>
+                            Download
+                        </UButton>
+                        <!-- <UButton size="xl">See inside</UButton> -->
+                        <ReportModal :project="project" />
                     </div>
                 </div>
-            </UCard>
-            <ClientOnly>
-                <ProjectComment />
-            </ClientOnly>
-        </template>
-        <template v-else>
-            <UEmpty
-                icon="i-lucide-file"
-                title="No projects found"
-                description="Make sure you've type the url correctly."
-            />
-        </template>
-    </UPage>
+                
+                <div ref="game-player-ref" class="mb-4">
+                    <GamePlayer :project-link="project.projectLink" />
+                </div>
+
+                <UCard class="mt-4">
+                    <div class="flex items-center justify-between gap-x-3 w-full">
+                        <div class="flex items-center">
+                            <span class="text-dimmed me-2">By</span>
+                            <NuxtLink
+                                :to="`/profile/${project.username}`"
+                                class="hover:underline"
+                            >
+                                <UUser
+                                    :name="project.username"
+                                    size="lg"
+                                />
+                            </NuxtLink>
+                            <span class="text-dimmed ms-4">
+                                <NuxtTime :datetime="project.createdAt"></NuxtTime>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-x-2">
+                            <ClientOnly>
+                                <UButton color="neutral" variant="ghost" >
+                                    <div class="flex items-center" @click="like">
+                                        <template v-if="likeStatus">
+                                            <UIcon name="material-symbols:favorite" class="block size-5" />
+                                        </template>
+                                        <template v-else>
+                                            <UIcon name="material-symbols:favorite-outline" class="block size-5" />
+                                        </template>
+                                        
+                                        <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
+                                    </div>
+                                </UButton>
+                                <!-- <UButton color="neutral" variant="ghost" >
+                                    <div class="flex items-center" @click="like">
+                                        <template v-if="likeStatus">
+                                            <UIcon name="material-symbols:kid-star" class="block size-5" />
+                                        </template>
+                                        <template v-else>
+                                            <UIcon name="material-symbols:kid-star-outline" class="block size-5" />
+                                        </template>
+                                        
+                                        <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
+                                    </div>
+                                </UButton> -->
+                            </ClientOnly>
+                        </div>
+                    </div>
+                </UCard>
+
+                <UCard class="mt-4">
+                    <div>
+                        <div>
+                            <span>{{ project.description }}</span>
+                        </div>
+                        <div class="mt-4">
+                            <span
+                                v-on:click="ToggleMoreInformation"
+                                class="underline cursor-pointer"
+                            >
+                                More information
+                            </span>
+                            <UCollapsible
+                                v-model:open="detailOpen"
+                                class="flex flex-col gap-2 mt-2"
+                            >
+                                <template #content>
+                                    <div class="border border-dashed border-accented px-4 py-3.5">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="pe-4 py-1.5 font-medium text-default">Author</td>
+                                                    <td>
+                                                        <NuxtLink
+                                                            :to="`/profile/${project.username}`"
+                                                            class="underline"
+                                                        >
+                                                            {{ project.username }}
+                                                        </NuxtLink>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="pe-4 py-1.5 font-medium text-default">Category</td>
+                                                    <td>{{ project.category }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                            </UCollapsible>
+                        </div>
+                    </div>
+                </UCard>
+                <ClientOnly>
+                    <ProjectComment />
+                </ClientOnly>
+            </template>
+            <template v-else>
+                <UEmpty
+                    icon="i-lucide-file"
+                    title="No projects found"
+                    description="Make sure you've type the url correctly."
+                />
+            </template>
+        </div>
+    </div>
 </template>
