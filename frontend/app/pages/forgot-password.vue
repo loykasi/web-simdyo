@@ -34,19 +34,19 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="mt-8 mx-auto max-w-md"
     >
         <template #header>
-            <h1 class="text-2xl font-bold text-center">Forgot password</h1>
-            <h2 class="mt-4 text-center text-gray-400">Enter your email and a reset password link will be sent to your email.</h2>
+            <h1 class="text-2xl font-bold text-center">{{ $t('forgot_password') }}</h1>
+            <h2 class="mt-4 text-center text-gray-400">{{ $t('forgot_password.description') }}</h2>
         </template>
 
         <template v-if="!isSendSuccess">
             <div class="w-full">
                 <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-                    <UFormField label="Email" name="email">
-                        <UInput v-model="state.email" placeholder="Email address" class="w-full mt-1" />
+                    <UFormField :label="$t('forgot_password.email')" name="email">
+                        <UInput v-model="state.email" :placeholder="$t('forgot_password.placeholder')" class="w-full mt-1" />
                     </UFormField>
 
                     <UButton type="submit" class="flex w-full py-2 justify-center">
-                        continue
+                        {{ $t('forgot_password.continue') }}
                     </UButton>
                 </UForm>
             </div>

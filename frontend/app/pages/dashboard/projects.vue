@@ -205,7 +205,7 @@ const updateDebouceSearch = debounce(applySearchFilter, 500);
 <template>
     <UDashboardPanel id="users" resizable >
         <template #header>
-            <UDashboardNavbar title="Users" />
+            <UDashboardNavbar :title="$t('dashboard.projects')" />
         </template>
 
         <template #body>

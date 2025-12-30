@@ -25,12 +25,20 @@ function handleUnityMessage(event: any) {
         console.log('Game loaded!', event.origin);
         controlDisable.value = false;
     }
+
+    if (event.data?.type === 'gameRestarted' ||
+        event.data?.type === 'gameResumed') {
+        running.value = true;
+    }
+
+    if (event.data?.type === 'gamePáued') {
+        running.value = false;
+    }
 }
 
 function pauseGame() {
     if (unityCanvas.value?.contentWindow) {
         unityCanvas.value.contentWindow.postMessage({ type: 'pause' }, '*');
-        running.value = false;
         unityCanvas.value.focus();
     }
 }
@@ -38,7 +46,6 @@ function pauseGame() {
 function resumeGame() {
     if (unityCanvas.value?.contentWindow) {
         unityCanvas.value.contentWindow.postMessage({ type: 'resume' }, '*');
-        running.value = true;
         unityCanvas.value.focus();
     }
 }
@@ -46,7 +53,6 @@ function resumeGame() {
 function restartGame() {
     if (unityCanvas.value?.contentWindow) {
         unityCanvas.value.contentWindow.postMessage({ type: 'restart' }, '*');
-        running.value = true;
         unityCanvas.value.focus();
     }
 }
@@ -91,7 +97,7 @@ onBeforeUnmount(() => {
             @click="pauseGame"
             :disabled="controlDisable"
         >
-            Pause
+            {{ $t('gameplayer.pause') }}
         </UButton>
         <UButton
             v-else
@@ -102,7 +108,7 @@ onBeforeUnmount(() => {
             @click="resumeGame"
             :disabled="controlDisable"
         >
-            Resume
+            {{ $t('gameplayer.resume') }}
         </UButton>
         <UButton
             size="xs" variant="outline" color="neutral"
@@ -112,7 +118,7 @@ onBeforeUnmount(() => {
             @click="restartGame"
             :disabled="controlDisable"
         >
-            Restart
+            {{ $t('gameplayer.restart') }}
         </UButton>
     </div>
 </template>

@@ -238,7 +238,7 @@ async function closeRoleModal() {
 <template>
     <UDashboardPanel id="users" resizable >
         <template #header>
-            <UDashboardNavbar title="Users" />
+            <UDashboardNavbar :title="$t('dashboard.users')" />
         </template>
 
         <template #body>

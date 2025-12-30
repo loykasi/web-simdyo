@@ -6,31 +6,31 @@ import { useAuthStore } from '~/stores/auth.store';
 const { isPermitted } = useAuthStore();
 
 const menu = [{
-  label: 'Users',
+  label: $t('dashboard.users'),
   icon: 'material-symbols:person-outline',
   to: '/dashboard/users',
   permissions: ['manage_users']
 }, {
-  label: 'Projects',
+  label: $t('dashboard.projects'),
   icon: 'material-symbols:view-object-track-outline',
   to: '/dashboard/projects',
   permissions: ['manage_projects']
 }, {
-  label: 'Reports',
+  label: $t('dashboard.reports'),
   icon: 'material-symbols:report-outline-rounded',
   to: '/dashboard/project-reports',
   permissions: ['manage_project_reports']
 }, {
-  label: 'Categories',
+  label: $t('dashboard.categories'),
   icon: 'material-symbols:category-outline-rounded',
   to: '/dashboard/project-categories',
   permissions: ['manage_categories']
 }, {
-  label: 'Roles',
+  label: $t('dashboard.roles'),
   icon: 'material-symbols:settings-account-box-outline',
   to: '/dashboard/roles',
 }, {
-  label: 'Settings',
+  label: $t('dashboard.settings'),
   icon: 'material-symbols:settings-outline',
   to: '/account'
 }]

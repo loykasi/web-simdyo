@@ -3,15 +3,15 @@ import type { ButtonProps } from '@nuxt/ui';
 
 const links = ref<ButtonProps[]>([
   {
-    label: 'Start Creating',
+    label: $t('home.hero.create'),
     to: '/create',
   }
 ])
 </script>
 <template>
     <UPageHero
-        title="Create your game"
-        description="Design, code, play with an intuitive visual editor. Shares with other around the world."
+        :title="$t('home.hero.title')"
+        :description="$t('home.hero.description')"
         :links="links"
     >
     </UPageHero>

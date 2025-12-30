@@ -191,7 +191,7 @@ function onResize(event: Event) {
                                 @click="deleteProject"
                                 :loading="statusLoading"
                             >
-                                Delete
+                                {{ $t('project.delete') }}
                             </UButton>
                             <UButton
                                 v-else
@@ -199,7 +199,7 @@ function onResize(event: Event) {
                                 @click="restoreProject"
                                 :loading="statusLoading"
                             >
-                                Restore
+                            {{ $t('project.restore') }}
                             </UButton>
 
                             <UButton
@@ -207,14 +207,14 @@ function onResize(event: Event) {
                                 :loading="statusLoading"
                                 @click="editProject"
                             >
-                                Edit
+                            {{ $t('project.edit') }}
                             </UButton>
                         </template>
                         <UButton
                             :to="project.projectLink"
                             color="secondary"
                         >
-                            Download
+                        {{ $t('project.download') }}
                         </UButton>
                         <!-- <UButton size="xl">See inside</UButton> -->
                         <ReportModal :project="project" />
@@ -228,7 +228,7 @@ function onResize(event: Event) {
                 <UCard class="mt-4">
                     <div class="flex items-center justify-between gap-x-3 w-full">
                         <div class="flex items-center">
-                            <span class="text-dimmed me-2">By</span>
+                            <span class="text-dimmed me-2">{{ $t('project.main.by') }}</span>
                             <NuxtLink
                                 :to="`/profile/${project.username}`"
                                 class="hover:underline"
@@ -283,7 +283,7 @@ function onResize(event: Event) {
                                 v-on:click="ToggleMoreInformation"
                                 class="underline cursor-pointer"
                             >
-                                More information
+                                {{ $t('project.more') }}
                             </span>
                             <UCollapsible
                                 v-model:open="detailOpen"

@@ -60,15 +60,15 @@ useHead({
 				<template v-if="profilePending">
 					<tbody>
 						<tr>
-							<td class="pe-8 py-1.5 font-medium text-default">Username</td>
+							<td class="pe-8 py-1.5 font-medium text-default">{{ $t('profile.username') }}</td>
 							<td><USkeleton class="w-20 h-6" /></td>
 						</tr>
 						<tr>
-							<td class="pe-8 py-1.5 font-medium text-default">Email</td>
+							<td class="pe-8 py-1.5 font-medium text-default">{{ $t('profile.email') }}</td>
 							<td><USkeleton class="w-20 h-6" /></td>
 						</tr>
 						<tr>
-							<td class="pe-8 py-1.5 font-medium text-default">Total projects</td>
+							<td class="pe-8 py-1.5 font-medium text-default">{{ $t('profile.total_projects') }}</td>
 							<td><USkeleton class="w-20 h-6" /></td>
 						</tr>
 					</tbody>
@@ -76,15 +76,15 @@ useHead({
 				<template v-else>
 					<tbody>
 						<tr>
-							<td class="pe-8 py-1.5 font-medium text-default">Username</td>
+							<td class="pe-8 py-1.5 font-medium text-default">{{ $t('profile.username') }}</td>
 							<td>{{ profile?.username }}</td>
 						</tr>
 						<tr>
-							<td class="pe-8 py-1.5 font-medium text-default">Email</td>
+							<td class="pe-8 py-1.5 font-medium text-default">{{ $t('profile.email') }}</td>
 							<td>{{ profile?.email }}</td>
 						</tr>
 						<tr>
-							<td class="pe-8 py-1.5 font-medium text-default">Total projects</td>
+							<td class="pe-8 py-1.5 font-medium text-default">{{ $t('profile.total_projects') }}</td>
 							<td>{{ profile?.totalProject }}</td>
 						</tr>
 					</tbody>
@@ -93,7 +93,7 @@ useHead({
         </UCard>
 
 		<div class="flex items-center justify-between gap-x-4 mt-8 border-b border-b-default pb-2">
-			<h2 class="block text-3xl font-bold">Projects</h2>
+			<h2 class="block text-3xl font-bold">{{ $t('profile.projects') }}</h2>
 
 			<div
 				v-if="isLoggedIn && user?.username == profile?.username"
@@ -104,14 +104,14 @@ useHead({
 					:variant="getTabVariant('all')"
 					@click="toAllTab()"
 				>
-					All
+					{{ $t('profile.all') }}
 				</UButton>
 				<UButton
 					:color="getTabColor('trash')"
 					:variant="getTabVariant('trash')"
 					@click="toTrashTab()"
 				>
-					Trash
+					{{ $t('profile.trash') }}
 				</UButton>
 			</div>
 		</div>

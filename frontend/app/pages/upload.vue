@@ -105,13 +105,13 @@ definePageMeta({
 </script>
 <template>
     <UPage>
-        <UPageHeader title="Upload" />
+        <UPageHeader :title="$t('upload')" />
 
         <UCard class="mt-4">
             <UForm :schema="schema" :state="state" @submit="onSubmit">
                 <div class="grid grid-cols-3 space-x-12 space-y-4">
                     <div>
-                        <UFormField label="Select thumbnail" name="thumbnailFile">
+                        <UFormField :label="$t('upload.thumbnail')" name="thumbnailFile">
                             <UFileUpload
                                 v-model="state.thumbnailFile"
                                 accept="image/*"
@@ -152,7 +152,7 @@ definePageMeta({
                                     />
 
                                     <UButton
-                                        label="Update image"
+                                        :label="$t('upload.upload_thumbnail')"
                                         color="neutral"
                                         variant="outline"
                                         @click="open()"
@@ -162,7 +162,7 @@ definePageMeta({
                         </UFormField>
                     </div>
                     <div class="col-span-2 space-y-4">
-                        <UFormField label="Select file" name="projectFile">
+                        <UFormField :label="$t('upload.file')" name="projectFile">
                             <UFileUpload
                                 v-model="state.projectFile"
                                 icon="material-symbols:upload"
@@ -175,7 +175,7 @@ definePageMeta({
                             >
                                 <template #actions="{ open }">
                                     <UButton
-                                        label="Upload project"
+                                        :label="$t('upload.upload_file')"
                                         icon="material-symbols:upload"
                                         color="neutral"
                                         variant="outline"
@@ -185,11 +185,11 @@ definePageMeta({
                             </UFileUpload>
                         </UFormField>
 
-                        <UFormField label="Title" name="title">
+                        <UFormField :label="$t('upload.title')" name="title">
                             <UInput v-model="state.title" class="w-full mt-2" />
                         </UFormField>
 
-                        <UFormField label="Description" name="description">
+                        <UFormField :label="$t('description')" name="description">
                             <UTextarea
                                 v-model="state.description"
                                 class="w-full mt-2"
@@ -197,7 +197,7 @@ definePageMeta({
                             />
                         </UFormField>
 
-                        <UFormField label="Category" name="category">
+                        <UFormField :label="$t('upload.category')" name="category">
                             <USelect
                                 v-model="state.category"
                                 :items="categories"
@@ -208,7 +208,7 @@ definePageMeta({
                     </div>
                 </div>
                 <UButton type="submit" class="mt-4" :loading="loading">
-                    Upload
+                    {{ $t('upload.upload') }}
                 </UButton>
             </UForm>
         </UCard>

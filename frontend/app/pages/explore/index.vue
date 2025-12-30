@@ -54,7 +54,7 @@ useHead({
 
 <template>
   <UPage>
-    <h1 class="my-6 font-bold text-4xl">Explorer</h1>
+    <h1 class="my-6 font-bold text-4xl">{{ $t('explorer.title') }}</h1>
 
     <CategoryBar />
 

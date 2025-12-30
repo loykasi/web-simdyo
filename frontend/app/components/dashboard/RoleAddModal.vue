@@ -49,7 +49,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         title="New role"
         description="Add a new role"
     >
-        <UButton label="New role" icon="i-lucide-plus" />
+        <UButton :label="$t('dashboard.categories.new')" icon="i-lucide-plus" />
 
         <template #body>
             <UForm

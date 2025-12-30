@@ -48,18 +48,18 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
     <UCard>
         <UForm :state="state" class="flex flex-col gap-4" @submit="onSubmit">
-            <UFormField label="Current Password" name="current" required>
+            <UFormField :label="$t('settings.password.current')" name="current" required>
                 <UInput v-model="state.currentPassword" type="password" required class="w-full" />
             </UFormField>
-            <UFormField label="New Password" name="new" required>
+            <UFormField :label="$t('settings.password.new')" name="new" required>
                 <UInput v-model="state.newPassword" type="password" required class="w-full" />
             </UFormField>
-            <UFormField label="Confirm Password" name="confirm" required>
+            <UFormField :label="$t('settings.password.confirm')" name="confirm" required>
                 <UInput v-model="state.confirmPassword" type="password" required class="w-full" />
             </UFormField>
             
             <div>
-                <UButton type="submit" class="px-4">Change</UButton>
+                <UButton type="submit" class="px-4">{{ $t('settings.password.submit') }}</UButton>
             </div>
         </UForm>
     </UCard>

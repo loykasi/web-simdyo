@@ -70,24 +70,24 @@ definePageMeta({
             }"
         >
             <template #header>
-                <h1 class="text-2xl font-bold text-center">Create accout</h1>
-                <p class="mt-1 text-base">Join CodeVizdoo, create and share your projects.</p>
+                <h1 class="text-2xl font-bold text-center">{{ $t('register.title') }}</h1>
+                <p class="mt-1 text-base">{{ $t('register.description') }}</p>
             </template>
 
             <div class="w-full">
                 <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-                    <UFormField label="Username" name="username">
-                        <UInput v-model="state.username" placeholder="Username" class="w-full mt-1" />
+                    <UFormField :label="$t('register.username')" name="username">
+                        <UInput v-model="state.username" :placeholder="$t('register.username_placeholder')" class="w-full mt-1" />
                     </UFormField>
 
-                    <UFormField label="Email" name="email">
-                        <UInput v-model="state.email" placeholder="Email address" class="w-full mt-1" />
+                    <UFormField :label="$t('register.email')" name="email">
+                        <UInput v-model="state.email" :placeholder="$t('register.email_placeholder')" class="w-full mt-1" />
                     </UFormField>
 
-                    <UFormField label="Password" name="password">
+                    <UFormField :label="$t('register.password')" name="password">
                         <UInput
                             v-model="state.password"
-                            placeholder="Password"
+                            placeholder="********"
                             :type="showPassword ? 'text' : 'password'"
                             class="w-full mt-1"
                         >
@@ -106,10 +106,10 @@ definePageMeta({
                         </UInput>
                     </UFormField>
 
-                    <UFormField label="Re-enter Password" name="confirmPassword">
+                    <UFormField :label="$t('register.confirm_password')" name="confirmPassword">
                         <UInput
                             v-model="state.confirmPassword"
-                            placeholder="Type password again"
+                            placeholder="********"
                             :type="showPassword ? 'text' : 'password'"
                             class="w-full mt-1"
                         >
@@ -129,7 +129,7 @@ definePageMeta({
                     </UFormField>
 
                     <UButton type="submit" class="flex w-full py-2 justify-center">
-                        Continue
+                        {{ $t('register.continue') }}
                     </UButton>
                 </UForm>
             </div>

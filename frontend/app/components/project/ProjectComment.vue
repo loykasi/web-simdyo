@@ -156,7 +156,7 @@ function loadReplies(id: number) {
 <template>
     <div class="grid grid-cols-3 mt-8">
         <div class="col-span-2">
-            <h1 class="text-2xl font-semibold">Comments</h1>
+            <h1 class="text-2xl font-semibold">{{ $t('project.comments') }}</h1>
             <ProjectCommentForm v-if="isLoggedIn" v-on:add-comment="addComment" />
             <div class="mt-8">
                 <div
@@ -193,7 +193,7 @@ function loadReplies(id: number) {
                             class="px-6 mt-2 font-semibold"
                             @click="loadReplies(comment.id)"
                         >
-                            Show more replies
+                            {{ $t('project.show_replies') }}
                         </UButton>
                     </div>
                 </div>
@@ -203,7 +203,7 @@ function loadReplies(id: number) {
                 class="w-full justify-center px-6 mt-4 font-semibold"
                 @click="loadComments"
             >
-                Show more comments
+                {{ $t('project.show_comments') }}
             </UButton>
         </div>
     </div>

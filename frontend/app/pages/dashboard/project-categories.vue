@@ -168,7 +168,7 @@ async function updatePage(page: number) {
 <template>
     <UDashboardPanel id="users" resizable >
         <template #header>
-            <UDashboardNavbar title="Categories">
+            <UDashboardNavbar :title="$t('dashboard.categories')">
                 <template #right>
                     <DashboardProjectCategoryAddModal />
                 </template>

@@ -7,17 +7,17 @@ const { user } = useAuthStore();
 
 const accountItems = ref<DropdownMenuItem[]>([
   {
-    label: 'Profile',
+    label: $t('account_menu.profile'),
     icon: 'material-symbols:person-outline',
     to: `/profile/${user.value?.username}`
   },
   {
-    label: 'Settings',
+    label: $t('account_menu.settings'),
     icon: 'material-symbols:settings-outline',
     to: '/account'
   },
   {
-    label: 'Log out',
+    label: $t('account_menu.logout'),
     icon: 'material-symbols:logout',
     onSelect(e) {
       logout();
