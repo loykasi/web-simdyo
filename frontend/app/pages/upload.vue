@@ -15,8 +15,8 @@ const { data: categories, pending: categoryPending } = await useLazyAsyncData(
 );
 
 watchEffect(() => {
-    if (categories.value && categories.value[0] !== "Default") {
-        categories.value = ["Default", ...categories.value];
+    if (categories.value && categories.value[0] !== "default") {
+        categories.value = ["default", ...categories.value];
     }
 })
 
@@ -59,7 +59,7 @@ type schema = z.output<typeof schema>
 const state = reactive<Partial<schema>>({
     projectFile: undefined,
     thumbnailFile: undefined,
-    category: "Default"
+    category: "default"
 })
 
 const loading = ref(false);
@@ -71,7 +71,7 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
     payload.append("projectFile", event.data.projectFile);
     payload.append("thumbnailFile", event.data.thumbnailFile);
 
-    if (event.data.category !== "Default") {
+    if (event.data.category !== "default") {
         payload.append("category", event.data.category);
     }
 
@@ -189,7 +189,7 @@ definePageMeta({
                             <UInput v-model="state.title" class="w-full mt-2" />
                         </UFormField>
 
-                        <UFormField :label="$t('description')" name="description">
+                        <UFormField :label="$t('upload.description')" name="description">
                             <UTextarea
                                 v-model="state.description"
                                 class="w-full mt-2"
@@ -203,7 +203,14 @@ definePageMeta({
                                 :items="categories"
                                 :loading="categoryPending"
                                 class="w-full mt-2"
-                            />
+                            >
+                                <template #default="{ modelValue }">
+                                    {{ modelValue }}
+                                </template>
+                                <template #item-label="{ item }">
+                                    {{ $t(item) }}
+                                </template>
+                            </USelect>
                         </UFormField>
                     </div>
                 </div>

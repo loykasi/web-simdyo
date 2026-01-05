@@ -14,7 +14,15 @@ namespace Scratch.Infrastructure.Services
 
         public void Delete(string key)
         {
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete(key);
+            var options = new CookieOptions
+            {
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            };
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete(key, options);
         }
 
         public void SetToken(string key, string value, DateTime? expiration = null)
@@ -24,7 +32,7 @@ namespace Scratch.Infrastructure.Services
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.None
             };
 
             if (expiration != null )

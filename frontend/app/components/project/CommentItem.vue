@@ -65,7 +65,7 @@ function toDuration(dateString: string) {
                 class="px-0"
                 @click="deleteComment()"
             >
-                Delete
+                {{ $t("delete") }}
             </UButton>
         </template>
         
@@ -80,7 +80,7 @@ function toDuration(dateString: string) {
                 class="px-0 mt-2"
                 @click="toggleCommentForm"
             >
-                Reply
+                {{ $t("reply") }}
             </UButton>
         </template>
     </UCard>

@@ -294,7 +294,7 @@ function onResize(event: Event) {
                                         <table>
                                             <tbody>
                                                 <tr>
-                                                    <td class="pe-4 py-1.5 font-medium text-default">Author</td>
+                                                    <td class="pe-4 py-1.5 font-medium text-default">{{ $t("author") }}</td>
                                                     <td>
                                                         <NuxtLink
                                                             :to="`/profile/${project.username}`"
@@ -305,8 +305,8 @@ function onResize(event: Event) {
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="pe-4 py-1.5 font-medium text-default">Category</td>
-                                                    <td>{{ project.category }}</td>
+                                                    <td class="pe-4 py-1.5 font-medium text-default">{{ $t("category") }}</td>
+                                                    <td>{{ project.category ?? "All" }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

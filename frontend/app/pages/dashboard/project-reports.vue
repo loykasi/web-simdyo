@@ -37,23 +37,23 @@ const columns: TableColumn<ProjectReportResponse>[] = [
     },
     {
         accessorKey: 'reason',
-        header: 'Reason'
+        header: $t('reason')
     },
     {
         accessorKey: 'description',
-        header: 'Description'
+        header: $t('description')
     },
     {
         accessorKey: 'projectPublicId',
-        header: 'Project Public ID'
+        header: $t('public_id')
     },
     {
         accessorKey: 'username',
-        header: 'Username'
+        header: $t('username')
     },
     {
         accessorKey: 'createdAt',
-        header: 'Joined Date',
+        header: $t('joined_date'),
         cell: ({ row }) => {
         return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
             day: 'numeric',

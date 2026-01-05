@@ -145,13 +145,13 @@ definePageMeta({
             }"
         >
             <template #header>
-                <h1 class="text-2xl font-bold text-center">Check your email</h1>
+                <h1 class="text-2xl font-bold text-center">{{ $t('register.success.title') }}</h1>
             </template>
 
             <div class="w-full">
                 <div class="flex flex-col justify-center items-center">
-                    <div>A verification email was sent to <span>{{ state.email }}</span></div>
-                    <div>Click on the link in that email to verify your account.</div>
+                    <div>{{ $t('register.success.message1') }} <span>{{ state.email }}</span></div>
+                    <div>{{ $t('register.success.message2') }}</div>
                 </div>
             </div>
         </UCard>

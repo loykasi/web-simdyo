@@ -53,15 +53,15 @@ const columns: TableColumn<ProjectResponse>[] = [
     },
     {
         accessorKey: 'title',
-        header: 'Title'
+        header: $t('title')
     },
     {
         accessorKey: 'category',
-        header: 'Category'
+        header: $t('category')
     },
     {
         accessorKey: 'createdAt',
-        header: 'Joined Date',
+        header: $t('joined_date'),
         cell: ({ row }) => {
         return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
             day: 'numeric',
@@ -74,7 +74,7 @@ const columns: TableColumn<ProjectResponse>[] = [
     },
     {
         accessorKey: 'deletedAt',
-        header: 'Public status',
+        header: $t('public_status'),
         cell: ({ row }) => {
             const isPublic = row.getValue('deletedAt') == null;
             const color = isPublic ? 'success' : 'error';
@@ -85,11 +85,11 @@ const columns: TableColumn<ProjectResponse>[] = [
     },
     {
         accessorKey: 'isBanned',
-        header: 'Status',
+        header: $t('ban_status'),
         cell: ({ row }) => {
             const isBanned = row.getValue('isBanned') as boolean;
             const color = isBanned ? 'error' : 'success';
-            const label = isBanned ? 'Ban' : 'Active'
+            const label = $t(isBanned ? 'banned' : 'active')
 
             return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
         }

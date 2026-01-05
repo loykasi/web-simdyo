@@ -94,6 +94,7 @@ namespace Scratch.Infrastructure.Respositories
             //await dbContext.UserRoles.Where(u => u.UserId == user.Id).ExecuteDeleteAsync();
 
             var currentRoles = await userManager.GetRolesAsync(user);
+            
             await userManager.RemoveFromRolesAsync(user, currentRoles);
             await userManager.AddToRolesAsync(user, roles);
 

@@ -67,8 +67,8 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <div class="relative aspect-[16/9] w-full">
-        <!-- <div class="size-full border-none z-0 bg-amber-700"></div> -->
-        <ClientOnly>
+        <div class="size-full border-none z-0 bg-amber-700"></div>
+        <!-- <ClientOnly>
             <iframe
                 ref="unityCanvas"
                 src="/game/index.html"
@@ -78,7 +78,7 @@ onBeforeUnmount(() => {
                 loading="lazy"
             >
             </iframe>
-        </ClientOnly>
+        </ClientOnly> -->
         <template v-if="!unityLoaded">
             <div class="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center size-full bg-muted z-10">
                 <div class="flex flex-col items-center gap-y-2.5">

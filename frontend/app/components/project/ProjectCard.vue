@@ -2,7 +2,7 @@
 import type { ProjectResponse } from '~/types/project.type';
 
 defineProps<{
-    project: ProjectResponse
+    project: ProjectResponse,
 }>();
 </script>
 <template>
@@ -13,7 +13,8 @@ defineProps<{
             :to="`/projects/${project.publicId}`"
             class="block aspect-square w-full"
         >
-            <img alt="placeholder" src="https://placehold.co/400" class="aspect-square" />
+            <!-- <img alt="placeholder" src="https://placehold.co/400" class="aspect-square" /> -->
+            <img alt="placeholder" :src="`/thumbnails/${project.publicId}.png`" class="aspect-square" />
             <!-- <img alt="placeholder" :src="project.thumbnailLink" /> -->
         </NuxtLink>
 

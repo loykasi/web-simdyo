@@ -58,22 +58,21 @@ function updateBanStatus(id: string, status: boolean) {
 
 <template>
     <UModal
-        title="Ban"
-        :description="`Ban`"
+        :title="$t('ban')"
         :close="{ onClick: () => emit('close', false) }"
     >
         <template #body>
             <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-                <UFormField label="Reason" name="reason" >
-                    <UInput v-model="state.reason" placeholder="Reason" class="w-full mt-1" />
+                <UFormField :label="$t('reason')" name="reason" >
+                    <UInput v-model="state.reason" class="w-full mt-1" />
                 </UFormField>
 
-                <UFormField label="Description" name="description" >
-                    <UInput v-model="state.description" placeholder="Description" class="w-full mt-1" />
+                <UFormField :label="$t('description')" name="description" >
+                    <UInput v-model="state.description" class="w-full mt-1" />
                 </UFormField>
 
                 <UButton type="submit">
-                    Confirm
+                    {{ $t('confirm') }}
                 </UButton>
             </UForm>
         </template>

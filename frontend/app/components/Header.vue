@@ -52,7 +52,7 @@ function onSearch() {
 				to="/"
 				class="focus-visible:outline-primary hover:text-default transition-colors shrink-0 font-bold text-xl text-highlighted flex items-end gap-1.5 me-4"
 			>
-				CodeVisdoo
+				Simdyo
 			</NuxtLink>
 			<UNavigationMenu :items="items" variant="pill" />
 		</template>
@@ -64,7 +64,7 @@ function onSearch() {
 				v-model="searchTerm"
 				:placeholder="$t('nav.search')"
 				required
-				class="px-2.5 py-1.5 min-w-sm text-sm"
+				class="px-2.5 py-1.5 w-64 shrink text-sm"
 			/>
 			<button
 				type="submit"

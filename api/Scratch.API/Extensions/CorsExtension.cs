@@ -11,7 +11,7 @@ public static class CorsExtension
                 "AllowOrigins",
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000")
+                    policy.WithOrigins("http://localhost:3000", "http://127.0.0.1:8788")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

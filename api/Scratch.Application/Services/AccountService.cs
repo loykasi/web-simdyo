@@ -166,8 +166,8 @@ namespace Scratch.Application.Services
 
             await userManager.UpdateAsync(user);
 
-            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
-            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);
+            cookieService.SetToken("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
+            cookieService.SetToken("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);
 
             return Result.Success();
         }
