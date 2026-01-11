@@ -14,8 +14,8 @@ defineProps<{
             class="block aspect-square w-full"
         >
             <!-- <img alt="placeholder" src="https://placehold.co/400" class="aspect-square" /> -->
-            <img alt="placeholder" :src="`/thumbnails/${project.publicId}.png`" class="aspect-square" />
-            <!-- <img alt="placeholder" :src="project.thumbnailLink" /> -->
+            <!-- <img alt="placeholder" :src="`/thumbnails/${project.publicId}.png`" class="aspect-square" /> -->
+            <img :alt="project.publicId" :src="project.thumbnailLink" />
         </NuxtLink>
 
         <div class="p-2">

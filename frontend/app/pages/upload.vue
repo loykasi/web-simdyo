@@ -3,6 +3,7 @@ import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { useProject } from '~/composables/useProject';
 import type { ProjectCategory } from '~/types/projectCategory.type';
+import JSZip from 'jszip';
 
 const toast = useToast();
 const { upload } = useProject();
@@ -23,7 +24,7 @@ watchEffect(() => {
 // const categories = ref(['Default', 'Game', 'Prototype', 'Simulation', 'Animation']);
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
-const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 2MB
+const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 15MB
 
 const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -35,8 +36,8 @@ const formatBytes = (bytes: number, decimals = 2) => {
 }
 
 const schema = z.object({
-    title: z.string('Invalid title'),
-	description: z.string().default(""),
+    title: z.string('Required').min(0, 'Required'),
+	description: z.string('Required').min(0, 'Required'),
     category: z.string().default(""),
     projectFile: z
         .instanceof(File, {
@@ -95,6 +96,33 @@ function createObjectUrl(file: File): string {
     return URL.createObjectURL(file)
 }
 
+watch(
+    () => state.projectFile,
+    async () => {
+        // if (oldState.projectFile === newState.projectFile) return;
+        if (!state.projectFile) return;
+
+        try {
+            let zip = await JSZip.loadAsync(state.projectFile);
+            
+            let thumbnailEntry = zip.file("thumbnail.png");
+            if (!thumbnailEntry) return;
+
+            let thumbnailBlob = await thumbnailEntry.async("blob");
+            const thumbnailFile = new File([thumbnailBlob], "thumbnail.png", {
+                type: thumbnailBlob.type || "image/png",
+                lastModified: thumbnailEntry.date.getTime()
+            });
+
+            state.thumbnailFile = thumbnailFile;
+
+            console.log(thumbnailFile);
+        } catch (error) {
+            console.warn(`No thumbnail in file: ${state.projectFile.name}`);
+        }    
+    }
+)
+
 useHead({
   title: 'Upload',
 })
@@ -121,7 +149,7 @@ definePageMeta({
                                 <img
                                     v-if="state.thumbnailFile"
                                     :src="createObjectUrl(state.thumbnailFile)"
-                                    class="size-full"
+                                    class="size-full rounded-md"
                                 />
                                 <div
                                     v-if="state.thumbnailFile"
@@ -166,7 +194,7 @@ definePageMeta({
                             <UFileUpload
                                 v-model="state.projectFile"
                                 icon="material-symbols:upload"
-                                accept="zip/*"
+                                accept=".simdyo"
                                 position="inside"
                                 layout="list"
                                 label="Drop your file here"

@@ -15,6 +15,7 @@
     "@nuxtjs/i18n": "10.2.1",
     "@tailwindcss/vite": "^4.1.12",
     "@tanstack/vue-table": "^8.21.3",
+    "jszip": "^3.10.1",
     "nuxt": "^4.0.3",
     "tailwindcss": "^4.1.12",
     "vue": "^3.5.20",
