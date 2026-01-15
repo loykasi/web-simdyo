@@ -16,8 +16,8 @@ const { data: categories, pending: categoryPending } = await useLazyAsyncData(
 );
 
 watchEffect(() => {
-    if (categories.value && categories.value[0] !== "default") {
-        categories.value = ["default", ...categories.value];
+    if (categories.value && categories.value[0] !== "Default") {
+        categories.value = ["Default", ...categories.value];
     }
 })
 
@@ -60,7 +60,7 @@ type schema = z.output<typeof schema>
 const state = reactive<Partial<schema>>({
     projectFile: undefined,
     thumbnailFile: undefined,
-    category: "default"
+    category: "Default"
 })
 
 const loading = ref(false);
@@ -72,7 +72,7 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
     payload.append("projectFile", event.data.projectFile);
     payload.append("thumbnailFile", event.data.thumbnailFile);
 
-    if (event.data.category !== "default") {
+    if (event.data.category !== "Default") {
         payload.append("category", event.data.category);
     }
 

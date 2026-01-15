@@ -7,7 +7,7 @@ const route = useRoute();
 
 const searchQuery = computed(() => route.query.q || "");
 
-const pageSize = 6;
+const pageSize = 12;
 const loading = ref(false);
 
 const { data: pagination, pending } = await useLazyAsyncData(

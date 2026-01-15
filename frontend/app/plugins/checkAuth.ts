@@ -7,35 +7,35 @@ import type { H3Event } from 'h3';
 export default defineNuxtPlugin(async () => {
     const { user } = useAuthStore();
 
-    async function getUser() {
-        const isLogged = useCookie("isLogged", {
-            default: () => false
-        });
+    // async function getUser() {
+    //     const isLogged = useCookie("isLogged", {
+    //         default: () => false
+    //     });
         
-        if (user.value || !isLogged.value) {
-            return;
-        }
+    //     if (user.value || !isLogged.value) {
+    //         return;
+    //     }
         
-        console.log("get current user")
-        await useAPI<AuthUser>("auth/user", {
-            method: "GET",
-            headers: useRequestHeaders(['cookie']),
-            onErrorAction: "refreshTokenAndRetry"
-        }).then(res => {
-            user.value = {
-                email: res.email,
-                username: res.username,
-                permissions: res.permissions
-            } as AuthUser;
+    //     console.log("get current user")
+    //     await useAPI<AuthUser>("auth/user", {
+    //         method: "GET",
+    //         headers: useRequestHeaders(['cookie']),
+    //         onErrorAction: "refreshTokenAndRetry"
+    //     }).then(res => {
+    //         user.value = {
+    //             email: res.email,
+    //             username: res.username,
+    //             permissions: res.permissions
+    //         } as AuthUser;
             
-            isLogged.value = true;
-            // console.log("SUCCESS get current user");
-        }).catch(err => {
-            console.log("FAIL get current user");
-        });
+    //         isLogged.value = true;
+    //         // console.log("SUCCESS get current user");
+    //     }).catch(err => {
+    //         console.log("FAIL get current user");
+    //     });
 
-        // console.log("DONE get current user");
-    }
+    //     // console.log("DONE get current user");
+    // }
 
     const nuxtApp = useNuxtApp();
 
@@ -99,12 +99,12 @@ export default defineNuxtPlugin(async () => {
             default: () => false
         });
 
-        if (import.meta.client) return;
+        // if (import.meta.client) return;
         
         if (user.value || !isLogged.value) {
             return;
         }
-        
+
         console.log("get current user");
 
         await fetchUser().then(res => {

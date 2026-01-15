@@ -162,9 +162,13 @@ namespace Scratch.Application.Services
             }
 
             var (jwtToken, expirationDateInUtc) = await authTokenProcessor.GenerateJwtToken(user);
-            refreshTokenModel = authTokenProcessor.GenerateRefreshToken(user, refreshToken);
+            var newRefreshToken = authTokenProcessor.GenerateRefreshToken(user, refreshToken);
+            refreshTokenModel.Token = newRefreshToken.Token;
+            refreshTokenModel.RefreshTokenExpriresAtUTC = newRefreshToken.RefreshTokenExpriresAtUTC;
 
-            await userManager.UpdateAsync(user);
+            await unitOfWork.SaveChangesAsync();
+
+            //await userManager.UpdateAsync(user);
 
             cookieService.SetToken("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
             cookieService.SetToken("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);
@@ -218,7 +222,7 @@ namespace Scratch.Application.Services
 
         private async Task SendConfirmationEmail(User user, string token)
         {
-            string baseUrl = configuration.GetSection("URLOptions")["Web"]!;
+            string baseUrl = configuration.GetSection("URL")["Web"]!;
             string url = $"{baseUrl}/confirm-email?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
             string body = $"Click link to verify your account: <a href=\"{url}\" target=\"_blank\" >Click here</a><br/><div>{url}</div>";
 
@@ -227,7 +231,7 @@ namespace Scratch.Application.Services
 
         private async Task SendPasswordResetEmail(User user, string token)
         {
-            string baseUrl = configuration.GetSection("URLOptions")["Web"]!;
+            string baseUrl = configuration.GetSection("URL")["Web"]!;
             string url = $"{baseUrl}/reset-password?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
             string body = $"Click link to reset your password: <a href=\"{url}\" target=\"_blank\" >Click here</a>" +
                 $"\ntoken: {token}";

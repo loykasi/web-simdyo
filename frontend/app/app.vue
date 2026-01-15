@@ -5,7 +5,7 @@ const { locale } = useI18n();
 
 useHead({
 	titleTemplate: (titleChunk) => {
-		return titleChunk ? `${titleChunk} - CodeVisdoo` : 'CodeVisdoo'
+		return titleChunk ? `${titleChunk} - Simdyo` : 'Simdyo'
 	},
 })
 </script>
