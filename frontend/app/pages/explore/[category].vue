@@ -9,7 +9,7 @@ const route = useRoute();
 const searchQuery = computed(() => route.query.q || "");
 const categoryQuery = computed(() => (route.params.category as string).toLowerCase());
 
-const pageSize = 6;
+const pageSize = 12;
 const loading = ref(false);
 
 watchEffect(() => {

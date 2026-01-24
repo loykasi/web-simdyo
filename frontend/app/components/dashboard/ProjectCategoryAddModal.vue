@@ -39,7 +39,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
     <UModal v-model:open="open" title="New category" description="Add a new category">
-        <UButton label="New category" icon="i-lucide-plus" />
+        <UButton :label="$t('dashboard.categories.new')" icon="i-lucide-plus" />
 
         <template #body>
         <UForm

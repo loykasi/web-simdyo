@@ -57,15 +57,15 @@ const columns: TableColumn<UserResponse>[] = [
     },
     {
         accessorKey: 'username',
-        header: 'Username'
+        header: $t('username')
     },
     {
         accessorKey: 'email',
-        header: 'Email'
+        header: $t('email')
     },
     {
         accessorKey: 'roles',
-        header: 'Roles',
+        header: $t('role'),
         cell: ({ row }) => {
             const roles = row.getValue('roles') as string[];
 
@@ -74,7 +74,7 @@ const columns: TableColumn<UserResponse>[] = [
     },
     {
         accessorKey: 'createdAt',
-        header: 'Joined Date',
+        header: $t('joined_date'),
         cell: ({ row }) => {
         return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
             day: 'numeric',
@@ -87,11 +87,11 @@ const columns: TableColumn<UserResponse>[] = [
     },
     {
         accessorKey: 'isBanned',
-        header: 'Status',
+        header: $t('ban_status'),
         cell: ({ row }) => {
             const isBanned = row.getValue('isBanned') as boolean;
             const color = isBanned ? 'error' : 'success';
-            const label = isBanned ? 'Ban' : 'Active';
+            const label = $t(isBanned ? 'banned' : 'active');
 
             return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
         }
@@ -238,7 +238,7 @@ async function closeRoleModal() {
 <template>
     <UDashboardPanel id="users" resizable >
         <template #header>
-            <UDashboardNavbar title="Users" />
+            <UDashboardNavbar :title="$t('dashboard.users')" />
         </template>
 
         <template #body>

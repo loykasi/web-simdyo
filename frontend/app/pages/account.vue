@@ -2,12 +2,12 @@
 
 const items = [
   {
-    label: 'Account',
+    label: $t('settings.account'),
     icon: 'material-symbols:person-outline',
     slot: 'account'
   },
   {
-    label: 'Password',
+    label: $t('settings.password'),
     icon: 'material-symbols:lock-outline',
     slot: 'password'
   }
@@ -20,7 +20,7 @@ definePageMeta({
 
 <template>
     <UPage>
-        <UPageHeader title="Account" />
+        <UPageHeader :title="$t('settings')" />
 
         <UTabs
             :items="items"

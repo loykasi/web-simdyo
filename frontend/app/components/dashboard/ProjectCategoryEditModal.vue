@@ -53,8 +53,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
     <UModal
         v-model:open="open"
-        title="New category"
-        description="Add a new category"
+        :title="$t('create_category.title')"
+        :description="$t('create_category.description')"
         :close="{ onClick: () => emit('close', false) }"
     >
         <template #body>
@@ -69,13 +69,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 </UFormField>
                 <div class="flex justify-end gap-2">
                     <UButton
-                        label="Cancel"
+                        :label="$t('cancle')"
                         color="neutral"
                         variant="subtle"
                         @click="() => emit('close', false)"
                     />
                     <UButton
-                        label="Create"
+                        :label="$t('create')"
                         color="primary"
                         variant="solid"
                         type="submit"

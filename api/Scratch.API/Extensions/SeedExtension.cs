@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Entities;
 using System.Security.Claims;
@@ -77,6 +78,21 @@ namespace Scratch.API.Extensions
                 {
                     throw new Exception("Failed to create the admin user: " + string.Join(", ", result.Errors));
                 }
+            }
+        }
+
+        public static async Task FixNullSecurityStamps(this WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            var users = await userManager.Users
+                .Where(u => u.SecurityStamp == null)
+                .ToListAsync();
+
+            foreach (var user in users)
+            {
+                await userManager.UpdateSecurityStampAsync(user);
             }
         }
     }

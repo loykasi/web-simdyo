@@ -48,11 +48,11 @@ const columns: TableColumn<ProjectCategory>[] = [
     },
     {
         accessorKey: 'name',
-        header: 'Name'
+        header: $t('name')
     },
     {
         accessorKey: 'createdAt',
-        header: 'Created Date',
+        header: $t('created_at'),
         cell: ({ row }) => {
         return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
             day: 'numeric',
@@ -65,7 +65,7 @@ const columns: TableColumn<ProjectCategory>[] = [
     },
     {
         accessorKey: 'updatedAt',
-        header: 'Updated Date',
+        header: $t('updated_at'),
         cell: ({ row }) => {
         return new Date(row.getValue('updatedAt')).toLocaleString('en-US', {
             day: 'numeric',
@@ -168,7 +168,7 @@ async function updatePage(page: number) {
 <template>
     <UDashboardPanel id="users" resizable >
         <template #header>
-            <UDashboardNavbar title="Categories">
+            <UDashboardNavbar :title="$t('dashboard.categories')">
                 <template #right>
                     <DashboardProjectCategoryAddModal />
                 </template>

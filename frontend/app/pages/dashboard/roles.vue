@@ -63,7 +63,7 @@ function updateRole(update: (value: Role[]) => Role[]) {
 <template>
     <UDashboardPanel id="users" resizable >
         <template #header>
-            <UDashboardNavbar title="Roles">
+            <UDashboardNavbar :title="$t('dashboard.roles')">
                 <template #right>
                     <RoleAddModal v-on:update="updateRole" />
                 </template>

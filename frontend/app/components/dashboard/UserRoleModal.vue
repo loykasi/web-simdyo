@@ -36,7 +36,7 @@ const { update: updateUsers } = useAdminUsersStore();
 async function onSubmit() {
     if (!prop.user) return;
 
-    useAPI(`users/${prop.user.id}/roles`, {
+    useAPI(`admin/users/${prop.user.id}/roles`, {
         method: "PUT",
         body: {
             roles: values.value,
@@ -64,8 +64,7 @@ function updateRole(id: string, roles: string[]) {
 <template>
     <UModal
         :open="open"
-        title="Role"
-        :description="`Select role for user: ${user?.username}`"
+        :title="$t('role')"
         :close="{ onClick: () => emit('close') }"
     >
         <template #body>
@@ -79,7 +78,7 @@ function updateRole(id: string, roles: string[]) {
                 </UFormField>
 
                 <UButton type="submit">
-                    Confirm
+                    {{ $t('confirm') }}
                 </UButton>
             </UForm>
         </template>

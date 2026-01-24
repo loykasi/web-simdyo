@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | visual-script</title>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #231F20;
+      }
+      #unity-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #231F20;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <script src="Build/413968e9610addd0bbb4c26ea2585445.loader.js"></script>
+    <script>
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+
+        var canvas = document.querySelector("#unity-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "fixed";
+
+        document.body.style.textAlign = "left";
+
+      }
+
+      let myUnityInstance = null;
+
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        arguments: [],
+        dataUrl: "Build/d58a7df2b64110030a3d28f2c1e5d4ce.data.unityweb",
+        frameworkUrl: "Build/de0118eb569fd421884a630ed4d8566f.framework.js.unityweb",
+        codeUrl: "Build/944c441e77960c2b0d8a8dbe8484b029.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "visual-script",
+        productVersion: "1.0",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      }).then((unityInstance) => {
+        myUnityInstance = unityInstance;
+        window.parent.postMessage({ type: "unityLoaded" }, "*");
+      }).catch((message) => {
+        alert(message);
+      });
+
+      window.addEventListener('message', (event) => {
+        if (event.data?.type === 'loadProject') {
+          myUnityInstance.SendMessage('GameLoader', 'Load', event.data.url);
+        }
+
+        if (event.data?.type === 'pause') {
+          myUnityInstance.SendMessage('GameCommunication', 'Pause');
+        }
+
+        if (event.data?.type === 'resume') {
+          myUnityInstance.SendMessage('GameCommunication', 'Resume');
+        }
+
+        if (event.data?.type === 'restart') {
+          myUnityInstance.SendMessage('GameCommunication', 'Restart');
+        }
+      });
+    </script>
+  </body>
+</html>

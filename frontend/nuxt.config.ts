@@ -18,8 +18,17 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxt/icon',
-    '@nuxt/fonts'
+    '@nuxt/fonts',
+    '@nuxtjs/i18n'
   ],
+  i18n: {
+    strategy: 'no_prefix',
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'vi', name: 'Tiếng Việt', file: 'vi-VN.json' }
+    ]
+  },
   routeRules: {
     // '/explore': { redirect: '/explore/default' },
     '/': { redirect: '/explore' },
@@ -29,4 +38,17 @@ export default defineNuxtConfig({
     '/projects/**/edit': { ssr: false },
     '/dashboard/**': { ssr: false },
   },
+  nitro: {
+    preset: "cloudflare-pages",
+    cloudflare: {
+      pages: {
+        routes: {
+          exclude: [
+            "/engine/*",
+            "/game/*"
+          ]
+        }
+      }
+    }
+  }
 })

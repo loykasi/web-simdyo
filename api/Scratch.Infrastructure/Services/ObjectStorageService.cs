@@ -14,7 +14,7 @@ namespace Scratch.Infrastructure.Services
         private readonly IAmazonS3 _s3Client;
 
         private readonly string _savePath = @"C:\\Users\\Admin\\Desktop\\_\\playground\\scratch-project\\test-storage";
-        private readonly string _s3Path = @"https://pub-62f76c9d48c649c5b8c5449d73c47ea5.r2.dev/";
+        private readonly string _s3Path = @"https://pub-962bffdbd95945c6a12e8c14089413e4.r2.dev/";
 
         public ObjectStorageService(IOptions<S3Options> s3Options)
         {
@@ -42,7 +42,7 @@ namespace Scratch.Infrastructure.Services
                 DisableDefaultChecksumValidation = true,
             };
 
-            //await _s3Client.PutObjectAsync(request);
+            await _s3Client.PutObjectAsync(request);
 
             return _s3Path + name;
         }

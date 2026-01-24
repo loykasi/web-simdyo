@@ -2,23 +2,24 @@
 import { UColorModeButton } from '#components';
 import type { NavigationMenuItem } from '@nuxt/ui'
 import { useAuthStore } from '~/stores/auth.store';
-import type { FormSubmitEvent } from '@nuxt/ui';
+import { en, vi } from '@nuxt/ui/locale'
 
-const route = useRoute()
+const route = useRoute();
 const { isLoggedIn, isPermitted } = useAuthStore();
+const { locale, setLocale, locales } = useI18n();
 
 const items = computed<NavigationMenuItem[]>(() => [
 	{
-		label: 'Create',
+		label: $t('nav.create'),
 		to: '/create'
 	},
 	{
-		label: 'Explore',
+		label: $t('nav.explore'),
 		to: '/explore'
 	},
 	...(isLoggedIn.value ? [ 
 		{
-			label: 'Upload',
+			label: $t('nav.upload'),
 			to: '/upload'
 		}
 	] : []),
@@ -61,9 +62,9 @@ function onSearch() {
 				id="search"
 				type="text"
 				v-model="searchTerm"
-				placeholder="Search for projects or creators"
+				:placeholder="$t('nav.search')"
 				required
-				class="px-2.5 py-1.5 min-w-sm text-sm"
+				class="px-2.5 py-1.5 w-64 shrink text-sm"
 			/>
 			<button
 				type="submit"
@@ -74,6 +75,11 @@ function onSearch() {
 
 		<template #right>
 			<ClientOnly>
+				<ULocaleSelect
+					:model-value="locale"
+					:locales="[en, vi]"
+					@update:model-value="setLocale($event)"
+				/>
 				<UColorModeButton />
 				<template v-if="isLoggedIn">
 					<AccountDropdown />
@@ -85,7 +91,7 @@ function onSearch() {
 						to="/register"
 						variant="subtle"
 					>
-						Register
+						{{ $t('nav.register') }}
 					</UButton>
 				</template>
 			</ClientOnly>

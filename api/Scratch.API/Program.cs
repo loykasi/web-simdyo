@@ -90,6 +90,7 @@ if (app.Environment.IsDevelopment())
 
     await app.SeedRolesAndPermissions();
     await app.SeedAdmin();
+    await app.FixNullSecurityStamps();
 }
 
 app.UseCors("AllowOrigins");

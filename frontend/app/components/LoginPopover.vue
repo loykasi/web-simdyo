@@ -79,21 +79,20 @@ const showPassword = ref(false);
         arrow
 	>
 		<UButton
-			label="Login"
+			:label="$t('nav.login')"
 			color="neutral"
 			variant="ghost"
 		/>
 		<template #content>
 			<div class="p-4 w-xs">
 				<UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit" :validateOn="[]">
-					<UFormField label="Username" name="username" >
-						<UInput v-model="state.username" placeholder="Username" class="w-full mt-1" />
+					<UFormField :label="$t('login.username')" name="username" >
+						<UInput v-model="state.username" class="w-full mt-1" />
 					</UFormField>
 
-					<UFormField label="Password" name="password">
+					<UFormField :label="$t('login.password')" name="password">
 						<UInput
 							v-model="state.password"
-							placeholder="Password"
 							:type="showPassword ? 'text' : 'password'"
 							class="w-full mt-1"
 						>
@@ -113,11 +112,11 @@ const showPassword = ref(false);
 					</UFormField>
 						
 					<div>
-						<ULink to="/forgot-password" @click="() => {open = false}">Forgot password?</ULink>
+						<ULink to="/forgot-password" @click="() => {open = false}">{{ $t('login.forgot') }}</ULink>
 					</div>
 
 					<UButton type="submit" :loading="loading" class="flex justify-center w-24">
-						Log in
+						{{ $t('login.login') }}
 					</UButton>
 
 					<div

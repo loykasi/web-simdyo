@@ -48,6 +48,7 @@ public class AuthTokenProcessor
         ];
 
         var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationTimeInMinutes);
+        //var expires = DateTime.UtcNow.AddSeconds(_jwtOptions.ExpirationTimeInMinutes);
 
         var token = new JwtSecurityToken
         (
