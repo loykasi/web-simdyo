@@ -38,7 +38,7 @@ namespace Scratch.Infrastructure.Respositories
             return await dbContext.Roles.AnyAsync(r => r.Name!.Equals(name));
         }
 
-        public async Task<Role?> GetRoleById(Guid id)
+        public async Task<Role?> GetRoleById(int id)
         {
             return await dbContext.Roles.Where(r => r.Id == id).FirstOrDefaultAsync();
         }
@@ -49,12 +49,12 @@ namespace Scratch.Infrastructure.Respositories
             //dbContext.Roles.Add(role);
         }
 
-        public async Task DeleteRole(Guid id)
+        public async Task DeleteRole(int id)
         {
             await dbContext.Roles.Where(r => r.Id == id).ExecuteDeleteAsync();
         }
 
-        public async Task AddPermissions(Guid roleId, string[] permissions)
+        public async Task AddPermissions(int roleId, string[] permissions)
         {
             var existingPermissions = await dbContext.RoleClaims
                 .Where(c => c.RoleId == roleId)
@@ -63,7 +63,7 @@ namespace Scratch.Infrastructure.Respositories
 
             var claims = permissions
                 .Where(p => !existingPermissions.Contains(p) && Permissions.All.Contains(p))
-                .Select(p => new Microsoft.AspNetCore.Identity.IdentityRoleClaim<Guid>()
+                .Select(p => new Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>()
                 {
                     RoleId = roleId,
                     ClaimType = CustomClaimType.Permission,
@@ -72,7 +72,7 @@ namespace Scratch.Infrastructure.Respositories
             dbContext.RoleClaims.AddRange(claims);
         }
 
-        public async Task DeletePermissions(Guid roleId, string[]? permissions)
+        public async Task DeletePermissions(int roleId, string[]? permissions)
         {
             if (permissions == null || permissions.Length == 0)
             {

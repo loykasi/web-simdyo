@@ -9,11 +9,11 @@
         public int ProjectId { get; set; }
         public required Project Project { get; set; }
 
-        public Guid ByUserId { get; set; }
+        public int ByUserId { get; set; }
         public required User ByUser { get; set; }
 
         public bool IsActive { get; set; } = true;
-        public Guid? RevokedByUserId { get; set; }
+        public int? RevokedByUserId { get; set; }
         public User? RevokedByUser { get; set; }
 
         public DateTime CreatedAt { get; set; }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -8,11 +10,15 @@ namespace Scratch.Infrastructure.Services
     public class CurrentUserService
     (
         ICookieService cookieService,
-        IAuthTokenProcessor authTokenProcessor
+        IAuthTokenProcessor authTokenProcessor,
+        UserManager<User> userManager,
+        IHttpContextAccessor httpContextAccessor
     ) : ICurrentUserService
     {
         private readonly ICookieService _cookieService = cookieService;
         private readonly IAuthTokenProcessor _authTokenProcessor = authTokenProcessor;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public bool HasValidAccessToken()
         {
@@ -51,6 +57,11 @@ namespace Scratch.Infrastructure.Services
             {
                 return string.Empty;
             }
+        }
+
+        public async Task<User?> GetUserAsync()
+        {
+            return await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
         }
     }
 }

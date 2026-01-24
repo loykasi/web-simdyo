@@ -56,6 +56,7 @@ namespace Scratch.Application.Services
                 );
             }
             
+            // add to send email queue task
             string token = await userManager.GenerateEmailConfirmationTokenAsync(user);
             await SendConfirmationEmail(user, token);
 
@@ -134,31 +135,35 @@ namespace Scratch.Application.Services
         {
             if (string.IsNullOrEmpty(refreshToken))
             {
-                return Result.NotFound(new Error("RefreshTokenMissing", "Refresh token is missing."));
+                return Result.NotFound(new Error("RefreshToken.Missing", "Refresh token is missing."));
             }
 
             var user = await unitOfWork.UserRespository.GetUserByRefreshTokenAsync(refreshToken);
             if (user == null)
             {
-                cookieService.Delete("ACCESS_TOKEN");
-                cookieService.Delete("REFRESH_TOKEN");
-                return Result.UnAuthorized(new Error("InvalidToken", "Refresh token is invalid."));
+                RevokeClientAccessCookie();
+                return Result.UnAuthorized(new Error("RefreshToken.Invalid", "Refresh token is invalid."));
             }
 
             var refreshTokenModel = authTokenProcessor.GetRefreshTokenByUser(user, refreshToken);
-            if (refreshTokenModel == null || refreshTokenModel.RefreshTokenExpriresAtUTC < DateTime.UtcNow)
+            if (refreshTokenModel == null)
             {
-                cookieService.Delete("ACCESS_TOKEN");
-                cookieService.Delete("REFRESH_TOKEN");
-                return Result.UnAuthorized(new Error("ExpiredToken", "Refresh token is expired."));
+                RevokeClientAccessCookie();
+                return Result.UnAuthorized(new Error("RefreshToken.Expired", "Refresh token is expired."));
+            }
+
+            if (refreshTokenModel.RefreshTokenExpriresAtUTC < DateTime.UtcNow)
+            {
+                RevokeClientAccessCookie();
+                await authTokenProcessor.RevokeToken(user, refreshTokenModel.Token);
+                return Result.UnAuthorized(new Error("RefreshToken.Expired", "Refresh token is expired."));
             }
 
             bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
             if (isBanned)
             {
-                cookieService.Delete("ACCESS_TOKEN");
-                cookieService.Delete("REFRESH_TOKEN");
-                return Result.UnAuthorized(new Error("ExpiredToken", "Refresh token is expired."));
+                RevokeClientAccessCookie();
+                return Result.UnAuthorized(new Error("RefreshToken.Expired", "Refresh token is expired."));
             }
 
             var (jwtToken, expirationDateInUtc) = await authTokenProcessor.GenerateJwtToken(user);
@@ -166,10 +171,16 @@ namespace Scratch.Application.Services
 
             await userManager.UpdateAsync(user);
 
-            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
-            authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);
+            cookieService.SetToken("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
+            cookieService.SetToken("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);
 
             return Result.Success();
+        }
+
+        private void RevokeClientAccessCookie()
+        {
+            cookieService.Delete("ACCESS_TOKEN");
+            cookieService.Delete("REFRESH_TOKEN");
         }
 
         public async Task<Result> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)

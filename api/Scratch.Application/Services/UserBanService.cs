@@ -16,7 +16,7 @@ namespace Scratch.Application.Services
         ICurrentUserService currentUserService
     ) : IUserBanService
     {
-        public async Task<Result> Ban(Guid userId, UserBanRequest payload)
+        public async Task<Result> Ban(int userId, UserBanRequest payload)
         {
             string authorID = currentUserService.GetUserID();
 
@@ -67,7 +67,7 @@ namespace Scratch.Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> RevokeBan(Guid userId)
+        public async Task<Result> RevokeBan(int userId)
         {
             string adminId = currentUserService.GetUserID();
             var admin = await userManager.FindByIdAsync(adminId);

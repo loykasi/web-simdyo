@@ -49,7 +49,7 @@ namespace Scratch.Application.Services
             );
         }
 
-        public async Task<Result> Update(Guid id, UpdateRoleRequest payload)
+        public async Task<Result> Update(int id, UpdateRoleRequest payload)
         {
             var role = await unitOfWork.RoleRepository.GetRoleById(id);
             if (role == null)
@@ -77,13 +77,13 @@ namespace Scratch.Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> Delete(Guid id)
+        public async Task<Result> Delete(int id)
         {
             await unitOfWork.RoleRepository.DeleteRole(id);
             return Result.Success();
         }
 
-        public async Task<Result> UpdateRolePermissions(Guid roleId, UpdateRolePermissionsRequest payload)
+        public async Task<Result> UpdateRolePermissions(int roleId, UpdateRolePermissionsRequest payload)
         {
             if (payload.Enables != null && payload.Enables.Length > 0)
             {

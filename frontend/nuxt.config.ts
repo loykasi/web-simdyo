@@ -22,6 +22,8 @@ export default defineNuxtConfig({
   ],
   routeRules: {
     // '/explore': { redirect: '/explore/default' },
+    '/': { redirect: '/explore' },
+    '/explore': { redirect: '/explore/all' },
     '/create': { ssr: false },
     '/confirm-email': { ssr: false },
     '/projects/**/edit': { ssr: false },

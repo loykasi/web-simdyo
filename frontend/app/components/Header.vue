@@ -9,10 +9,6 @@ const { isLoggedIn, isPermitted } = useAuthStore();
 
 const items = computed<NavigationMenuItem[]>(() => [
 	{
-		label: 'Home',
-		to: '/'
-	},
-	{
 		label: 'Create',
 		to: '/create'
 	},
@@ -55,7 +51,7 @@ function onSearch() {
 				to="/"
 				class="focus-visible:outline-primary hover:text-default transition-colors shrink-0 font-bold text-xl text-highlighted flex items-end gap-1.5 me-4"
 			>
-				CodeVisdoo
+				Simdyo
 			</NuxtLink>
 			<UNavigationMenu :items="items" variant="pill" />
 		</template>

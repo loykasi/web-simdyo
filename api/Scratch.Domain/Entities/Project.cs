@@ -4,8 +4,8 @@
     {
         public int Id { get; set; }
         public required string Name { get; set; }
+        public required string SortDescription { get; set; }
         public required string Description { get; set; }
-        //public required string Category { get; set; }
         public string PublicId { get; set; } = "";
         public string FileLink { get; set; } = "";
         public string ThumbnailLink { get; set; } = "";
@@ -13,7 +13,7 @@
         public int? CategoryId { get; set; }
         public ProjectCategory? Category { get; set; }
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public User User { get; set; } = null!;
 
         public int LikeCount { get; set; }

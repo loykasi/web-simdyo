@@ -2,11 +2,8 @@
 
 namespace Scratch.Domain.Entities
 {
-    public class User: IdentityUser<Guid>, ITrackable
+    public class User: IdentityUser<int>, ITrackable
     {
-        public string? RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpriresAtUTC { get; set; }
-
         public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
         public ICollection<Project> Projects { get; set; }
         public ICollection<ProjectLike> ProjectLikes { get; set; }

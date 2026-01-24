@@ -50,12 +50,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 			title: `Welcome, ${res.username}`,
 			color: 'success'
 		})
-	}).catch((err) => {
-		if (err.data[0].code === "Login.Ban") {
+	})
+	.catch((err) => {
+		if (!err.data) {
+			toast.add({
+				title: `Server error! Try again.`,
+				color: 'error'
+			})
+		} else if (err.data[0].code === "Login.Ban") {
 			error.value = "Account has been suspended due to a violation of community guidelines."
-        }
-
-		if (err.data[0].code === "Login.ValidationFailed") {
+        } else if (err.data[0].code === "Login.ValidationFailed") {
 			error.value = "Incorrect username or password"
         }
 	}).finally(() => {
@@ -112,7 +116,7 @@ const showPassword = ref(false);
 						<ULink to="/forgot-password" @click="() => {open = false}">Forgot password?</ULink>
 					</div>
 
-					<UButton type="submit" :loading="loading">
+					<UButton type="submit" :loading="loading" class="flex justify-center w-24">
 						Log in
 					</UButton>
 

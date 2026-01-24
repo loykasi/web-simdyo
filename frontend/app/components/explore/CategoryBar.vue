@@ -30,7 +30,7 @@ function toCategory(target?: string) {
     <div class="flex flex-wrap items-center py-4 gap-2 border-b border-default">
       <UButton
         label="All"
-        :variant="category === '' ? 'solid' : 'outline'"
+        :variant="category === 'all' ? 'solid' : 'outline'"
         @click="toCategory()"
       />
       <UButton

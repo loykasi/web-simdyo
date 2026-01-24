@@ -14,12 +14,12 @@ namespace Scratch.Domain.Entities
         public int ProjectId { get; set; }
         public Project Project { get; set; } = null!;
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         [ForeignKey("UserId")]
         [InverseProperty(nameof(User.Comments))]
         public User User { get; set; } = null!;
 
-        public Guid? RepliedUserId { get; set; } = null;
+        public int? RepliedUserId { get; set; } = null;
         [ForeignKey("RepliedUserId")]
         [InverseProperty(nameof(User.RepliedComments))]
         public User? RepliedUser { get; set; } = null!;

@@ -34,7 +34,7 @@ namespace Scratch.API.Controllers
         }
 
         [HttpPost("{userId}/ban")]
-        public async Task<IActionResult> Ban(Guid userId, UserBanRequest payload)
+        public async Task<IActionResult> Ban(int userId, UserBanRequest payload)
         {
             var result = await userBanService.Ban(userId, payload);
 
@@ -42,7 +42,7 @@ namespace Scratch.API.Controllers
         }
 
         [HttpDelete("{userId}/ban")]
-        public async Task<IActionResult> Unban(Guid userId)
+        public async Task<IActionResult> Unban(int userId)
         {
             var result = await userBanService.RevokeBan(userId);
 

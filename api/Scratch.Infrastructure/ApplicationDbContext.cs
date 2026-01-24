@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Scratch.Infrastructure
 {
-    public class ApplicationDbContext: IdentityDbContext<User, Role, Guid>
+    public class ApplicationDbContext: IdentityDbContext<User, Role, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -33,8 +33,6 @@ namespace Scratch.Infrastructure
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentCommentId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.UseVietnameseTables();
         }
 
         public override int SaveChanges()

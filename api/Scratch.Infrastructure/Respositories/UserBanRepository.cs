@@ -6,12 +6,12 @@ namespace Scratch.Infrastructure.Respositories
 {
     public class UserBanRepository(ApplicationDbContext dbContext) : IUserBanRepository
     {
-        public async Task<bool> GetBanStatus(Guid userId)
+        public async Task<bool> GetBanStatus(int userId)
         {
             return await dbContext.UserBans.AnyAsync(u => u.UserId == userId && u.IsActive == true);
         }
 
-        public async Task<UserBan?> GetByUserId(Guid userId)
+        public async Task<UserBan?> GetByUserId(int userId)
         {
             return await dbContext.UserBans.Where(u => u.UserId == userId && u.IsActive)
                                             .OrderByDescending(u => u.CreatedAt)

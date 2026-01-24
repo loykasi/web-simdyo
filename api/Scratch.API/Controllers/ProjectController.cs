@@ -16,30 +16,26 @@ namespace Scratch.API.Controllers
     ): BaseController
     {
         [HttpGet]
-        public async Task<IActionResult> GetProjects(
-            [FromQuery] string? q,
-            [FromQuery] string? category,
-            [FromQuery] int? lastId,
-            [FromQuery] int? limit)
+        public async Task<IActionResult> GetProjects([FromQuery] GetProjectsParameters query)
         {
-            var result = await projectService.GetProjectsAsync(q, category, lastId, limit);
+            var result = await projectService.GetProjectsAsync(query);
 
             return ToApiResult(result);
         }
 
         [HttpGet("users/{userName}")]
-        public async Task<IActionResult> GetUsersProjects(string userName, [FromQuery] int? page, [FromQuery] int? limit)
+        public async Task<IActionResult> GetUsersProjects(string userName, [FromQuery] PaginationQuery parameter)
         {
-            var result = await projectService.GetUserProjects(userName, page, limit);
+            var result = await projectService.GetUserProjects(userName, parameter);
 
             return ToApiResult(result);
         }
 
         [HttpGet("users/trash")]
         [Authorize]
-        public async Task<IActionResult> GetUsersTrash([FromQuery] int? page, [FromQuery] int? limit)
+        public async Task<IActionResult> GetUsersTrash([FromQuery] PaginationQuery parameter)
         {
-            var result = await projectService.GetUserTrashAsync(page, limit);
+            var result = await projectService.GetUserTrashAsync(parameter);
 
             return ToApiResult(result);
         }

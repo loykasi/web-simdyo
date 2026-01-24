@@ -13,8 +13,6 @@ namespace Scratch.Infrastructure
             {
                 entity.ToTable("NguoiDung");
 
-                entity.Property(u => u.RefreshToken).HasColumnName("TokenLamMoi");
-                entity.Property(u => u.RefreshTokenExpriresAtUTC).HasColumnName("TokenLamMoi_ThoiHan");
                 entity.Property(u => u.CreatedAt).HasColumnName("NgayTao");
                 entity.Property(u => u.UpdatedAt).HasColumnName("NgayCapNhat");
                 entity.Property(u => u.UserName).HasColumnName("TenDangNhap");

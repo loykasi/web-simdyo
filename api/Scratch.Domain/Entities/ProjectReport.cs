@@ -9,7 +9,7 @@
         public int ProjectId { get; set; }
         public required Project Project { get; set; }
 
-        public Guid ByUserId { get; set; }
+        public int ByUserId { get; set; }
         public required User ByUser { get; set; }
 
         public DateTime CreatedAt { get; set; }

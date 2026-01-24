@@ -1,12 +1,14 @@
 <script setup lang="ts">
+const toaster = { position: 'top-center' }
+
 useHead({
 	titleTemplate: (titleChunk) => {
-		return titleChunk ? `${titleChunk} - CodeVisdoo` : 'CodeVisdoo'
+		return titleChunk ? `${titleChunk} - Simdyo` : 'Simdyo'
 	},
 })
 </script>
 <template>
-	<UApp>
+	<UApp :toaster="toaster">
 		<NuxtLayout>
 		</NuxtLayout>
 	</UApp>

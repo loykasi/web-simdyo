@@ -18,25 +18,24 @@ namespace Scratch.Application.Services
         IPublicIdService publicIdService
     ) : IProjectService
     {
-        public async Task<Result<Pagination<ProjectResponse>>> GetAll(string? filter, int? page = null, int? limit = null)
+        public async Task<Result<Pagination<ProjectResponse>>> GetAll(
+            string? filter,
+            int? page = null,
+            int? limit = null
+        )
         {
             var response = await unitOfWork.ProjectRepository.GetAllProjects(filter, page, limit);
             return Result.Success(response);
         }
 
-        public async Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(
-            string? search,
-            string? category,
-            int? cursor = null,
-            int? limit = null
-        )
+        public async Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(GetProjectsParameters query)
         {
-            var response = await unitOfWork.ProjectRepository.GetProjects(search, category, cursor, limit);
+            var response = await unitOfWork.ProjectRepository.GetProjects(query);
 
             return Result.Success(response);
         }
 
-        public async Task<Result<Pagination<ProjectResponse>>> GetUserProjects(string userName, int? page, int? limit)
+        public async Task<Result<Pagination<ProjectResponse>>> GetUserProjects(string userName, PaginationQuery parameters)
         {
             var user = await userManager.FindByNameAsync(userName);
             if (user == null)
@@ -47,12 +46,12 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var result = await unitOfWork.ProjectRepository.GetUserProjects(user.Id, page, limit);
+            var result = await unitOfWork.ProjectRepository.GetUserProjects(user.Id, parameters);
 
             return Result.Success(result);
         }
 
-        public async Task<Result<Pagination<ProjectResponse>>> GetUserTrashAsync(int? page, int? limit)
+        public async Task<Result<Pagination<ProjectResponse>>> GetUserTrashAsync(PaginationQuery parameter)
         {
             string userID = currentUserService.GetUserID();
             var user = await userManager.FindByIdAsync(userID);
@@ -65,7 +64,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var result = await unitOfWork.ProjectRepository.GetUserDeletedProjects(user.Id, page, limit);
+            var result = await unitOfWork.ProjectRepository.GetUserDeletedProjects(user.Id, parameter);
 
             return Result.Success(result);
         }
@@ -132,9 +131,7 @@ namespace Scratch.Application.Services
 
         public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)
         {
-            string userID = currentUserService.GetUserID();
-
-            var user = await userManager.FindByIdAsync(userID);
+            var user = await currentUserService.GetUserAsync();
             if (user == null)
             {
                 return Result.NotFound<ProjectResponse>
@@ -159,6 +156,7 @@ namespace Scratch.Application.Services
             Project project = new()
             {
                 Name = addProjectRequest.Title,
+                SortDescription = addProjectRequest.ShortDescription,
                 Description = addProjectRequest.Description,
                 Category = category,
                 User = user

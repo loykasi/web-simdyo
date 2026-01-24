@@ -12,7 +12,7 @@ namespace Scratch.Infrastructure.Respositories
             return await dbContext.ProjectLikes.Where(p => p.ProjectId == id).CountAsync();
         }
 
-        public async Task<ProjectLike> Get(int projectId, Guid userId)
+        public async Task<ProjectLike> Get(int projectId, int userId)
         {
             return await dbContext.ProjectLikes.FirstOrDefaultAsync(p => p.ProjectId == projectId && p.UserId == userId);
         }
@@ -27,7 +27,7 @@ namespace Scratch.Infrastructure.Respositories
             dbContext.ProjectLikes.Remove(projectLike);
         }
 
-        public async Task<bool> Exist(int projectId, Guid userId)
+        public async Task<bool> Exist(int projectId, int userId)
         {
             return await AnyAsync(p => p.ProjectId == projectId && p.UserId == userId);
         }

@@ -4,8 +4,8 @@ namespace Scratch.Application.Interfaces.Repositories
 {
     public interface IUserBanRepository
     {
-        Task<bool> GetBanStatus(Guid userId);
-        Task<UserBan?> GetByUserId(Guid userId);
+        Task<bool> GetBanStatus(int userId);
+        Task<UserBan?> GetByUserId(int userId);
         void Add(UserBan userBan);
     }
 }

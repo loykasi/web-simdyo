@@ -25,7 +25,7 @@ namespace Scratch.Infrastructure.Migrations
             modelBuilder.HasSequence<int>("ProjectIdSequence")
                 .IncrementsBy(100);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,25 +34,22 @@ namespace Scratch.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text")
-                        .HasColumnName("KieuClaim");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text")
-                        .HasColumnName("GiaTriClaim");
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdVaiTro");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("VaiTroClaim", (string)null);
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,87 +58,74 @@ namespace Scratch.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text")
-                        .HasColumnName("KieuClaim");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text")
-                        .HasColumnName("GiaTriClaim");
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NguoiDungClaim", (string)null);
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("NhaCungCap");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("text")
-                        .HasColumnName("KhoaNhaCungCap");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text")
-                        .HasColumnName("TenNhaCungCap");
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("NguoiDungId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NguoiDungDangNhap", (string)null);
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdVaiTro");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("NguoiDung_VaiTro", (string)null);
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("NhaCungCap");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("Ten");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
-                        .HasColumnType("text")
-                        .HasColumnName("GiaTri");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("NguoiDungToken", (string)null);
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.Project", b =>
@@ -153,53 +137,46 @@ namespace Scratch.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "ProjectIdSequence");
 
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdDanhMuc");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayXoa");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("MoTa");
+                        .HasColumnType("text");
 
                     b.Property<string>("FileLink")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("LinkFile");
+                        .HasColumnType("text");
 
                     b.Property<int>("LikeCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("LuotThich");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Ten");
+                        .HasColumnType("text");
 
                     b.Property<string>("PublicId")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("IdCongKhai");
+                        .HasColumnType("text");
+
+                    b.Property<string>("SortDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ThumbnailLink")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("LinkAnh");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -210,7 +187,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DuAn", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectBan", b =>
@@ -221,38 +198,30 @@ namespace Scratch.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("ByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiThucHien");
+                    b.Property<int>("ByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("MoTa");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("HieuLuc");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("ProjectId")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdDuAn");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Lydo");
+                        .HasColumnType("text");
 
-                    b.Property<Guid?>("RevokedByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiThuHoi");
+                    b.Property<int?>("RevokedByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -262,7 +231,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("RevokedByUserId");
 
-                    b.ToTable("CamDuAn", (string)null);
+                    b.ToTable("ProjectBans");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectCategory", b =>
@@ -274,21 +243,18 @@ namespace Scratch.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Ten");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("DanhMucDuAn", (string)null);
+                    b.ToTable("ProjectCategories");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectComment", b =>
@@ -301,32 +267,25 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("NoiDung");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ParentCommentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdTraLoi");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProjectId")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdDuAn");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid?>("RepliedUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiTraLoi");
+                    b.Property<int?>("RepliedUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -338,7 +297,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BinhLuanDuAn", (string)null);
+                    b.ToTable("ProjectComments");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectLike", b =>
@@ -350,20 +309,16 @@ namespace Scratch.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ProjectId")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdDuAn");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -371,7 +326,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LuotThichDuAn", (string)null);
+                    b.ToTable("ProjectLikes");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectReport", b =>
@@ -382,31 +337,25 @@ namespace Scratch.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("ByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiThucHien");
+                    b.Property<int>("ByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("MoTa");
+                        .HasColumnType("text");
 
                     b.Property<int>("ProjectId")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdDuAn");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Lydo");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -414,54 +363,53 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("BaoCaoDuAn", (string)null);
+                    b.ToTable("ProjectReports");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.RefreshToken", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime?>("RefreshTokenExpriresAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("TokenLamMoi_ThoiHan");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("RefreshTokenExpriresAtUTC")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TokenLamMoi", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.Role", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text")
-                        .HasColumnName("MaDongBo");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("Ten");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("TenChuanHoa");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -469,91 +417,69 @@ namespace Scratch.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("VaiTro", (string)null);
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("SoLanDangNhapThatBai");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text")
-                        .HasColumnName("MaDongBo");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("Email");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("XacNhanEmail");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("KhoaTaiKhoan");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("ThoiGianKhoa");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("EmailChuanHoa");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("TenDangNhapChuanHoa");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("text")
-                        .HasColumnName("MatKhauHash");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("SoDienThoai");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("XacNhanSoDienThoai");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("text")
-                        .HasColumnName("TokenLamMoi");
-
-                    b.Property<DateTime?>("RefreshTokenExpriresAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("TokenLamMoi_ThoiHan");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text")
-                        .HasColumnName("MaBaoMat");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("XacThucHaiLop");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("TenDangNhap");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -564,7 +490,7 @@ namespace Scratch.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("NguoiDung", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.UserBan", b =>
@@ -575,38 +501,30 @@ namespace Scratch.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("ByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiThucHien");
+                    b.Property<int>("ByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayTao");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("MoTa");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("HieuLuc");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Lydo");
+                        .HasColumnType("text");
 
-                    b.Property<Guid?>("RevokedByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiThuHoi");
+                    b.Property<int?>("RevokedByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("NgayCapNhat");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("IdNguoiDung");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -616,10 +534,10 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CamNguoiDung", (string)null);
+                    b.ToTable("UserBans");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.Role", null)
                         .WithMany()
@@ -628,7 +546,7 @@ namespace Scratch.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.User", null)
                         .WithMany()
@@ -637,7 +555,7 @@ namespace Scratch.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.User", null)
                         .WithMany()
@@ -646,7 +564,7 @@ namespace Scratch.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.Role", null)
                         .WithMany()
@@ -661,7 +579,7 @@ namespace Scratch.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.User", null)
                         .WithMany()
@@ -785,7 +703,7 @@ namespace Scratch.Infrastructure.Migrations
             modelBuilder.Entity("Scratch.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -837,6 +755,8 @@ namespace Scratch.Infrastructure.Migrations
                     b.Navigation("ProjectLikes");
 
                     b.Navigation("Projects");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("RepliedComments");
                 });

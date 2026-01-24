@@ -8,10 +8,10 @@ namespace Scratch.Application.Interfaces.Repositories
         Task<RoleDto[]> GetAll();
         Task<string[]> GetAllName();
         Task<bool> IsRoleExist(string name);
-        Task<Role?> GetRoleById(Guid id);
+        Task<Role?> GetRoleById(int id);
         Task AddRole(Role role);
-        Task DeleteRole(Guid id);
-        Task AddPermissions(Guid roleId, string[] permissions);
-        Task DeletePermissions(Guid roleId, string[]? permissions);
+        Task DeleteRole(int id);
+        Task AddPermissions(int roleId, string[] permissions);
+        Task DeletePermissions(int roleId, string[]? permissions);
     }
 }

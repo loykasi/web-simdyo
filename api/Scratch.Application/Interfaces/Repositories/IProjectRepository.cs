@@ -1,4 +1,5 @@
 ﻿using Scratch.Domain.Entities;
+using Scratch.Domain.Requests;
 using Scratch.Domain.Responses;
 
 namespace Scratch.Application.Interfaces.Repositories
@@ -7,11 +8,10 @@ namespace Scratch.Application.Interfaces.Repositories
     {
         Task<Pagination<ProjectResponse>> GetAllProjects(string? filter, int? page = null, int? limit = null);
 
-        Task<Pagination<ProjectResponse>> GetProjects(string? search, string? category, int? cursor = null, int ? limit = null);
-        //Task<Pagination<ProjectResponse>> GetProjectsCursor(int? page = null, int ? limit = null);
-        Task<int> GetUserProjectCount(Guid id);
-        Task<Pagination<ProjectResponse>> GetUserProjects(Guid id, int? page, int? limit);
-        Task<Pagination<ProjectResponse>> GetUserDeletedProjects(Guid id, int? page, int? limit);
+        Task<Pagination<ProjectResponse>> GetProjects(GetProjectsParameters query);
+        Task<int> GetUserProjectCount(int id);
+        Task<Pagination<ProjectResponse>> GetUserProjects(int id, PaginationQuery parameter);
+        Task<Pagination<ProjectResponse>> GetUserDeletedProjects(int id, PaginationQuery parameter);
         Task<Project> GetById(int id);
         void Add(Project project);
         Task<int> GetProjectLike(int id);

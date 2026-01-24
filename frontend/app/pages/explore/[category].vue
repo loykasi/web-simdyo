@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CategoryBar from '~/components/explore/CategoryBar.vue';
+import ProjectList from '~/components/explore/ProjectList.vue';
 import type { Pagination } from '~/types/pagination.type';
 import type { ProjectResponse } from '~/types/project.type';
 
@@ -17,19 +18,81 @@ watchEffect(() => {
 
 const key = computed(() => `projects-${categoryQuery.value}`);
 
-const { data: pagination, pending } = await useLazyAsyncData(
-	key,
-	() => useAPI<Pagination<ProjectResponse>>(`projects`, {
-		method: "GET",
-    query: {
-      q: searchQuery.value,
-      category: categoryQuery.value,
-      limit: pageSize,
+// const { data: pagination, pending } = await useLazyAsyncData(
+// 	key,
+// 	() => useAPI<Pagination<ProjectResponse>>(`projects`, {
+// 		method: "GET",
+//     query: {
+//       q: searchQuery.value,
+//       category: categoryQuery.value,
+//       limit: pageSize,
+//     }
+// 	}), {
+//     watch: [searchQuery, categoryQuery]
+//   }
+// );
+
+const pagination = ref<Pagination<ProjectResponse>>({
+  total: 2,
+  size: 2,
+  lastId: 1,
+  items: [
+    {
+      publicId: '1',
+      title: 'GG EZ',
+      description: 'lorem isopum',
+      category: 'Gane',
+      projectLink: '#',
+      thumbnailLink: '',
+      username: 'john',
+      likeCount: 0,
+      isBanned: false,
+      createdAt: '#',
+      deletedAt: '#',
+    },
+    {
+      publicId: '1',
+      title: 'GG EZ',
+      description: 'lorem isopum',
+      category: 'Gane',
+      projectLink: '#',
+      thumbnailLink: '',
+      username: 'john',
+      likeCount: 0,
+      isBanned: false,
+      createdAt: '#',
+      deletedAt: '#',
+    },
+    {
+      publicId: '1',
+      title: 'GG EZ',
+      description: 'lorem isopum',
+      category: 'Gane',
+      projectLink: '#',
+      thumbnailLink: '',
+      username: 'john',
+      likeCount: 12,
+      isBanned: false,
+      createdAt: '#',
+      deletedAt: '#',
+    },
+    {
+      publicId: '1',
+      title: 'GG EZ',
+      description: 'lorem isopum',
+      category: 'Gane',
+      projectLink: '#',
+      thumbnailLink: '',
+      username: 'john',
+      likeCount: 0,
+      isBanned: false,
+      createdAt: '#',
+      deletedAt: '#',
     }
-	}), {
-    watch: [searchQuery, categoryQuery]
-  }
-);
+  ]
+});
+
+const pending = ref(false);
 
 function showMore() {
   loading.value = true;
@@ -66,36 +129,10 @@ useHead({
     <h1 class="my-6 font-bold text-4xl">Explorer</h1>
 
     <CategoryBar />
-
-    <template v-if="pending && !pagination">
-      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
-        <div
-          v-for="item in pageSize"
-          :key="item"
-          class="rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
-        >
-          <USkeleton class="aspect-square w-full" />
-          <div class="p-4">
-            <USkeleton class="w-full h-[84px]" />
-          </div>
-        </div>
-      </div>
-    </template>
-    <template v-else-if="pagination && pagination.size > 0">
-      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
-        <ProjectCard
-          v-for="project in pagination?.items"
-          :project="project"
-        />
-      </div>
-    </template>
-    <template v-else>
-      <UEmpty
-          icon="material-symbols:sad-tab-outline-rounded"
-          title="No results found"
-      />
-    </template>
-    
+    <ProjectList
+      :pending="pending"
+      :pagination="pagination"
+    />
     <UButton
       v-if="pagination?.size != pagination?.total"
       type="submit"

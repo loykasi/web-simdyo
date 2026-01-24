@@ -9,8 +9,8 @@ namespace Scratch.Application.Interfaces.Services
         Task<Result<RoleDto[]>> GetAll();
         Task<Result<string[]>> GetAllName();
         Task<Result<RoleDto>> Add(AddRoleRequest payload);
-        Task<Result> Update(Guid id, UpdateRoleRequest payload);
-        Task<Result> Delete(Guid id);
-        Task<Result> UpdateRolePermissions(Guid roleId, UpdateRolePermissionsRequest payload);
+        Task<Result> Update(int id, UpdateRoleRequest payload);
+        Task<Result> Delete(int id);
+        Task<Result> UpdateRolePermissions(int roleId, UpdateRolePermissionsRequest payload);
     }
 }

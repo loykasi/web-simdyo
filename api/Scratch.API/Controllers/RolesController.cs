@@ -36,7 +36,7 @@ namespace Scratch.API.Controllers
 
         [HttpPut("{id}")]
         [RequirePermission(Permissions.ManageRoles)]
-        public async Task<IActionResult> UpdateRole(Guid id, UpdateRoleRequest payload)
+        public async Task<IActionResult> UpdateRole(int id, UpdateRoleRequest payload)
         {
             var result = await roleService.Update(id, payload);
 
@@ -45,7 +45,7 @@ namespace Scratch.API.Controllers
 
         [HttpDelete("{id}")]
         [RequirePermission(Permissions.ManageRoles)]
-        public async Task<IActionResult> DeleteRole(Guid id)
+        public async Task<IActionResult> DeleteRole(int id)
         {
             var result = await roleService.Delete(id);
 
@@ -63,7 +63,7 @@ namespace Scratch.API.Controllers
         [RequirePermission(Permissions.ManageRoles)]
         public async Task<IActionResult> UpdateRolePermissions
         (
-            Guid roleId,
+            int roleId,
             UpdateRolePermissionsRequest payload
         )
         {

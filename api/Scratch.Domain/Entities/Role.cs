@@ -2,7 +2,7 @@
 
 namespace Scratch.Domain.Entities
 {
-    public class Role : IdentityRole<Guid>
+    public class Role : IdentityRole<int>
     {
         public Role() { }
         public Role(string roleName) : base(roleName) { }

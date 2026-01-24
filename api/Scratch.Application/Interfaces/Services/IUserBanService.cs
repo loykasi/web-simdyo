@@ -5,7 +5,7 @@ namespace Scratch.Application.Interfaces.Services
 {
     public interface IUserBanService
     {
-        Task<Result> Ban(Guid userId, UserBanRequest payload);
-        Task<Result> RevokeBan(Guid userId);
+        Task<Result> Ban(int userId, UserBanRequest payload);
+        Task<Result> RevokeBan(int userId);
     }
 }

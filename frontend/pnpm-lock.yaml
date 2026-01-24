@@ -36,6 +36,9 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5
     devDependencies:
+      '@iconify-json/lucide':
+        specifier: ^1.2.86
+        version: 1.2.86
       '@iconify-json/material-symbols':
         specifier: ^1.2.44
         version: 1.2.44
@@ -558,6 +561,9 @@ packages:
 
   '@floating-ui/vue@1.1.9':
     resolution: {integrity: sha512-BfNqNW6KA83Nexspgb9DZuz578R7HT8MZw1CfK9I6Ah4QReNWEJsXWHN+SdmOVLNGmTPDi+fDT535Df5PzMLbQ==}
+
+  '@iconify-json/lucide@1.2.86':
+    resolution: {integrity: sha512-W/Jz7/gGOkI9u43r+UHmQtZtcyw2YLvMwiHa01WV6V4DYltrPNXiD+bCa+djV8LZB1uwF8CiympOMIbgiQ74nA==}
 
   '@iconify-json/material-symbols@1.2.44':
     resolution: {integrity: sha512-NAJjhswaK9FxBeIzFFsNygws7wHtmAkBWhF4YEwn1NZIMbA+LNITqhUiq6sP5mOdKQqnoritFTlQaZ47a5BgBg==}
@@ -5149,6 +5155,10 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
+
+  '@iconify-json/lucide@1.2.86':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify-json/material-symbols@1.2.44':
     dependencies:
