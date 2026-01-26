@@ -19,7 +19,7 @@ public static class ServiceExtension
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IProjectService, ProjectService>();
-        services.AddScoped<IProjectLikeService, ProjectLikeService>();
+        services.AddScoped<IProjectReactionService, ProjectReactionService>();
         services.AddScoped<IProjectCommentService, ProjectCommentService>();
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IRoleService, RoleService>();
@@ -32,8 +32,8 @@ public static class ServiceExtension
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IPublicIdService, PublicIdService>();
 
         services.AddSingleton<IObjectStorageService, ObjectStorageService>();
-        services.AddSingleton<IPublicIdService, PublicIdService>();
     }
 }

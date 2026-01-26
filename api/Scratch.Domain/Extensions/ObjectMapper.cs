@@ -12,12 +12,14 @@ namespace Scratch.Domain.Extensions
                 (
                     project.PublicId,
                     project.Name,
+                    project.ShortDescription,
                     project.Description,
                     project.Category != null ? project.Category.Name : null,
                     project.FileLink,
                     project.ThumbnailLink,
                     project.User.UserName!,
-                    project.LikeCount,
+                    0,
+                    0,
                     false,
                     project.CreatedAt.ToString("o"),
                     project.DeletedAt.HasValue ? project.DeletedAt.Value.ToString("o") : null

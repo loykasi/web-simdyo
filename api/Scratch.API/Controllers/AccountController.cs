@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scratch.Application.Interfaces.Repositories;
-using Scratch.Domain.Entities;
 using Scratch.Domain.Requests;
 
 namespace Scratch.API.Controllers
@@ -22,10 +19,10 @@ namespace Scratch.API.Controllers
         }
 
         [HttpGet]
-        [Route("{userName}")]
-        public async Task<IActionResult> GetProfile(string userName)
+        [Route("{username}")]
+        public async Task<IActionResult> GetProfile(string username)
         {
-            var result = await accountService.GetProfileDetail(userName);
+            var result = await accountService.GetProfileDetail(username);
 
             return ToApiResult(result);
         }

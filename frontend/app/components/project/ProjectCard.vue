@@ -55,7 +55,7 @@ defineProps<{
       />
     </NuxtLink>
 
-    <div class="py-2 h-32 flex flex-col">
+    <div class="py-2 h-32 flex flex-col flex-1">
       <NuxtLink
         :to="`/projects/${project.publicId}`"
         class="text-base text-primary line-clamp-1 font-bold hover:underline"
@@ -73,11 +73,11 @@ defineProps<{
       </div>
       <div class="flex-1 mt-2">
         <UTooltip
-          text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          :text="project.shortDescription"
           :delay-duration="200"
         >
           <p class="line-clamp-2 overflow-hidden">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            {{ project.shortDescription }}
           </p>
         </UTooltip>
       </div>
@@ -86,15 +86,19 @@ defineProps<{
       </div> -->
     </div>
 
-    <div class="py-2 pe-4 flex flex-col gap-y-2">
+    <div class="py-2 pe-4 flex flex-col items-end justify-center gap-y-2">
       <div class="flex items-center gap-1 text-muted">
         <span class="font-bold text-xl">{{ project.likeCount }}</span>
         <UIcon name="lucide:heart" class="size-5 mt-0.5" />
       </div>
       <div class="flex items-center gap-1 text-muted">
-        <span class="font-bold text-xl">{{ project.likeCount }}</span>
+        <span class="font-bold text-xl">{{ project.okayCount }}</span>
         <UIcon name="lucide:meh" class="size-5 mt-0.5" />
       </div>
+      <!-- <div class="flex items-center gap-1 text-muted">
+        <span class="font-bold text-xl">100</span>
+        <UIcon name="lucide:eye" class="size-5 mt-0.5" />
+      </div> -->
     </div>
   </div>
 </template>

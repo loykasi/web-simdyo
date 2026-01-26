@@ -57,7 +57,7 @@ function onSearch() {
 			<UNavigationMenu :items="items" variant="pill" />
 		</template>
 
-		<form @submit.prevent="onSearch" class="flex items-center bg-accented rounded-md">
+		<!-- <form @submit.prevent="onSearch" class="flex items-center bg-accented rounded-md">
 			<input
 				id="search"
 				type="text"
@@ -71,7 +71,7 @@ function onSearch() {
 				class="flex justify-center items-center px-2 hover:cursor-pointer">
 				<UIcon name="material-symbols:search" class="size-5" />
 			</button>
-		</form>
+		</form> -->
 
 		<template #right>
 			<ClientOnly>

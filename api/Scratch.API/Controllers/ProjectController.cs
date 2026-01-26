@@ -16,7 +16,7 @@ namespace Scratch.API.Controllers
     ): BaseController
     {
         [HttpGet]
-        public async Task<IActionResult> GetProjects([FromQuery] GetProjectsParameters query)
+        public async Task<IActionResult> GetProjects([FromQuery] GetProjectsQuery query)
         {
             var result = await projectService.GetProjectsAsync(query);
 

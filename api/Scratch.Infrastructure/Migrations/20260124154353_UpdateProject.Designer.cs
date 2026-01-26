@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scratch.Infrastructure;
@@ -11,9 +12,11 @@ using Scratch.Infrastructure;
 namespace Scratch.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124154353_UpdateProject")]
+    partial class UpdateProject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,6 +155,9 @@ namespace Scratch.Infrastructure.Migrations
                     b.Property<string>("FileLink")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -297,7 +303,7 @@ namespace Scratch.Infrastructure.Migrations
                     b.ToTable("ProjectComments");
                 });
 
-            modelBuilder.Entity("Scratch.Domain.Entities.ProjectReaction", b =>
+            modelBuilder.Entity("Scratch.Domain.Entities.ProjectLike", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -310,10 +316,6 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -481,10 +483,6 @@ namespace Scratch.Infrastructure.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -667,10 +665,10 @@ namespace Scratch.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Scratch.Domain.Entities.ProjectReaction", b =>
+            modelBuilder.Entity("Scratch.Domain.Entities.ProjectLike", b =>
                 {
                     b.HasOne("Scratch.Domain.Entities.Project", "Project")
-                        .WithMany("ProjectReactions")
+                        .WithMany("ProjectLikes")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -745,7 +743,7 @@ namespace Scratch.Infrastructure.Migrations
                 {
                     b.Navigation("ProjectBans");
 
-                    b.Navigation("ProjectReactions");
+                    b.Navigation("ProjectLikes");
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectComment", b =>

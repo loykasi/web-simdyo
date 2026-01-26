@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { de } from 'zod/locales';
 import GamePlayer from '~/components/project/GamePlayer.vue';
 import ReportModal from '~/components/project/ReportModal.vue';
 import { useAuthStore } from '~/stores/auth.store';
 import type { ProjectResponse } from '~/types/project.type';
+import type { projectReactionType } from '~/types/projectReaction.type';
 
 const { user, isLoggedIn } = useAuthStore();
 const route = useRoute();
@@ -12,7 +14,7 @@ const isLogged = useCookie("isLogged", {
     default: () => false
 });
 
-const { likeProject, unlikeProject } = useLikeProject();
+const { addReaction, deleteReaction } = useProjectReaction();
 
 const { data: project, status } = await useAsyncData(
 	`project.${projectId}`,
@@ -27,50 +29,85 @@ const { data: project, status } = await useAsyncData(
 
 const isPending = computed(() => ["idle", "pending"].includes(status.value));
 
-const { data: likeCount } = await useAsyncData(
-	`project.${projectId}.likeCount`,
-	() => useAPI<number>(`projects/${projectId}/like`, {
-		method: "GET",
-	})
-);
+// const { data: likeCount } = await useAsyncData(
+// 	`project.${projectId}.likeCount`,
+// 	() => useAPI<number>(`projects/${projectId}/like`, {
+// 		method: "GET",
+// 	})
+// );
 
-const likeStatus = ref(false);
+const reactionStatus = ref<projectReactionType>("");
 
 if (isLogged.value) {
     useAsyncData(
-        `project.${projectId}.likeStatus`,
-        () => useAPI<boolean>(`projects/${projectId}/like-status`, {
+        `project.${projectId}.reactionStatus`,
+        () => useAPI<projectReactionType>(`projects/${projectId}/reaction-status`, {
             method: "GET",
         }),
         {
             server: false,
             transform: (data) => {
-                console.log("fetch like status");
-                likeStatus.value = data;
+                reactionStatus.value = data;
             }
         }
     );
 }
 
-async function like() {
-    if (likeStatus.value) {
-        likeStatus.value = false;
-        likeCount.value! -= 1;
+async function reactLike() {
+    if (!project.value) return;
 
-        unlikeProject(projectId)
-            .catch(() => {
-                likeStatus.value = true;
-                likeCount.value! += 1;
-            });
+    if (reactionStatus.value === 'Like') {
+        reactionStatus.value = '';
+        project.value.likeCount--;
+
+        try {
+            await deleteReaction(projectId);
+        } catch {
+            reactionStatus.value = 'Like';
+            project.value.likeCount++;
+        }
     } else {
-        likeStatus.value = true;
-        likeCount.value! += 1;
+        project.value.likeCount++;
+        if (reactionStatus.value === 'Okay') {
+            project.value.okayCount--;
+        }
 
-        likeProject(projectId)
-            .catch(() => {
-                likeStatus.value = false;
-                likeCount.value! -= 1;
-            });
+        reactionStatus.value = 'Like';
+        try {
+            await addReaction(projectId, 'Like');
+        } catch {
+            reactionStatus.value = '';
+            project.value.likeCount--;
+        }
+    }
+}
+
+async function reactOkay() {
+    if (!project.value) return;
+
+    if (reactionStatus.value === 'Okay') {
+        reactionStatus.value = '';
+        project.value.okayCount--;
+
+        try {
+            await deleteReaction(projectId);
+        } catch {
+            reactionStatus.value = 'Okay';
+            project.value.okayCount++;
+        }
+    } else {
+        project.value.okayCount++;
+        if (reactionStatus.value === 'Like') {
+            project.value.likeCount--;
+        }
+
+        reactionStatus.value = 'Okay';
+        try {
+            await addReaction(projectId, 'Okay');
+        } catch {
+            reactionStatus.value = '';
+            project.value.okayCount--;
+        }
     }
 }
 
@@ -244,30 +281,26 @@ function onResize(event: Event) {
                         </div>
                         <div class="flex items-center gap-x-2">
                             <ClientOnly>
-                                <UButton color="neutral" variant="ghost" >
-                                    <div class="flex items-center" @click="like">
-                                        <template v-if="likeStatus">
-                                            <UIcon name="material-symbols:favorite" class="block size-5" />
-                                        </template>
-                                        <template v-else>
-                                            <UIcon name="material-symbols:favorite-outline" class="block size-5" />
-                                        </template>
-                                        
-                                        <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
+                                <UButton color="neutral" variant="ghost" @click="reactLike">
+                                    <div v-if="reactionStatus === 'Like'" class="text-primary flex items-center">
+                                        <UIcon name="material-symbols:favorite" class="block size-6" />
+                                        <span class="block ms-2 font-semibold text-xl">{{ project.likeCount }}</span>
+                                    </div>
+                                    <div v-else class="flex items-center">
+                                        <UIcon name="material-symbols:favorite-outline" class="block size-6" />
+                                        <span class="block ms-2 font-semibold text-xl">{{ project.likeCount }}</span>
                                     </div>
                                 </UButton>
-                                <!-- <UButton color="neutral" variant="ghost" >
-                                    <div class="flex items-center" @click="like">
-                                        <template v-if="likeStatus">
-                                            <UIcon name="material-symbols:kid-star" class="block size-5" />
-                                        </template>
-                                        <template v-else>
-                                            <UIcon name="material-symbols:kid-star-outline" class="block size-5" />
-                                        </template>
-                                        
-                                        <span class="block ms-2 font-semibold text-xl">{{ likeCount }}</span>
+                                <UButton color="neutral" variant="ghost" @click="reactOkay">
+                                    <div v-if="reactionStatus === 'Okay'" class="text-primary flex items-center">
+                                        <UIcon name="material-symbols:sentiment-neutral" class="block size-6" />
+                                        <span class="block ms-2 font-semibold text-xl">{{ project.okayCount }}</span>
                                     </div>
-                                </UButton> -->
+                                    <div v-else class="flex items-center">
+                                        <UIcon name="material-symbols:sentiment-neutral-outline" class="block size-6" />
+                                        <span class="block ms-2 font-semibold text-xl">{{ project.okayCount }}</span>
+                                    </div>
+                                </UButton>
                             </ClientOnly>
                         </div>
                     </div>

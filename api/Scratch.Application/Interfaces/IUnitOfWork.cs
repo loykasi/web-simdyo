@@ -7,7 +7,7 @@ namespace Scratch.Application.Abstracts
     {
         IUserRespository UserRespository { get; }
         IProjectRepository ProjectRepository { get; }
-        IProjectLikeRepository ProjectLikeRepository { get; }
+        IProjectReactionRepository ProjectReactionRepository { get; }
         IProjectCommentRepository ProjectCommentRepository { get; }
         IUserBanRepository UserBanRepository { get; }
         IProjectReportRepository ProjectReportRepository { get; }

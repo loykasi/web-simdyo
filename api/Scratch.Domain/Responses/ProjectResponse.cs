@@ -6,12 +6,14 @@ namespace Scratch.Domain.Responses
     (
         string PublicId,
         string Title,
+        string ShortDescription,
         string Description,
         string? Category,
         string ProjectLink,
         string ThumbnailLink,
         string Username,
         int LikeCount,
+        int OkayCount,
         bool IsBanned,
         string CreatedAt,
         string? DeletedAt

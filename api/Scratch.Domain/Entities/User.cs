@@ -4,9 +4,11 @@ namespace Scratch.Domain.Entities
 {
     public class User: IdentityUser<int>, ITrackable
     {
+        public string Username { get => UserName!; set => UserName = value; }
+
         public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
-        public ICollection<Project> Projects { get; set; }
-        public ICollection<ProjectLike> ProjectLikes { get; set; }
+        public ICollection<Project> Projects { get; set; } = [];
+        public ICollection<ProjectReaction> ProjectLikes { get; set; } = [];
         public ICollection<ProjectComment> Comments { get; set; } = [];
         public ICollection<ProjectComment> RepliedComments { get; set; } = [];
 
@@ -18,13 +20,13 @@ namespace Scratch.Domain.Entities
             return new User
             {
                 Email = email,
-                UserName = userName
+                Username = userName
             };
         }
 
         public override string ToString()
         {
-            return UserName;
+            return Username;
         }
     }
 }

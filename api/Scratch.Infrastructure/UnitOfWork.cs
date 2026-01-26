@@ -14,7 +14,7 @@ namespace Scratch.Infrastructure
 
         public IUserRespository UserRespository { get; }
         public IProjectRepository ProjectRepository { get; }
-        public IProjectLikeRepository ProjectLikeRepository { get; }
+        public IProjectReactionRepository ProjectReactionRepository { get; }
         public IProjectCommentRepository ProjectCommentRepository { get; }
         public IUserBanRepository UserBanRepository { get; }
         public IProjectReportRepository ProjectReportRepository { get; }
@@ -31,7 +31,7 @@ namespace Scratch.Infrastructure
             _dbContext = dbContext;
             UserRespository = new UserRepository(dbContext, userManager);
             ProjectRepository = new ProjectRepository(dbContext);
-            ProjectLikeRepository = new ProjectLikeRepository(dbContext);
+            ProjectReactionRepository = new ProjectReactionRepository(dbContext);
             ProjectCommentRepository = new ProjectCommentRepository(dbContext);
             UserBanRepository = new UserBanRepository(dbContext);
             ProjectReportRepository = new ProjectReportRepository(dbContext);

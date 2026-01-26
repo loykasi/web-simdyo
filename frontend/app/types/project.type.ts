@@ -9,12 +9,14 @@ export interface UploadProjectRequest {
 export interface ProjectResponse {
     publicId: string;
     title: string;
+    shortDescription: string;
     description: string;
     category: string | null;
     projectLink: string;
     thumbnailLink: string;
     username: string;
     likeCount: number;
+    okayCount: number;
     isBanned: boolean;
     createdAt: string;
     deletedAt: string | null;

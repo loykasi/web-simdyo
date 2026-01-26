@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required string SortDescription { get; set; }
+        public required string ShortDescription { get; set; }
         public required string Description { get; set; }
         public string PublicId { get; set; } = "";
         public string FileLink { get; set; } = "";
@@ -16,9 +16,7 @@
         public int UserId { get; set; }
         public User User { get; set; } = null!;
 
-        public int LikeCount { get; set; }
-        public ICollection<ProjectLike> ProjectLikes { get; set; }
-
+        public ICollection<ProjectReaction> ProjectReactions { get; set; }
         public ICollection<ProjectBan> ProjectBans { get; set; }
 
         public DateTime? DeletedAt { get; set; }

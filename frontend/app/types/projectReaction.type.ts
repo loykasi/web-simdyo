@@ -1,0 +1,1 @@
+export type projectReactionType = "" | "Like" | "Okay";

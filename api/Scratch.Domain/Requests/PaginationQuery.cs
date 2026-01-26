@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata;
+using System.Text.Json.Serialization;
 
 namespace Scratch.Domain.Requests
 {
@@ -19,7 +20,9 @@ namespace Scratch.Domain.Requests
         public int? Cursor { get; set; }
         public int? Page { get; set; }
 
+        [JsonIgnore]
         public bool IsCursorPagination => Cursor.HasValue;
+        [JsonIgnore]
         public int Offset => Page.HasValue ? ((Page.Value - 1) * Limit) : 0;
     }
 }

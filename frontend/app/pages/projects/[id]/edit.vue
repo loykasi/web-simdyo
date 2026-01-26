@@ -24,6 +24,7 @@ watchEffect(() => {
 })
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 15MB
 
 const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -35,25 +36,24 @@ const formatBytes = (bytes: number, decimals = 2) => {
 }
 
 const schema = z.object({
-    title: z.string('Invalid title'),
-	description: z.string().default(""),
-    category: z.string().default(""),
-    projectFile: z
-        .instanceof(File, {
-            message: 'Please select a file.'
-        })
-        .refine((file) => file.size <= MAX_FILE_SIZE, {
-            message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
-        })
-        .optional(),
-    thumbnailFile: z
-        .instanceof(File, {
-            message: 'Please select a file.'
-        })
-        .refine((file) => file.size <= MAX_FILE_SIZE, {
-            message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
-        })
-        .optional()
+  title: z.string('Required').min(1, 'Required'),
+  shortDescription: z.string('Required').min(1, 'Required'),
+	description: z.string('Required').min(1, 'Required'),
+  category: z.string().default(""),
+  projectFile: z
+    .instanceof(File, {
+        message: 'Please select a file.'
+    })
+    .refine((file) => file.size <= MAX_PROJECT_FILE_SIZE, {
+        message: `The project is too large. Please choose a project smaller than ${formatBytes(MAX_PROJECT_FILE_SIZE)}.`
+    }),
+  thumbnailFile: z
+    .instanceof(File, {
+        message: 'Please select a file.'
+    })
+    .refine((file) => file.size <= MAX_FILE_SIZE, {
+        message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
+    })
 })
 
 type schema = z.output<typeof schema>
@@ -73,6 +73,7 @@ const loading = ref(false);
 async function onSubmit(event: FormSubmitEvent<schema>) {
     const payload = new FormData();
     payload.append("title", event.data.title);
+    payload.append("shortDescription", event.data.description);
     payload.append("description", event.data.description);
 
     if (event.data.category !== "Default") {
@@ -133,6 +134,7 @@ onMounted(() => {
 	}).then(res => {
         console.log("run");
         state.title = res.title;
+        state.shortDescription = res.shortDescription;
         state.description = res.description;
         state.category = res.category ?? "Default";
         defaultThumbnail.value = res.thumbnailLink;
@@ -148,12 +150,11 @@ useHead({
 	title: headTitle,
 })
 </script>
-<template>
+<!-- <template>
     <UPage>
         <UPageHeader title="Edit" />
 
         <template v-if="projectPending">
-            <!-- <UProgress /> -->
         </template>
         <template v-else>
             <UCard class="mt-4">
@@ -243,4 +244,126 @@ useHead({
             </UCard>
         </template>
     </UPage>
+</template> -->
+
+<template>
+  <UPage>
+    <UPageHeader :title="$t('upload')" />
+    <UCard class="mt-4">
+      <UForm
+        :schema="schema"
+        :state="state"
+        @submit="onSubmit"
+        class="space-y-4"
+      >
+        <div class="flex space-x-4">
+          <UFormField
+            :label="$t('upload.thumbnail')"
+            name="thumbnailFile"
+            class=""
+          >
+            <UFileUpload
+              v-model="state.thumbnailFile"
+              accept="image/*"
+              v-slot="{ open, removeFile }"
+              class="relative aspect-square size-32 mt-2 flex flex-col items-center justify-center bg-default border border-default rounded-lg focus-visible:outline-2"
+            >
+              <img
+                :src="state.thumbnailFile ? createObjectUrl(state.thumbnailFile) : defaultThumbnail"
+                class="size-full"
+              />
+              <div class="absolute size-full flex flex-col items-center justify-center gap-3 bg-black/50 opacity-0 hover:opacity-100 transition">
+                <UAvatar
+                  size="md"
+                  icon="i-lucide-image"
+                />
+
+                <UButton
+                  :label="state.thumbnailFile ? 'Change' : 'Replace'"
+                  color="neutral"
+                  variant="outline"
+                  @click="open()"
+                />
+
+                <UButton
+                  v-if="state.thumbnailFile"
+                  label="Remove image"
+                  color="warning"
+                  variant="link"
+                  @click="removeFile()"
+                  class="underline"
+                />
+              </div>
+            </UFileUpload>
+          </UFormField>
+        
+          <UFormField
+            :label="$t('upload.file')"
+            name="projectFile"
+            class="flex-1"
+          >
+            <UFileUpload
+              v-model="state.projectFile"
+              icon="material-symbols:upload"
+              accept=".simdyo"
+              position="inside"
+              layout="list"
+              :interactive="false"
+              :ui="{
+                root: 'mt-2 h-32',
+                base: 'flex flex-col items-center justify-center bg-default border border-solid border-default rounded-lg focus-visible:outline-2',
+                wrapper: 'p-0 gap-3',
+                actions: 'm-0'
+              }"
+            >
+              <template #actions="{ open }">
+                <UButton
+                  :label="$t('upload.upload_file')"
+                  color="neutral"
+                  variant="outline"
+                  @click="open()"
+                />
+              </template>
+            </UFileUpload>
+          </UFormField>
+        </div>
+
+            <UFormField :label="$t('upload.title')" name="title">
+              <UInput v-model="state.title" class="w-full mt-2" />
+            </UFormField>
+
+            <UFormField :label="$t('upload.shortDescription')" name="shortDescription">
+              <UInput v-model="state.shortDescription" class="w-full mt-2" />
+            </UFormField>
+
+            <UFormField :label="$t('upload.category')" name="category">
+              <USelect
+                v-model="state.category"
+                :items="categories"
+                :loading="categoryPending"
+                class="w-full mt-2"
+              >
+                <template #default="{ modelValue }">
+                  {{ modelValue }}
+                </template>
+                <template #item-label="{ item }">
+                  {{ $t(item) }}
+                </template>
+              </USelect>
+            </UFormField>
+
+            <UFormField :label="$t('upload.description')" name="description">
+              <UTextarea
+                v-model="state.description"
+                class="w-full mt-2"
+                autoresize
+              />
+            </UFormField>
+          
+        <UButton type="submit" class="mt-4" :loading="loading">
+          Save
+        </UButton>
+      </UForm>
+    </UCard>
+  </UPage>
 </template>

@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Enums;
 using Scratch.Domain.Requests;
 using Scratch.Domain.Responses;
-using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Scratch.Infrastructure.Respositories
 {
@@ -37,12 +38,14 @@ namespace Scratch.Infrastructure.Respositories
                     p.Id,
                     p.PublicId,
                     p.Name,
+                    p.ShortDescription,
                     p.Description,
                     Category = p.Category.Name,
                     p.FileLink,
                     p.ThumbnailLink,
                     Username = p.User.UserName,
-                    p.LikeCount,
+                    LikeCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Like),
+                    OkayCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Okay),
                     IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
                     p.CreatedAt,
                     p.DeletedAt
@@ -52,12 +55,14 @@ namespace Scratch.Infrastructure.Respositories
             var responseItems = items.Select(p => new ProjectResponse(
                                             p.PublicId,
                                             p.Name,
+                                            p.ShortDescription,
                                             p.Description,
                                             p.Category,
                                             p.FileLink,
                                             p.ThumbnailLink,
                                             p.Username,
                                             p.LikeCount,
+                                            p.OkayCount,
                                             p.IsBanned,
                                             p.CreatedAt.ToString("o"),
                                             p.DeletedAt?.ToString("o")
@@ -71,7 +76,7 @@ namespace Scratch.Infrastructure.Respositories
             };
         }
 
-        public async Task<Pagination<ProjectResponse>> GetProjects(GetProjectsParameters paginationQuery)
+        public async Task<Pagination<ProjectResponse>> GetProjects(GetProjectsQuery paginationQuery)
         {
             IQueryable<Project> query = GetAvailable()
                 .Include(p => p.Category)
@@ -83,7 +88,7 @@ namespace Scratch.Infrastructure.Respositories
                 query = query
                     .Where(p =>
                         p.Category != null &&
-                        p.Category.Name.Contains(paginationQuery.Category, StringComparison.OrdinalIgnoreCase)
+                        p.Category.Name.ToLower().Contains(paginationQuery.Category.ToLower())
                     );
             }
 
@@ -101,12 +106,14 @@ namespace Scratch.Infrastructure.Respositories
                     p.Id,
                     p.PublicId,
                     p.Name,
+                    p.ShortDescription,
                     p.Description,
                     Category = p.Category.Name,
                     p.FileLink,
                     p.ThumbnailLink,
                     Username = p.User.UserName,
-                    p.LikeCount,
+                    LikeCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Like),
+                    OkayCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Okay),
                     p.CreatedAt,
                     p.DeletedAt
                 })
@@ -116,12 +123,14 @@ namespace Scratch.Infrastructure.Respositories
                 .Select(p => new ProjectResponse(
                     p.PublicId,
                     p.Name,
+                    p.ShortDescription,
                     p.Description,
                     p.Category,
                     p.FileLink,
                     p.ThumbnailLink,
                     p.Username,
                     p.LikeCount,
+                    p.OkayCount,
                     false,
                     p.CreatedAt.ToString("o"),
                     p.DeletedAt?.ToString("o")
@@ -155,12 +164,14 @@ namespace Scratch.Infrastructure.Respositories
                     p.Id,
                     p.PublicId,
                     p.Name,
+                    p.ShortDescription,
                     p.Description,
                     Category = p.Category.Name,
                     p.FileLink,
                     p.ThumbnailLink,
                     Username = p.User.UserName,
-                    p.LikeCount,
+                    LikeCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Like),
+                    OkayCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Okay),
                     IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
                     p.CreatedAt,
                     p.DeletedAt
@@ -170,12 +181,14 @@ namespace Scratch.Infrastructure.Respositories
             var responseItems = items.Select(p => new ProjectResponse(
                                             p.PublicId,
                                             p.Name,
+                                            p.ShortDescription,
                                             p.Description,
                                             p.Category,
                                             p.FileLink,
                                             p.ThumbnailLink,
                                             p.Username,
                                             p.LikeCount,
+                                            p.OkayCount,
                                             p.IsBanned,
                                             p.CreatedAt.ToString("o"),
                                             p.DeletedAt?.ToString("o")
@@ -204,12 +217,14 @@ namespace Scratch.Infrastructure.Respositories
                     p.Id,
                     p.PublicId,
                     p.Name,
+                    p.ShortDescription,
                     p.Description,
                     Category = p.Category.Name,
                     p.FileLink,
                     p.ThumbnailLink,
                     Username = p.User.UserName,
-                    p.LikeCount,
+                    LikeCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Like),
+                    OkayCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Okay),
                     IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
                     p.CreatedAt,
                     p.DeletedAt
@@ -219,12 +234,14 @@ namespace Scratch.Infrastructure.Respositories
             var responseItems = items.Select(p => new ProjectResponse(
                                             p.PublicId,
                                             p.Name,
+                                            p.ShortDescription,
                                             p.Description,
                                             p.Category,
                                             p.FileLink,
                                             p.ThumbnailLink,
                                             p.Username,
                                             p.LikeCount,
+                                            p.OkayCount,
                                             p.IsBanned,
                                             p.CreatedAt.ToString("o"),
                                             p.DeletedAt?.ToString("o")
@@ -239,6 +256,47 @@ namespace Scratch.Infrastructure.Respositories
             };
         }
 
+        public async Task<ProjectResponse> GetDetailById(int id)
+        {
+            var project = await dbContext.Projects
+                .Include(p => p.User)
+                .Include(p => p.Category)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.PublicId,
+                    p.Name,
+                    p.ShortDescription,
+                    p.Description,
+                    Category = p.Category.Name,
+                    p.FileLink,
+                    p.ThumbnailLink,
+                    Username = p.User.UserName,
+                    LikeCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Like),
+                    OkayCount = p.ProjectReactions.Count(r => r.Type == ReactionTypes.Okay),
+                    IsBanned = dbContext.ProjectBans.Any(b => b.ProjectId == p.Id && b.IsActive == true),
+                    p.CreatedAt,
+                    p.DeletedAt
+                })
+                .FirstAsync(p => p.Id == id);
+
+            return new ProjectResponse(
+                project.PublicId,
+                project.Name,
+                project.ShortDescription,
+                project.Description,
+                project.Category,
+                project.FileLink,
+                project.ThumbnailLink,
+                project.Username,
+                project.LikeCount,
+                project.OkayCount,
+                project.IsBanned,
+                project.CreatedAt.ToString("o"),
+                project.DeletedAt?.ToString("o")
+            );
+        }
+
         public async Task<Project> GetById(int id)
         {
             return await dbContext.Projects
@@ -250,12 +308,6 @@ namespace Scratch.Infrastructure.Respositories
         public void Add(Project project)
         {
             dbContext.Projects.Add(project);
-        }
-
-        public async Task<int> GetProjectLike(int id)
-        {
-            var project = await dbContext.Projects.FindAsync(id);
-            return project.LikeCount;
         }
 
         public void SoftDelete(Project project)

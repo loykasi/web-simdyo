@@ -1,4 +1,4 @@
-﻿namespace Scratch.Domain.Entities
+﻿namespace Scratch.Domain.Enums
 {
     public enum ReportStatus
     {

@@ -1,8 +1,11 @@
-﻿namespace Scratch.Domain.Entities
+﻿using Scratch.Domain.Enums;
+
+namespace Scratch.Domain.Entities
 {
-    public class ProjectLike : ITrackable
+    public class ProjectReaction : ITrackable
     {
         public int Id { get; set; }
+        public ReactionTypes Type { get; set; }
         
         public int ProjectId { get; set; }
         public Project Project { get; set; } = null!;

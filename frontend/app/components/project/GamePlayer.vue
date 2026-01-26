@@ -1,4 +1,7 @@
 <script setup lang="ts">
+
+const disableGamePlayer = true;
+
 const prop = defineProps<{
     projectLink: string
 }>();
@@ -67,9 +70,10 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <div class="relative aspect-[16/9] w-full">
-        <!-- <div class="size-full border-none z-0 bg-amber-700"></div> -->
         <ClientOnly>
+            <div v-if="disableGamePlayer" class="size-full border-none z-0 bg-amber-700"></div>
             <iframe
+                v-else
                 ref="unityCanvas"
                 src="/game/index.html"
                 width="100%"

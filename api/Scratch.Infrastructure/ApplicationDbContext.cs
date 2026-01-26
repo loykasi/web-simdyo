@@ -33,6 +33,10 @@ namespace Scratch.Infrastructure
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentCommentId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProjectReaction>()
+                .Property(r => r.Type)
+                .HasConversion<string>();
         }
 
         public override int SaveChanges()
@@ -68,7 +72,7 @@ namespace Scratch.Infrastructure
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<ProjectLike> ProjectLikes { get; set; }
+        public DbSet<ProjectReaction> ProjectLikes { get; set; }
         public DbSet<ProjectComment> ProjectComments { get; set; }
         public DbSet<UserBan> UserBans { get; set; }
         public DbSet<ProjectReport> ProjectReports { get; set; }

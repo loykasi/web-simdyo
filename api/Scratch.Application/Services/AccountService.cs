@@ -169,7 +169,7 @@ namespace Scratch.Application.Services
             var (jwtToken, expirationDateInUtc) = await authTokenProcessor.GenerateJwtToken(user);
             refreshTokenModel = authTokenProcessor.GenerateRefreshToken(user, refreshToken);
 
-            await userManager.UpdateAsync(user);
+            await unitOfWork.SaveChangesAsync();
 
             cookieService.SetToken("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
             cookieService.SetToken("REFRESH_TOKEN", refreshTokenModel.Token, refreshTokenModel.RefreshTokenExpriresAtUTC);

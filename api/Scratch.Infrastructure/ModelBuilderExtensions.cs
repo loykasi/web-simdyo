@@ -132,7 +132,6 @@ namespace Scratch.Infrastructure
                 entity.Property(p => p.ThumbnailLink).HasColumnName("LinkAnh");
                 entity.Property(p => p.CategoryId).HasColumnName("IdDanhMuc");
                 entity.Property(p => p.UserId).HasColumnName("IdNguoiDung");
-                entity.Property(p => p.LikeCount).HasColumnName("LuotThich");
                 entity.Property(p => p.DeletedAt).HasColumnName("NgayXoa");
                 entity.Property(u => u.CreatedAt).HasColumnName("NgayTao");
                 entity.Property(u => u.UpdatedAt).HasColumnName("NgayCapNhat");
@@ -154,7 +153,7 @@ namespace Scratch.Infrastructure
             });
 
             // PROJECT LIKES
-            builder.Entity<ProjectLike>(entity =>
+            builder.Entity<ProjectReaction>(entity =>
             {
                 entity.ToTable("LuotThichDuAn");
 

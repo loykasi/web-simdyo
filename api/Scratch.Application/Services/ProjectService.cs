@@ -28,7 +28,7 @@ namespace Scratch.Application.Services
             return Result.Success(response);
         }
 
-        public async Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(GetProjectsParameters query)
+        public async Task<Result<Pagination<ProjectResponse>>> GetProjectsAsync(GetProjectsQuery query)
         {
             var response = await unitOfWork.ProjectRepository.GetProjects(query);
 
@@ -71,15 +71,15 @@ namespace Scratch.Application.Services
 
         public async Task<Result<ProjectResponse>> Get(string publicId)
         {
-            if (!DecodeId(publicId, out int projectId))
+            if (!publicIdService.TryDecodeId(publicId, out int projectId))
             {
                 return Result.NotFound<ProjectResponse>
                 (
                     new Error("Project.InvalidPublicId", "Invalid public ID.")
                 );
             }
-
-            var project = await unitOfWork.ProjectRepository.GetById(projectId);
+            
+            var project = await unitOfWork.ProjectRepository.GetDetailById(projectId);
             if (project == null)
             {
                 return Result.NotFound<ProjectResponse>
@@ -88,37 +88,20 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var isBanned = await unitOfWork.ProjectBanRepository.GetBanStatus(project.Id);
-            string userId = currentUserService.GetUserID();
+            //var isBanned = await unitOfWork.ProjectBanRepository.GetBanStatus(project.Id);
+            var user = await currentUserService.GetUserAsync();
 
-            if (!string.IsNullOrEmpty(userId))
+            if (user != null)
             {
-                var user = await userManager.FindByIdAsync(userId);
-                if (user != null && project.UserId == user.Id && isBanned)
+                if (user != null && project.Username == user.UserName && project.IsBanned)
                 {
-                    return Result.Success
-                    (
-                        new ProjectResponse
-                        (
-                            project.PublicId,
-                            project.Name,
-                            project.Description,
-                            project.Category.Name,
-                            string.Empty,
-                            string.Empty,
-                            project.User.UserName,
-                            project.LikeCount,
-                            true,
-                            project.CreatedAt.ToString("o"),
-                            project.DeletedAt.HasValue ? project.DeletedAt.Value.ToString("o") : null
-                        )
-                    );
+                    return Result.Success(project);
                 }
 
-                return Result.Success(project.ToProjectResponse());
+                return Result.Success(project);
             }
 
-            if (project.DeletedAt.HasValue || isBanned)
+            if (!string.IsNullOrEmpty(project.DeletedAt) || project.IsBanned)
             {
                 return Result.NotFound<ProjectResponse>
                 (
@@ -126,7 +109,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            return Result.Success(project.ToProjectResponse());
+            return Result.Success(project);
         }
 
         public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)
@@ -156,7 +139,7 @@ namespace Scratch.Application.Services
             Project project = new()
             {
                 Name = addProjectRequest.Title,
-                SortDescription = addProjectRequest.ShortDescription,
+                ShortDescription = addProjectRequest.ShortDescription,
                 Description = addProjectRequest.Description,
                 Category = category,
                 User = user
@@ -174,31 +157,23 @@ namespace Scratch.Application.Services
             return Result.Success(project.ToProjectResponse());
         }
 
-        public async Task<Result<ProjectResponse>> Update(string publicId, UpdateProjectRequest updateProjectRequest)
+        public async Task<Result> Update(string publicId, UpdateProjectRequest updateProjectRequest)
         {
             string userID = currentUserService.GetUserID();
 
             var user = await userManager.FindByIdAsync(userID);
             if (user == null)
             {
-                return Result.NotFound<ProjectResponse>
+                return Result.NotFound
                 (
                     new Error("Profile.InvalidUserToken", "Invalid token")
                 );
             }
 
-            if (!DecodeId(publicId, out int projectId))
-            {
-                return Result.NotFound<ProjectResponse>
-                (
-                    new Error("Project.InvalidPublicId", "Invalid public ID.")
-                );
-            }
-
-            var project = await unitOfWork.ProjectRepository.GetById(projectId);
+            var project = await publicIdService.GetProject(publicId);
             if (project == null)
             {
-                return Result.NotFound<ProjectResponse>
+                return Result.NotFound
                 (
                     new Error("Project.NotFound", $"No project with id: {publicId}.")
                 );
@@ -206,15 +181,14 @@ namespace Scratch.Application.Services
 
             if (project.UserId != user.Id)
             {
-                return Result.NotFound<ProjectResponse>
+                return Result.NotFound
                 (
                     new Error("Project.Unauthorized", $"Cannot delete project with id: {publicId}.")
                 );
             }
-
-            
             
             project.Name = updateProjectRequest.Title;
+            project.ShortDescription = updateProjectRequest.ShortDescription;
             project.Description = updateProjectRequest.Description;
 
             if (updateProjectRequest.Category != null)
@@ -222,7 +196,7 @@ namespace Scratch.Application.Services
                 var category = await unitOfWork.ProjectCategoryRepository.GetByName(updateProjectRequest.Category);
                 if (category == null)
                 {
-                    return Result.NotFound<ProjectResponse>
+                    return Result.NotFound
                     (
                         new Error("Category.Invalid", "Invalid category")
                     );
@@ -245,7 +219,7 @@ namespace Scratch.Application.Services
 
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success(project.ToProjectResponse());
+            return Result.Success();
         }
 
         public async Task<Result> Delete(string publicId)
@@ -261,15 +235,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            if (!DecodeId(publicId, out int projectId))
-            {
-                return Result.NotFound<ProjectResponse>
-                (
-                    new Error("Project.InvalidPublicId", "Invalid public ID.")
-                );
-            }
-
-            var project = await unitOfWork.ProjectRepository.GetById(projectId);
+            var project = await publicIdService.GetProject(publicId);
             if (project == null)
             {
                 return Result.NotFound<ProjectResponse>
@@ -305,15 +271,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            if (!DecodeId(publicId, out int projectId))
-            {
-                return Result.NotFound<ProjectResponse>
-                (
-                    new Error("Project.InvalidPublicId", "Invalid public ID.")
-                );
-            }
-
-            var project = await unitOfWork.ProjectRepository.GetById(projectId);
+            var project = await publicIdService.GetProject(publicId);
             if (project == null)
             {
                 return Result.NotFound<ProjectResponse>
@@ -334,21 +292,6 @@ namespace Scratch.Application.Services
             await unitOfWork.SaveChangesAsync();
 
             return Result.Success();
-        }
-
-        private bool DecodeId(string publicId, out int id)
-        {
-            id = 0;
-            if (publicIdService.Decode(publicId) is [int decodedId] &&
-                publicId == publicIdService.Encode(decodedId))
-            {
-                id = decodedId;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

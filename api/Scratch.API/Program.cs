@@ -9,6 +9,8 @@ using Scratch.API.Handlers;
 using Scratch.Infrastructure;
 using Scratch.Infrastructure.Options;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,7 +77,15 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)
+        );
+    });
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
