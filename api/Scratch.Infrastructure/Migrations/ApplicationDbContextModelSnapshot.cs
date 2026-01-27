@@ -184,7 +184,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectBan", b =>
@@ -228,7 +228,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("RevokedByUserId");
 
-                    b.ToTable("ProjectBans");
+                    b.ToTable("ProjectBans", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectCategory", b =>
@@ -251,7 +251,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectCategories");
+                    b.ToTable("ProjectCategories", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectComment", b =>
@@ -294,7 +294,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectComments");
+                    b.ToTable("ProjectComments", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectReaction", b =>
@@ -327,7 +327,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectLikes");
+                    b.ToTable("ProjectLikes", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.ProjectReport", b =>
@@ -364,7 +364,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectReports");
+                    b.ToTable("ProjectReports", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.RefreshToken", b =>
@@ -389,7 +389,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Scratch.Domain.Entities.Role", b =>
@@ -539,7 +539,7 @@ namespace Scratch.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserBans");
+                    b.ToTable("UserBans", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

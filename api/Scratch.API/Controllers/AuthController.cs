@@ -1,14 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Models.Emails;
+using Scratch.Domain.Entities;
 using Scratch.Domain.Requests;
 using Scratch.Domain.Responses;
 using Scratch.Domain.Results;
+using System.Web;
 
 namespace Scratch.API.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthController(IAccountService accountService) : BaseController
+    public class AuthController(IAccountService accountService, IEmailService emailService) : BaseController
     {
         [HttpPost]
         [Route("register")]

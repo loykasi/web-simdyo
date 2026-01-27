@@ -29,7 +29,7 @@ public static class ServiceExtension
         services.AddScoped<IProjectCategoryService, ProjectCategoryService>();
 
         services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
-        services.AddScoped<IEmailSender, EmailSender>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IPublicIdService, PublicIdService>();

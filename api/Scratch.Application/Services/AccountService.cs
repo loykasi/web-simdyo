@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Scratch.Application.Abstracts;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Models.Emails;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Exceptions;
@@ -17,7 +18,7 @@ namespace Scratch.Application.Services
         IAuthTokenProcessor authTokenProcessor,
         IUnitOfWork unitOfWork,
         UserManager<User> userManager,
-        IEmailSender emailSender,
+        IEmailService emailSender,
         IConfiguration configuration,
         ICurrentUserService currentUserService,
         ICookieService cookieService
@@ -56,9 +57,7 @@ namespace Scratch.Application.Services
                 );
             }
             
-            // add to send email queue task
-            string token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            await SendConfirmationEmail(user, token);
+            await SendConfirmationEmail(user);
 
             return Result.Success(
                 new RegisterResponse("Registration successful. Please check your email to verify your account.")
@@ -194,9 +193,7 @@ namespace Scratch.Application.Services
                 );
             }
 
-            var token = await userManager.GeneratePasswordResetTokenAsync(user);
-
-            await SendPasswordResetEmail(user, token);
+            await SendPasswordResetEmail(user);
 
             return Result.Success();
         }
@@ -227,23 +224,47 @@ namespace Scratch.Application.Services
             return Result.Success();
         }
 
-        private async Task SendConfirmationEmail(User user, string token)
+        private async Task SendConfirmationEmail(User user)
         {
+            string token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
             string baseUrl = configuration.GetSection("URL")["Web"]!;
             string url = $"{baseUrl}/confirm-email?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
-            string body = $"Click link to verify your account: <a href=\"{url}\" target=\"_blank\" >Click here</a><br/><div>{url}</div>";
 
-            await emailSender.Send(user.UserName!, user.Email!, "Account Verification", body);
+            EmailMessage emailMessage = new()
+            {
+                ToName = user.Username,
+                ToEmail = user.Email!,
+                Subject = "Account Verification",
+                TemplateName = "ConfirmationMail.html",
+                Placeholders =
+                [
+                    new("url", url)
+                ]
+            };
+
+            emailSender.Send(emailMessage);
         }
 
-        private async Task SendPasswordResetEmail(User user, string token)
+        private async Task SendPasswordResetEmail(User user)
         {
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
             string baseUrl = configuration.GetSection("URL")["Web"]!;
             string url = $"{baseUrl}/reset-password?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
-            string body = $"Click link to reset your password: <a href=\"{url}\" target=\"_blank\" >Click here</a>" +
-                $"\ntoken: {token}";
+            
+            EmailMessage emailMessage = new()
+            {
+                ToName = user.Username,
+                ToEmail = user.Email!,
+                Subject = "Reset Password",
+                TemplateName = "ResetPasswordMail.html",
+                Placeholders =
+                [
+                    new("url", url)
+                ]
+            };
 
-            await emailSender.Send(user.UserName!, user.Email!, "Reset Password", body);
+            emailSender.Send(emailMessage);
         }
 
         public async Task<Result<AuthUserResponse>> GetCurrentUser()

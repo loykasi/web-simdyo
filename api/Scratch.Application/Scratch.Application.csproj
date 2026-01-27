@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Scratch.Domain\Scratch.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Utilities\" />
-  </ItemGroup>
-
 </Project>

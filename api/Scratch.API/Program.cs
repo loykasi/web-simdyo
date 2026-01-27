@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
+using Hangfire;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Scratch.API.Extensions;
 using Scratch.API.Handlers;
@@ -37,6 +35,8 @@ builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddAuthorization(builder.Configuration);
 builder.Services.SetupCors();
 builder.Services.SetupServices();
+
+builder.Services.AddBackgroundJobsServices(builder.Configuration);
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -96,6 +96,12 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(options =>
     {
         options.WithTitle("API");
+    });
+
+    app.UseHangfireDashboard(options: new DashboardOptions
+    {
+        Authorization = [],
+        DarkModeEnabled = true
     });
 
     await app.SeedRolesAndPermissions();
