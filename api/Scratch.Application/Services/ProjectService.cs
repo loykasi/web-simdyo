@@ -112,24 +112,26 @@ namespace Scratch.Application.Services
             return Result.Success(project);
         }
 
-        public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)
+        public async Task<Result<ProjectUploadResponse>> RequestUpload(UploadProjectRequest request)
         {
+            // TO DO: validate files size
+
             var user = await currentUserService.GetUserAsync();
             if (user == null)
             {
-                return Result.NotFound<ProjectResponse>
+                return Result.NotFound<ProjectUploadResponse>
                 (
                     new Error("Profile.InvalidUserToken", "Invalid token")
                 );
             }
 
             ProjectCategory? category = null;
-            if (addProjectRequest.Category != null)
+            if (request.Category != null)
             {
-                category = await unitOfWork.ProjectCategoryRepository.GetByName(addProjectRequest.Category);
+                category = await unitOfWork.ProjectCategoryRepository.GetByName(request.Category);
                 if (category == null)
                 {
-                    return Result.NotFound<ProjectResponse>
+                    return Result.NotFound<ProjectUploadResponse>
                     (
                         new Error("Category.Invalid", "Invalid category")
                     );
@@ -138,24 +140,98 @@ namespace Scratch.Application.Services
 
             Project project = new()
             {
-                Name = addProjectRequest.Title,
-                ShortDescription = addProjectRequest.ShortDescription,
-                Description = addProjectRequest.Description,
+                Name = request.Title,
+                ShortDescription = request.ShortDescription,
+                Description = request.Description,
                 Category = category,
                 User = user
             };
             unitOfWork.ProjectRepository.Add(project);
 
-            string id = publicIdService.Encode(project.Id);
+            project.PublicId = publicIdService.Encode(project.Id);
+            project.FileLink = objectStorageService.GetPath($"{project.PublicId}.simdyo");
+            project.ThumbnailLink = objectStorageService.GetPath($"{project.PublicId}.png");
 
-            project.PublicId = id;
-            project.FileLink = await objectStorageService.Save(id + ".zip", addProjectRequest.ProjectFile);
-            project.ThumbnailLink = await objectStorageService.Save(id + ".png", addProjectRequest.ThumbnailFile);
+            bool isGetProjectLinkSuccess = objectStorageService.TryGetPreSignedUrl
+            (
+                $"{project.PublicId}.simdyo",
+                "application/x-simdyo",
+                request.ProjectLength,
+                out string projectPresignedUrl
+            );
+            bool isGetThumbnailLinkSuccess = objectStorageService.TryGetPreSignedUrl
+            (
+                $"{project.PublicId}.png",
+                "image/png",
+                request.ThumbnailLength,
+                out string thumbnailPresignedUrl
+            );
+
+
+            if (!isGetProjectLinkSuccess || !isGetThumbnailLinkSuccess)
+            {
+                return Result.NotFound<ProjectUploadResponse>
+                (
+                    new Error("Upload.Failure", "Request upload failed")
+                );
+            }
+
+            var uploadResponse = new ProjectUploadResponse
+            (
+                PublicId: project.PublicId,
+                ProjectPresignedUrl: projectPresignedUrl,
+                ThumbnaiPresignedUrl: thumbnailPresignedUrl
+            );
 
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success(project.ToProjectResponse());
+            return Result.Success(uploadResponse);
         }
+
+        //public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)
+        //{
+        //    var user = await currentUserService.GetUserAsync();
+        //    if (user == null)
+        //    {
+        //        return Result.NotFound<ProjectResponse>
+        //        (
+        //            new Error("Profile.InvalidUserToken", "Invalid token")
+        //        );
+        //    }
+
+        //    ProjectCategory? category = null;
+        //    if (addProjectRequest.Category != null)
+        //    {
+        //        category = await unitOfWork.ProjectCategoryRepository.GetByName(addProjectRequest.Category);
+        //        if (category == null)
+        //        {
+        //            return Result.NotFound<ProjectResponse>
+        //            (
+        //                new Error("Category.Invalid", "Invalid category")
+        //            );
+        //        }
+        //    }
+
+        //    Project project = new()
+        //    {
+        //        Name = addProjectRequest.Title,
+        //        ShortDescription = addProjectRequest.ShortDescription,
+        //        Description = addProjectRequest.Description,
+        //        Category = category,
+        //        User = user
+        //    };
+        //    unitOfWork.ProjectRepository.Add(project);
+
+        //    string id = publicIdService.Encode(project.Id);
+
+        //    project.PublicId = id;
+        //    project.FileLink = await objectStorageService.Save(id + ".zip", addProjectRequest.ProjectFile);
+        //    project.ThumbnailLink = await objectStorageService.Save(id + ".png", addProjectRequest.ThumbnailFile);
+
+        //    await unitOfWork.SaveChangesAsync();
+
+        //    return Result.Success(project.ToProjectResponse());
+        //}
 
         public async Task<Result> Update(string publicId, UpdateProjectRequest updateProjectRequest)
         {

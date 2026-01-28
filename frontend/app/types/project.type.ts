@@ -1,9 +1,16 @@
 export interface UploadProjectRequest {
     title: string;
+    shortDescription: string;
     description: string;
-    category: string;
-    projectFile: File;
-    thumbnailFile: File;
+    category: string | null;
+    projectLength: string;
+    thumbnailLength: string;
+}
+
+export interface UploadProjectResponse {
+    publicId: string,
+    projectPresignedUrl: string,
+    thumbnaiPresignedUrl: string
 }
 
 export interface ProjectResponse {

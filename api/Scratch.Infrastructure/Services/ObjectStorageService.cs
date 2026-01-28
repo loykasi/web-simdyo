@@ -46,5 +46,35 @@ namespace Scratch.Infrastructure.Services
 
             return _s3Path + name;
         }
+
+        public string GetPath(string name)
+        {
+            return _s3Path + name;
+        }
+
+        public bool TryGetPreSignedUrl(string name, string contentType, string contentLength, out string preSignedUrl)
+        {
+            try
+            {
+                var request = new GetPreSignedUrlRequest
+                {
+                    BucketName = _options.Bucket,
+                    Key = name,
+                    Expires = DateTime.UtcNow.AddMinutes(2),
+                    Verb = HttpVerb.PUT,
+                    ContentType = contentType,
+                };
+
+                request.Headers["Content-Length"] = contentLength;
+
+                preSignedUrl = _s3Client.GetPreSignedURL(request);
+                return true;
+            }
+            catch (AmazonS3Exception)
+            {
+                preSignedUrl = string.Empty;
+                return false;
+            }
+        }
     }
 }

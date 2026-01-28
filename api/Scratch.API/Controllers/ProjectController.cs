@@ -51,9 +51,9 @@ namespace Scratch.API.Controllers
         [HttpPost]
         [Authorize]
         [Route("upload")]
-        public async Task<IActionResult> UploadProject(UploadProjectRequest uploadProjectRequest)
+        public async Task<IActionResult> RequestUpload(UploadProjectRequest uploadProjectRequest)
         {
-            var result = await projectService.Upload(uploadProjectRequest);
+            var result = await projectService.RequestUpload(uploadProjectRequest);
 
             return ToApiResult(result);
         }

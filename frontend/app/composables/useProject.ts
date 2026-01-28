@@ -1,8 +1,8 @@
-import type { ProjectResponse, UploadProjectRequest } from "~/types/project.type";
+import type { ProjectResponse, UploadProjectRequest, UploadProjectResponse } from "~/types/project.type";
 
 export function useProject() {
-    async function upload(payload: FormData) {
-        return useAPI<ProjectResponse>("projects/upload", {
+    async function upload(payload: UploadProjectRequest) {
+        return useAPI<UploadProjectResponse>("projects/upload", {
             method: "POST",
             body: payload
         });

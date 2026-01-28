@@ -12,7 +12,8 @@ namespace Scratch.Application.Interfaces.Repositories
         Task<Result<Pagination<ProjectResponse>>> GetUserProjects(string userName, PaginationQuery parameter);
         Task<Result<Pagination<ProjectResponse>>> GetUserTrashAsync(PaginationQuery parameter);
         Task<Result<ProjectResponse>> Get(string id);
-        Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest);
+        Task<Result<ProjectUploadResponse>> RequestUpload(UploadProjectRequest addProjectRequest);
+        //Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest);
         Task<Result> Update(string publicId, UpdateProjectRequest updateProjectRequest);
         Task<Result> Delete(string id);
         Task<Result> Undelete(string id);
