@@ -2,13 +2,19 @@
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { useProject } from '~/composables/useProject';
-import type { ProjectResponse } from '~/types/project.type';
+import type { ProjectResponse, UpdateProjectRequest, UploadProjectResponse } from '~/types/project.type';
+
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 15MB
 
 const route = useRoute();
 const projectId = route.params.id as string;
 
 const toast = useToast();
 const { update } = useProject();
+const onSaveProcess = ref(false);
+const thumbnailUploadProgress = ref(0);
+const projectUploadProgress = ref(0);
 
 const { data: categories, pending: categoryPending } = await useLazyAsyncData(
 	"projectCategories",
@@ -18,13 +24,10 @@ const { data: categories, pending: categoryPending } = await useLazyAsyncData(
 );
 
 watchEffect(() => {
-    if (categories.value && categories.value[0] !== "Default") {
-        categories.value = ["Default", ...categories.value];
-    }
+  if (categories.value && categories.value[0] !== "Default") {
+    categories.value = ["Default", ...categories.value];
+  }
 })
-
-const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
-const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 15MB
 
 const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -42,107 +45,122 @@ const schema = z.object({
   category: z.string().default(""),
   projectFile: z
     .instanceof(File, {
-        message: 'Please select a file.'
+      message: 'Please select a file.'
     })
     .refine((file) => file.size <= MAX_PROJECT_FILE_SIZE, {
-        message: `The project is too large. Please choose a project smaller than ${formatBytes(MAX_PROJECT_FILE_SIZE)}.`
-    }),
+      message: `The project is too large. Please choose a project smaller than ${formatBytes(MAX_PROJECT_FILE_SIZE)}.`
+    })
+    .optional(),
   thumbnailFile: z
     .instanceof(File, {
-        message: 'Please select a file.'
+      message: 'Please select a file.'
     })
     .refine((file) => file.size <= MAX_FILE_SIZE, {
-        message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
+      message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
     })
+    .optional()
 })
 
 type schema = z.output<typeof schema>
-
 const state = reactive<Partial<schema>>({
-    projectFile: undefined,
-    thumbnailFile: undefined,
-    category: "Default"
+  projectFile: undefined,
+  thumbnailFile: undefined,
+  category: "Default"
 })
 
 function createObjectUrl(file: File): string {
-    return URL.createObjectURL(file)
+  return URL.createObjectURL(file)
 }
-
-const loading = ref(false);
 
 async function onSubmit(event: FormSubmitEvent<schema>) {
-    const payload = new FormData();
-    payload.append("title", event.data.title);
-    payload.append("shortDescription", event.data.description);
-    payload.append("description", event.data.description);
+  const payload: UpdateProjectRequest = {
+    title: event.data.title,
+    shortDescription: event.data.shortDescription,
+    description: event.data.description,
+    category: event.data.category === "Default"
+      ? null
+      : event.data.category,
+    projectLength: event.data.projectFile
+      ? event.data.projectFile.size
+      : null,
+    thumbnailLength: event.data.thumbnailFile
+      ? event.data.thumbnailFile.size
+      : null
+  }
 
-    if (event.data.category !== "Default") {
-        payload.append("category", event.data.category);
-    }
+    // const payload = new FormData();
+    // payload.append("title", event.data.title);
+    // payload.append("shortDescription", event.data.description);
+    // payload.append("description", event.data.description);
 
-    if (event.data.projectFile !== undefined) {
-        payload.append("projectFile", event.data.projectFile);
-    }
+    // if (event.data.category !== "Default") {
+    //     payload.append("category", event.data.category);
+    // }
 
-    if (event.data.thumbnailFile !== undefined) {
-        payload.append("thumbnailFile", event.data.thumbnailFile);
-    }
+    // if (event.data.projectFile !== undefined) {
+    //     payload.append("projectFile", event.data.projectFile);
+    // }
 
-    loading.value = true;
-    update(projectId, payload)
-        .then((res) => {
-            navigateTo(`/projects/${res.publicId}`);
-        })
-        .catch((error) => {
-            toast.add({
-                title: "Failed",
-                description: "Something wrong!",
-                color: "error",
-            })
-        })
-        .finally(() => {
-            loading.value = false;
-        });
+    // if (event.data.thumbnailFile !== undefined) {
+    //     payload.append("thumbnailFile", event.data.thumbnailFile);
+    // }
+
+  onSaveProcess.value = true;
+  update(projectId, payload)
+    .then((res) => {
+      uploadFiles(res);
+    })
+    .catch((error) => {
+      onSaveProcess.value = false;
+      toast.add({
+        title: "Failed",
+        description: "Something wrong!",
+        color: "error",
+      });
+    })
 }
 
+async function uploadFiles(data: UploadProjectResponse) {
+  try {
+    await Promise.all([
+      usePreSignedUpload(data.thumbnaiPresignedUrl, "image/png", state.thumbnailFile, thumbnailUploadProgress),
+      usePreSignedUpload(data.projectPresignedUrl, "application/x-simdyo", state.projectFile, projectUploadProgress)
+    ]);
 
-// const { data: project, pending: projectPending } = await useAsyncData(
-// 	`project.${projectId}`,
-// 	() => useAPI<ProjectResponse>(`projects/${projectId}`, {
-// 		method: "GET",
-// 	}),
-//     {
-//         server: false,
-//         lazy: true
-//     }
-// );
-
-// watchEffect(() => {
-//     if (!projectPending.value && project) {
-//         console.log(project.value);
-//         state.title = project.value?.title;
-//         state.description = project.value?.description;
-//         state.category = project.value?.category;
-//     }
-// })
+    toast.add({
+      title: "Success",
+      description: "Save successful!",
+      color: "success",
+    })
+  } catch (error) {
+    toast.add({
+      title: "Failed",
+      description: "Something wrong!",
+      color: "error",
+    })
+  } finally {
+    onSaveProcess.value = false;
+    navigateTo(`/projects/${data.publicId}`);
+  }
+}
 
 const projectPending = ref(true);
 const defaultThumbnail = ref("https://placehold.co/400");
 onMounted(() => {
-    useAPI<ProjectResponse>(`projects/${projectId}`, {
+  useAPI<ProjectResponse>(`projects/${projectId}`, {
 		method: "GET",
 	}).then(res => {
-        console.log("run");
-        state.title = res.title;
-        state.shortDescription = res.shortDescription;
-        state.description = res.description;
-        state.category = res.category ?? "Default";
-        defaultThumbnail.value = res.thumbnailLink;
-    }).catch(err => {
+      console.log("run");
+      state.title = res.title;
+      state.shortDescription = res.shortDescription;
+      state.description = res.description;
+      state.category = res.category ?? "Default";
+      defaultThumbnail.value = res.thumbnailLink;
+  }).catch(err => {
 
-    }).finally(() => {
-        projectPending.value = false;
-    })
+  }).finally(() => {
+      projectPending.value = false;
+  })
 })
 
 const headTitle = computed(() => `${state.title || route.fullPath} - Edit`);
@@ -295,6 +313,11 @@ useHead({
                 />
               </div>
             </UFileUpload>
+            <UProgress
+              v-if="onSaveProcess"
+              v-model="thumbnailUploadProgress"
+              class="mt-1"
+            />
           </UFormField>
         
           <UFormField
@@ -325,6 +348,11 @@ useHead({
                 />
               </template>
             </UFileUpload>
+            <UProgress
+              v-if="onSaveProcess"
+              v-model="projectUploadProgress"
+              class="mt-1"
+            />
           </UFormField>
         </div>
 
@@ -360,7 +388,7 @@ useHead({
               />
             </UFormField>
           
-        <UButton type="submit" class="mt-4" :loading="loading">
+        <UButton type="submit" class="mt-4" :loading="onSaveProcess">
           Save
         </UButton>
       </UForm>

@@ -4,6 +4,7 @@ import type { FormSubmitEvent } from '@nuxt/ui';
 import { useProject } from '~/composables/useProject';
 import JSZip from 'jszip';
 import type { UploadProjectRequest, UploadProjectResponse } from '~/types/project.type';
+import { usePreSignedUpload } from '~/composables/usePreSignedUpload';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 15MB
@@ -72,15 +73,14 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
     category: event.data.category === "Default"
       ? null
       : event.data.category,
-    projectLength: event.data.projectFile.size.toString(),
-    thumbnailLength: event.data.thumbnailFile.size.toString()
+    projectLength: event.data.projectFile.size,
+    thumbnailLength: event.data.thumbnailFile.size
   }
 
   onUploadProcess.value = true;
   upload(payload)
     .then((res) => {
-      console.log(res);
-      uploadFiles(res)
+      uploadFiles(res);
     })
     .catch((error) => {
       onUploadProcess.value = false;
@@ -88,18 +88,25 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
         title: "Failed",
         description: "Something wrong!",
         color: "error",
-      })
+      });
     })
 }
 
-async function uploadFiles(data: UploadProjectResponse)
-{
-  if (!state.thumbnailFile || !state.projectFile) return;
+async function uploadFiles(data: UploadProjectResponse) {
+  if (!state.thumbnailFile || !state.projectFile) {
+    onUploadProcess.value = false;
+    toast.add({
+      title: "Failed",
+      description: "File upload failed!",
+      color: "error",
+    });
+    return;
+  }
 
   try {
     await Promise.all([
-      uploadWithProgress(data.thumbnaiPresignedUrl, "image/png", state.thumbnailFile, thumbnailUploadProgress),
-      uploadWithProgress(data.projectPresignedUrl, "application/x-simdyo", state.projectFile, projectUploadProgress)
+      usePreSignedUpload(data.thumbnaiPresignedUrl, "image/png", state.thumbnailFile, thumbnailUploadProgress),
+      usePreSignedUpload(data.projectPresignedUrl, "application/x-simdyo", state.projectFile, projectUploadProgress)
     ]);
 
     toast.add({
@@ -117,32 +124,6 @@ async function uploadFiles(data: UploadProjectResponse)
     onUploadProcess.value = false;
     navigateTo(`/projects/${data.publicId}`);
   }
-}
-
-async function uploadWithProgress(url: string, contentType: string, file: File, progress: globalThis.Ref<number, number>) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-Type", contentType);
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        progress.value = (event.loaded / event.total) * 100;
-      }
-    }
-
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(xhr.response);
-      } else {
-        reject(new Error(`Upload failed with status ${xhr.status}`));
-      }
-    }
-
-    xhr.onerror = () => reject(new Error("Network error occurred"));
-
-    xhr.send(file);
-  })
 }
 
 function createObjectUrl(file: File): string {
@@ -288,37 +269,37 @@ definePageMeta({
           </UFormField>
         </div>
 
-            <UFormField :label="$t('upload.title')" name="title">
-              <UInput v-model="state.title" class="w-full mt-2" />
-            </UFormField>
+        <UFormField :label="$t('upload.title')" name="title">
+          <UInput v-model="state.title" class="w-full mt-2" />
+        </UFormField>
 
-            <UFormField :label="$t('upload.shortDescription')" name="shortDescription">
-              <UInput v-model="state.shortDescription" class="w-full mt-2" />
-            </UFormField>
+        <UFormField :label="$t('upload.shortDescription')" name="shortDescription">
+          <UInput v-model="state.shortDescription" class="w-full mt-2" />
+        </UFormField>
 
-            <UFormField :label="$t('upload.category')" name="category">
-              <USelect
-                v-model="state.category"
-                :items="categories"
-                :loading="categoryPending"
-                class="w-full mt-2"
-              >
-                <template #default="{ modelValue }">
-                  {{ modelValue }}
-                </template>
-                <template #item-label="{ item }">
-                  {{ $t(item) }}
-                </template>
-              </USelect>
-            </UFormField>
+        <UFormField :label="$t('upload.category')" name="category">
+          <USelect
+            v-model="state.category"
+            :items="categories"
+            :loading="categoryPending"
+            class="w-full mt-2"
+          >
+            <template #default="{ modelValue }">
+              {{ modelValue }}
+            </template>
+            <template #item-label="{ item }">
+              {{ $t(item) }}
+            </template>
+          </USelect>
+        </UFormField>
 
-            <UFormField :label="$t('upload.description')" name="description">
-              <UTextarea
-                v-model="state.description"
-                class="w-full mt-2"
-                autoresize
-              />
-            </UFormField>
+        <UFormField :label="$t('upload.description')" name="description">
+          <UTextarea
+            v-model="state.description"
+            class="w-full mt-2"
+            autoresize
+          />
+        </UFormField>
           
         <UButton type="submit" class="mt-4" :loading="onUploadProcess">
           {{ $t('upload.upload') }}

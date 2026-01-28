@@ -18,6 +18,9 @@ namespace Scratch.Application.Services
         IPublicIdService publicIdService
     ) : IProjectService
     {
+        private const long _thumbnailSizeLimit = 2 * 1024 * 1024;
+        private const long _projectSizeLimit = 15 * 1024 * 1024;
+
         public async Task<Result<Pagination<ProjectResponse>>> GetAll(
             string? filter,
             int? page = null,
@@ -112,14 +115,22 @@ namespace Scratch.Application.Services
             return Result.Success(project);
         }
 
-        public async Task<Result<ProjectUploadResponse>> RequestUpload(UploadProjectRequest request)
+        public async Task<Result<UploadProjectResponse>> RequestUpload(UploadProjectRequest request)
         {
             // TO DO: validate files size
+            if (request.ThumbnailLength > _thumbnailSizeLimit||
+                request.ProjectLength > _projectSizeLimit)
+            {
+                return Result.BadRequest<UploadProjectResponse>
+                (
+                    new Error("Profile.Validation", "File size exceeds limit")
+                );
+            }
 
             var user = await currentUserService.GetUserAsync();
             if (user == null)
             {
-                return Result.NotFound<ProjectUploadResponse>
+                return Result.NotFound<UploadProjectResponse>
                 (
                     new Error("Profile.InvalidUserToken", "Invalid token")
                 );
@@ -131,7 +142,7 @@ namespace Scratch.Application.Services
                 category = await unitOfWork.ProjectCategoryRepository.GetByName(request.Category);
                 if (category == null)
                 {
-                    return Result.NotFound<ProjectUploadResponse>
+                    return Result.NotFound<UploadProjectResponse>
                     (
                         new Error("Category.Invalid", "Invalid category")
                     );
@@ -148,35 +159,37 @@ namespace Scratch.Application.Services
             };
             unitOfWork.ProjectRepository.Add(project);
 
+            string projectName = $"{project.PublicId}_{GetUniqueHash}.simdyo";
+            string thumbnailName = $"{project.PublicId}_{GetUniqueHash}.png";
+
             project.PublicId = publicIdService.Encode(project.Id);
-            project.FileLink = objectStorageService.GetPath($"{project.PublicId}.simdyo");
-            project.ThumbnailLink = objectStorageService.GetPath($"{project.PublicId}.png");
+            project.FileLink = objectStorageService.GetPath(projectName);
+            project.ThumbnailLink = objectStorageService.GetPath(thumbnailName);
 
             bool isGetProjectLinkSuccess = objectStorageService.TryGetPreSignedUrl
             (
-                $"{project.PublicId}.simdyo",
+                projectName,
                 "application/x-simdyo",
                 request.ProjectLength,
                 out string projectPresignedUrl
             );
             bool isGetThumbnailLinkSuccess = objectStorageService.TryGetPreSignedUrl
             (
-                $"{project.PublicId}.png",
+                thumbnailName,
                 "image/png",
                 request.ThumbnailLength,
                 out string thumbnailPresignedUrl
             );
 
-
             if (!isGetProjectLinkSuccess || !isGetThumbnailLinkSuccess)
             {
-                return Result.NotFound<ProjectUploadResponse>
+                return Result.NotFound<UploadProjectResponse>
                 (
                     new Error("Upload.Failure", "Request upload failed")
                 );
             }
 
-            var uploadResponse = new ProjectUploadResponse
+            var uploadResponse = new UploadProjectResponse
             (
                 PublicId: project.PublicId,
                 ProjectPresignedUrl: projectPresignedUrl,
@@ -188,59 +201,23 @@ namespace Scratch.Application.Services
             return Result.Success(uploadResponse);
         }
 
-        //public async Task<Result<ProjectResponse>> Upload(UploadProjectRequest addProjectRequest)
-        //{
-        //    var user = await currentUserService.GetUserAsync();
-        //    if (user == null)
-        //    {
-        //        return Result.NotFound<ProjectResponse>
-        //        (
-        //            new Error("Profile.InvalidUserToken", "Invalid token")
-        //        );
-        //    }
-
-        //    ProjectCategory? category = null;
-        //    if (addProjectRequest.Category != null)
-        //    {
-        //        category = await unitOfWork.ProjectCategoryRepository.GetByName(addProjectRequest.Category);
-        //        if (category == null)
-        //        {
-        //            return Result.NotFound<ProjectResponse>
-        //            (
-        //                new Error("Category.Invalid", "Invalid category")
-        //            );
-        //        }
-        //    }
-
-        //    Project project = new()
-        //    {
-        //        Name = addProjectRequest.Title,
-        //        ShortDescription = addProjectRequest.ShortDescription,
-        //        Description = addProjectRequest.Description,
-        //        Category = category,
-        //        User = user
-        //    };
-        //    unitOfWork.ProjectRepository.Add(project);
-
-        //    string id = publicIdService.Encode(project.Id);
-
-        //    project.PublicId = id;
-        //    project.FileLink = await objectStorageService.Save(id + ".zip", addProjectRequest.ProjectFile);
-        //    project.ThumbnailLink = await objectStorageService.Save(id + ".png", addProjectRequest.ThumbnailFile);
-
-        //    await unitOfWork.SaveChangesAsync();
-
-        //    return Result.Success(project.ToProjectResponse());
-        //}
-
-        public async Task<Result> Update(string publicId, UpdateProjectRequest updateProjectRequest)
+        public async Task<Result<UploadProjectResponse>> Update(string publicId, UpdateProjectRequest request)
         {
+            if (request.ThumbnailLength > _thumbnailSizeLimit ||
+                request.ProjectLength > _projectSizeLimit)
+            {
+                return Result.BadRequest<UploadProjectResponse>
+                (
+                    new Error("Profile.Validation", "File size exceeds limit")
+                );
+            }
+
             string userID = currentUserService.GetUserID();
 
             var user = await userManager.FindByIdAsync(userID);
             if (user == null)
             {
-                return Result.NotFound
+                return Result.NotFound<UploadProjectResponse>
                 (
                     new Error("Profile.InvalidUserToken", "Invalid token")
                 );
@@ -249,7 +226,7 @@ namespace Scratch.Application.Services
             var project = await publicIdService.GetProject(publicId);
             if (project == null)
             {
-                return Result.NotFound
+                return Result.NotFound<UploadProjectResponse>
                 (
                     new Error("Project.NotFound", $"No project with id: {publicId}.")
                 );
@@ -257,22 +234,22 @@ namespace Scratch.Application.Services
 
             if (project.UserId != user.Id)
             {
-                return Result.NotFound
+                return Result.NotFound<UploadProjectResponse>
                 (
                     new Error("Project.Unauthorized", $"Cannot delete project with id: {publicId}.")
                 );
             }
             
-            project.Name = updateProjectRequest.Title;
-            project.ShortDescription = updateProjectRequest.ShortDescription;
-            project.Description = updateProjectRequest.Description;
+            project.Name = request.Title;
+            project.ShortDescription = request.ShortDescription;
+            project.Description = request.Description;
 
-            if (updateProjectRequest.Category != null)
+            if (request.Category != null)
             {
-                var category = await unitOfWork.ProjectCategoryRepository.GetByName(updateProjectRequest.Category);
+                var category = await unitOfWork.ProjectCategoryRepository.GetByName(request.Category);
                 if (category == null)
                 {
-                    return Result.NotFound
+                    return Result.NotFound<UploadProjectResponse>
                     (
                         new Error("Category.Invalid", "Invalid category")
                     );
@@ -281,21 +258,54 @@ namespace Scratch.Application.Services
                 project.Category = category;
             }
 
-            string name = project.PublicId;
+            string projectPresignedUrl = string.Empty;
+            string thumbnailPresignedUrl = string.Empty;
+            List<string> oldFileNames = [];
 
-            if (updateProjectRequest.ProjectFile != null)
+            if (request.ProjectLength.HasValue)
             {
-                await objectStorageService.Save(name + ".zip", updateProjectRequest.ProjectFile);
+                string projectName = $"{project.PublicId}_{GetUniqueHash}.simdyo";
+                if (objectStorageService.TryGetPreSignedUrl
+                (
+                    projectName,
+                    "application/x-simdyo",
+                    request.ProjectLength.Value,
+                    out projectPresignedUrl
+                ))
+                {
+                    oldFileNames.Add(Path.GetFileName(project.FileLink));
+                    project.FileLink = objectStorageService.GetPath(projectName);
+                }
             }
 
-            if (updateProjectRequest.ThumbnailFile != null)
+            if (request.ThumbnailLength.HasValue)
             {
-                await objectStorageService.Save(name + ".png", updateProjectRequest.ThumbnailFile);
+                string thumbnailName = $"{project.PublicId}_{GetUniqueHash}.png";
+                if (objectStorageService.TryGetPreSignedUrl
+                (
+                    thumbnailName,
+                    "image/png",
+                    request.ThumbnailLength.Value,
+                    out thumbnailPresignedUrl
+                ))
+                {
+                    oldFileNames.Add(Path.GetFileName(project.ThumbnailLink));
+                    project.ThumbnailLink = objectStorageService.GetPath(thumbnailName);
+                }
             }
+
+            var uploadResponse = new UploadProjectResponse
+            (
+                PublicId: project.PublicId,
+                ProjectPresignedUrl: projectPresignedUrl,
+                ThumbnaiPresignedUrl: thumbnailPresignedUrl
+            );
 
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success();
+            objectStorageService.DeleteJobs(oldFileNames);
+
+            return Result.Success(uploadResponse);
         }
 
         public async Task<Result> Delete(string publicId)
@@ -369,5 +379,7 @@ namespace Scratch.Application.Services
 
             return Result.Success();
         }
+
+        private string GetUniqueHash => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString("x");
     }
 }

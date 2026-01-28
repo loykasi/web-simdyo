@@ -1,10 +1,12 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Infrastructure.Options;
+using System.Threading.Tasks;
 
 namespace Scratch.Infrastructure.Services
 {
@@ -47,12 +49,38 @@ namespace Scratch.Infrastructure.Services
             return _s3Path + name;
         }
 
+        public void DeleteJobs(IEnumerable<string> names)
+        {
+            BackgroundJob.Enqueue(() => Delete(names));
+        }
+
+        public async Task<bool> Delete(IEnumerable<string> names)
+        {
+            var request = new DeleteObjectsRequest
+            {
+                BucketName = _options.Bucket,
+            };
+            foreach (var item in names)
+            {
+                request.AddKey(item);
+            }
+            try
+            {
+                await _s3Client.DeleteObjectsAsync(request);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
         public string GetPath(string name)
         {
             return _s3Path + name;
         }
 
-        public bool TryGetPreSignedUrl(string name, string contentType, string contentLength, out string preSignedUrl)
+        public bool TryGetPreSignedUrl(string name, string contentType, long contentLength, out string preSignedUrl)
         {
             try
             {
@@ -65,7 +93,7 @@ namespace Scratch.Infrastructure.Services
                     ContentType = contentType,
                 };
 
-                request.Headers["Content-Length"] = contentLength;
+                request.Headers["Content-Length"] = contentLength.ToString();
 
                 preSignedUrl = _s3Client.GetPreSignedURL(request);
                 return true;

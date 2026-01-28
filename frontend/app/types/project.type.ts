@@ -3,8 +3,17 @@ export interface UploadProjectRequest {
     shortDescription: string;
     description: string;
     category: string | null;
-    projectLength: string;
-    thumbnailLength: string;
+    projectLength: number;
+    thumbnailLength: number;
+}
+
+export interface UpdateProjectRequest {
+    title: string;
+    shortDescription: string;
+    description: string;
+    category: string | null;
+    projectLength: number | null;
+    thumbnailLength: number | null;
 }
 
 export interface UploadProjectResponse {

@@ -1,6 +1,6 @@
 ﻿namespace Scratch.Domain.Responses
 {
-    public record ProjectUploadResponse
+    public record UploadProjectResponse
     (
         string PublicId,
         string ProjectPresignedUrl,

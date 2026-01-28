@@ -1,4 +1,4 @@
-import type { ProjectResponse, UploadProjectRequest, UploadProjectResponse } from "~/types/project.type";
+import type { ProjectResponse, UpdateProjectRequest, UploadProjectRequest, UploadProjectResponse } from "~/types/project.type";
 
 export function useProject() {
     async function upload(payload: UploadProjectRequest) {
@@ -8,8 +8,8 @@ export function useProject() {
         });
     }
 
-    async function update(publicId: string, payload: FormData) {
-        return useAPI<ProjectResponse>(`projects/${publicId}`, {
+    async function update(publicId: string, payload: UpdateProjectRequest) {
+        return useAPI<UploadProjectResponse>(`projects/${publicId}`, {
             method: "PUT",
             body: payload
         });

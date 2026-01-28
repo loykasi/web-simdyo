@@ -8,7 +8,9 @@ namespace Scratch.Domain.Requests
         public required string ShortDescription { get; set; }
         public required string Description { get; set; }
         public string? Category { get; set; }
-        public IFormFile? ProjectFile { get; set; }
-        public IFormFile? ThumbnailFile { get; set; }
+        public long? ProjectLength { get; set; }
+        public long? ThumbnailLength { get; set; }
+        //public IFormFile? ProjectFile { get; set; }
+        //public IFormFile? ThumbnailFile { get; set; }
     }
 }
