@@ -10,6 +10,7 @@ const searchQuery = computed(() => route.query.q || "");
 const categoryQuery = computed(() => {
   let value = (route.params.category as string).toLowerCase();
   value = value === "all" ? "" : value;
+  return value;
 });
 
 const pageSize = 12;
