@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Scratch.Application.Interfaces.Repositories
+namespace Scratch.Application.Interfaces.Services
 {
     public interface IObjectStorageService
     {

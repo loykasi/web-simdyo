@@ -1,4 +1,4 @@
-﻿namespace Scratch.Application.Interfaces.Repositories
+﻿namespace Scratch.Application.Interfaces.Services
 {
     public interface ICookieService
     {

@@ -1,6 +1,6 @@
 ﻿using Scratch.Domain.Entities;
 
-namespace Scratch.Application.Interfaces.Repositories
+namespace Scratch.Application.Interfaces.Services
 {
     public interface IPublicIdService
     {

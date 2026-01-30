@@ -44,6 +44,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     user.value = {
 			email: res.email,
 			username: res.username,
+      isUseOTP: res.isUseOTP,
 			permissions: res.permissions
 		};
 		

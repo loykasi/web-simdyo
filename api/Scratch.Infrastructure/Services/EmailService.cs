@@ -2,7 +2,7 @@
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Models.Emails;
 using Scratch.Infrastructure.Options;
 

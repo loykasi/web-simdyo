@@ -6,4 +6,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (!isLoggedIn.value || !isPermitted(["dashboard_access"])) {
         return navigateTo('/');
     }
+
+    if (user.value?.isUseOTP) {
+        return navigateTo(`/login?redirect=${encodeURIComponent("/dashboard")}`);
+    }
 })

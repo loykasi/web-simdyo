@@ -2,15 +2,15 @@
 using Scratch.Domain.Responses;
 using Scratch.Domain.Results;
 
-namespace Scratch.Application.Interfaces.Repositories
+namespace Scratch.Application.Interfaces.Services
 {
-    public interface IAccountService
+    public interface IAuthService
     {
         Task<Result> RequestLoginAsync(string email);
         Task<Result<LoginResponse>> LoginWithOtpAsync(LoginOtpRequest request);
         Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest registerRequest);
         Task<Result> ConfirmEmail(ConfirmEmailRequest request);
-        //Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest);
+        Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest);
         Task<Result> RefreshTokenAsync(string? refreshToken);
         Task<Result> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
         Task<Result> ResetPassword(ResetPasswordRequest resetPasswordRequest);

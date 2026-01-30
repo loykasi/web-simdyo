@@ -4,6 +4,7 @@ using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Dto;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Options;
 using System.Security.Claims;
 
 namespace Scratch.Infrastructure.Respositories
@@ -66,7 +67,7 @@ namespace Scratch.Infrastructure.Respositories
                 .Select(p => new Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>()
                 {
                     RoleId = roleId,
-                    ClaimType = CustomClaimType.Permission,
+                    ClaimType = CustomClaimTypes.Permission,
                     ClaimValue = p
                 });
             dbContext.RoleClaims.AddRange(claims);

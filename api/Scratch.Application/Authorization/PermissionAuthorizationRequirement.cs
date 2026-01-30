@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Scratch.Domain.Authorizations;
+using Scratch.Domain.Options;
 
 namespace Scratch.Application.Authorization
 {
@@ -15,8 +16,22 @@ namespace Scratch.Application.Authorization
             foreach (var permission in requirement.AllowedPermissions)
             {
                 bool found = context.User.FindFirst(c =>
-                    c.Type == CustomClaimType.Permission &&
+                    c.Type == CustomClaimTypes.Permission &&
                     c.Value == permission) is not null;
+
+                // only allow dashboard access if user logged with account's password
+                if (permission == Permissions.DashboardAccess)
+                {
+                    var isUseOTPClaim = context.User.FindFirst(CustomClaimTypes.IsUseOTP)?.Value;
+                    if (bool.TryParse(isUseOTPClaim, out bool isUseOTP))
+                    {
+                        found = found && !isUseOTP;
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+                }
 
                 if (found)
                 {

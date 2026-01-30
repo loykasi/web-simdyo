@@ -32,7 +32,7 @@ const state = reactive<Partial<Schema>>({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
 	loading.value = true;
     const payload: LoginRequest = {
-        username: event.data.username,
+        email: event.data.username,
         password: event.data.password
     };
     login(payload)
@@ -40,6 +40,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 		user.value = {
 			email: res.email,
 			username: res.username,
+			isUseOTP: res.isUseOTP,
 			permissions: res.permissions
 		};
 		

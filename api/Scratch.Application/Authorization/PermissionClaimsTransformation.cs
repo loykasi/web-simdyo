@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Scratch.Application.Interfaces.Services;
-using Scratch.Domain.Authorizations;
+using Scratch.Domain.Options;
 using System.Security.Claims;
 
 namespace Scratch.Application.Authorization
@@ -30,7 +30,7 @@ namespace Scratch.Application.Authorization
             var claimsIdentity = (ClaimsIdentity)principal.Identity;
             foreach (var permission in permissions.Value!)
             {
-                claimsIdentity.AddClaim(new Claim(CustomClaimType.Permission, permission));
+                claimsIdentity.AddClaim(new Claim(CustomClaimTypes.Permission, permission));
             }
 
             return principal;

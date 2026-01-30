@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Options;
 using System.Security.Claims;
 
 namespace Scratch.API.Extensions
@@ -43,7 +44,7 @@ namespace Scratch.API.Extensions
         {
             if (claims == null || !claims.Any(c => c.Value.Equals(permission)))
             {
-                var claim = new Claim(CustomClaimType.Permission, permission);
+                var claim = new Claim(CustomClaimTypes.Permission, permission);
                 await roleManager.AddClaimAsync(
                     role,
                     claim

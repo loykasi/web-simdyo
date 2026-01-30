@@ -1,9 +1,7 @@
 ﻿using Scratch.Application.Abstracts;
-using Scratch.Application.Interfaces.Repositories;
 using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Services;
 using Scratch.Infrastructure;
-using Scratch.Infrastructure.Processors;
 using Scratch.Infrastructure.Respositories;
 using Scratch.Infrastructure.Services;
 
@@ -16,7 +14,7 @@ public static class ServiceExtension
         //services.AddScoped<IUserRespository, UserRespository>();
         //services.AddScoped<IProjectRepository, ProjectRespository>();
 
-        services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IProjectReactionService, ProjectReactionService>();
@@ -28,7 +26,7 @@ public static class ServiceExtension
         services.AddScoped<IProjectBanService, ProjectBanService>();
         services.AddScoped<IProjectCategoryService, ProjectCategoryService>();
 
-        services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
+        services.AddScoped<IAuthTokenService, AuthTokenService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();

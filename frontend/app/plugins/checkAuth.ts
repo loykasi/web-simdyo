@@ -111,6 +111,7 @@ export default defineNuxtPlugin(async () => {
             user.value = {
                 email: res.email,
                 username: res.username,
+                isUseOTP: true,
                 permissions: res.permissions
             } as AuthUser;
             

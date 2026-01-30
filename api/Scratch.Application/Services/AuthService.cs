@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Scratch.Application.Abstracts;
-using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Models.Emails;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.Entities;
@@ -13,16 +13,16 @@ using System.Web;
 
 namespace Scratch.Application.Services
 {
-    public class AccountService
+    public class AuthService
     (
-        IAuthTokenProcessor authTokenProcessor,
+        IAuthTokenService authTokenProcessor,
         IUnitOfWork unitOfWork,
         UserManager<User> userManager,
         IEmailService emailSender,
         IConfiguration configuration,
         ICurrentUserService currentUserService,
         ICookieService cookieService
-    ) : IAccountService
+    ) : IAuthService
     {
         public async Task<Result> RequestLoginAsync(string email)
         {
@@ -123,7 +123,7 @@ namespace Scratch.Application.Services
             user.EmailConfirmed = true;
 
             // generate access and refresh token
-            var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user);
+            var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user, isUseOTP: true);
             var refreshToken = authTokenProcessor.GenerateRefreshToken(user);
 
             user.RefreshTokens.Add(refreshToken);
@@ -136,7 +136,14 @@ namespace Scratch.Application.Services
 
             return Result.Success
             (
-                new LoginResponse(user.UserName!, user.Email!, expiration.ToString("o"), permissions)
+                new LoginResponse
+                (
+                    Username: user.UserName!,
+                    Email: user.Email!,
+                    ExpiresAt: expiration.ToString("o"),
+                    IsUseOTP: true,
+                    Permissions: permissions
+                )
             );
         }
 
@@ -205,16 +212,17 @@ namespace Scratch.Application.Services
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest)
         {
-            var user = await userManager.FindByNameAsync(loginRequest.Username);
+            var user = await userManager.FindByEmailAsync(loginRequest.Email);
 
             if (user == null
+                || string.IsNullOrWhiteSpace(user.PasswordHash)
                 || !await userManager.IsEmailConfirmedAsync(user)
                 || !await userManager.CheckPasswordAsync(user, loginRequest.Password)
                 )
             {
                 return Result.Failure<LoginResponse>
                 (
-                    new Error("Login.ValidationFailed", $"Invalid email or password.")
+                    new Error("Auth.InvalidCredentials", $"Invalid email or password.")
                 );
             }
 
@@ -223,11 +231,11 @@ namespace Scratch.Application.Services
             {
                 return Result.Failure<LoginResponse>
                 (
-                    new Error("Login.Ban", $"Account has been banned.")
+                    new Error("Auth.AccountBanned", $"Account has been banned.")
                 );
             }
 
-            var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user);
+            var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user, isUseOTP: false);
             var refreshToken = authTokenProcessor.GenerateRefreshToken(user);
 
             user.RefreshTokens.Add(refreshToken);
@@ -240,7 +248,14 @@ namespace Scratch.Application.Services
 
             return Result.Success
             (
-                new LoginResponse(user.UserName!, user.Email!, expiration.ToString("o"), permissions)
+                new LoginResponse
+                (
+                    Username: user.UserName!,
+                    Email: user.Email!,
+                    ExpiresAt: expiration.ToString("o"),
+                    IsUseOTP: false,
+                    Permissions: permissions
+                )
             );
         }
 

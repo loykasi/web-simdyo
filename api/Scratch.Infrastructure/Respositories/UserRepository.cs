@@ -4,6 +4,7 @@ using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Authorizations;
 using Scratch.Domain.DTO;
 using Scratch.Domain.Entities;
+using Scratch.Domain.Options;
 using System.Data;
 
 namespace Scratch.Infrastructure.Respositories
@@ -81,7 +82,7 @@ namespace Scratch.Infrastructure.Respositories
                 from role in dbContext.Roles
                 join claims in dbContext.RoleClaims on role.Id equals claims.RoleId
                 where roles.Contains(role.Name!) && 
-                      claims.ClaimType == CustomClaimType.Permission
+                      claims.ClaimType == CustomClaimTypes.Permission
                 select claims.ClaimValue)
             .Distinct()
             .ToArrayAsync();

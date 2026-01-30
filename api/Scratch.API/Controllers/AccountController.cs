@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 using Scratch.Domain.Requests;
 
 namespace Scratch.API.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountController(IAccountService accountService, ICurrentUserService currentUserService) : BaseController
+    public class AccountController(IAuthService accountService, ICurrentUserService currentUserService) : BaseController
     {
         [HttpPost]
         [Authorize]

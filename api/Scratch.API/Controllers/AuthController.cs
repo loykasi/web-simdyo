@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Models.Emails;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Requests;
@@ -13,7 +13,7 @@ using System.Web;
 namespace Scratch.API.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthController(IAccountService accountService, IEmailService emailService) : BaseController
+    public class AuthController(IAuthService accountService, IEmailService emailService) : BaseController
     {
         [HttpPost]
         [Route("send-otp")]
@@ -51,14 +51,14 @@ namespace Scratch.API.Controllers
             return ToApiResult(result);
         }
 
-        //[HttpPost]
-        //[Route("login")]
-        //public async Task<IActionResult> Login(LoginRequest loginRequest)
-        //{
-        //    var result = await accountService.LoginAsync(loginRequest);
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        {
+            var result = await accountService.LoginAsync(loginRequest);
 
-        //    return ToApiResult(result);
-        //}
+            return ToApiResult(result);
+        }
 
         [HttpPost]
         [Route("refresh")]

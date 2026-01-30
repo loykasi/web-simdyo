@@ -4,7 +4,7 @@ using Amazon.S3.Model;
 using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 using Scratch.Infrastructure.Options;
 using System.Threading.Tasks;
 

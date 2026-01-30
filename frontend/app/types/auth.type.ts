@@ -9,7 +9,7 @@ export interface LoginOTPRequest {
 }
 
 export interface LoginRequest {
-    username: string;
+    email: string;
     password: string;
 }
 
@@ -24,11 +24,13 @@ export interface LoginResponse {
     username: string;
     email: string;
     expiresAt: string;
+    isUseOTP: boolean;
     permissions: string[]
 }
 
 export interface AuthUser {
     username: string,
     email: string,
+    isUseOTP: boolean,
     permissions: string[]
 }

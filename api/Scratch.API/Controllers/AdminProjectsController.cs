@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Scratch.Application.Authorization;
-using Scratch.Application.Interfaces.Repositories;
 using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Services;
 using Scratch.Domain.Authorizations;

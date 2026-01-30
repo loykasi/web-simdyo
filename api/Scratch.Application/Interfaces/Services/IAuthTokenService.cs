@@ -1,11 +1,11 @@
 ﻿using Scratch.Domain.Entities;
 using System.Security.Claims;
 
-namespace Scratch.Application.Interfaces.Repositories
+namespace Scratch.Application.Interfaces.Services
 {
-    public interface IAuthTokenProcessor
+    public interface IAuthTokenService
     {
-        Task<(string token, DateTime expiresAtUTC)> GenerateJwtToken(User user);
+        Task<(string token, DateTime expiresAtUTC)> GenerateJwtToken(User user, bool isUseOTP = false);
         RefreshToken? GetRefreshTokenByUser(User user, string refreshToken);
         RefreshToken GenerateRefreshToken(User user);
         RefreshToken GenerateRefreshToken(User user, string refreshToken);

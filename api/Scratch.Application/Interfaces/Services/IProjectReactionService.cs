@@ -2,7 +2,7 @@
 using Scratch.Domain.Responses;
 using Scratch.Domain.Results;
 
-namespace Scratch.Application.Interfaces.Repositories
+namespace Scratch.Application.Interfaces.Services
 {
     public interface IProjectReactionService
     {

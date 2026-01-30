@@ -33,6 +33,7 @@ export default defineNuxtConfig({
     // '/explore': { redirect: '/explore/default' },
     '/': { redirect: '/explore' },
     '/explore': { redirect: '/explore/all' },
+    '/dashboard': { redirect: '/dashboard/users' },
     '/create': { ssr: false },
     '/confirm-email': { ssr: false },
     '/projects/**/edit': { ssr: false },

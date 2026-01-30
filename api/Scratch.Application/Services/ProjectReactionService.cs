@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Scratch.Application.Abstracts;
-using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Interfaces.Services;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Enums;
 using Scratch.Domain.Requests;
