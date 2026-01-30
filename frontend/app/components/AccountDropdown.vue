@@ -11,11 +11,11 @@ const accountItems = ref<DropdownMenuItem[]>([
     icon: 'material-symbols:person-outline',
     to: `/profile/${user.value?.username}`
   },
-  {
-    label: $t('account_menu.settings'),
-    icon: 'material-symbols:settings-outline',
-    to: '/account'
-  },
+  // {
+  //   label: $t('account_menu.settings'),
+  //   icon: 'material-symbols:settings-outline',
+  //   to: '/account'
+  // },
   {
     label: $t('account_menu.logout'),
     icon: 'material-symbols:logout',

@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Scratch.Domain.Entities;
 using Scratch.Infrastructure;
 using Scratch.Infrastructure.Options;
+using Scratch.Infrastructure.TokenProviders;
 using System.Text;
 
 namespace Scratch.API.Extensions;
@@ -23,7 +24,8 @@ public static class AuthenticationExtension
             options.SignIn.RequireConfirmedEmail = true;
         })
         .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
+        .AddDefaultTokenProviders()
+        .AddTokenProvider<PasswordlessLoginTotpTokenProvider<User>>("PasswordlessLoginTotpProvider");
 
         services.AddAuthentication(options =>
         {

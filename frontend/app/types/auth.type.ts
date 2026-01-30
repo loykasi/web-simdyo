@@ -1,7 +1,11 @@
 export interface RegisterRequest {
     username: string;
     email: string;
-    password: string;
+}
+
+export interface LoginOTPRequest {
+    email: string;
+    code: string;
 }
 
 export interface LoginRequest {

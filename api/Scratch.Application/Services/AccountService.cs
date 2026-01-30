@@ -24,6 +24,122 @@ namespace Scratch.Application.Services
         ICookieService cookieService
     ) : IAccountService
     {
+        public async Task<Result> RequestLoginAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return Result.NotFound
+                (
+                    new Error("Account.NotFound", $"Account not found with email {email}")
+                );
+            }
+
+            bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
+            if (isBanned)
+            {
+                return Result.Failure<LoginResponse>
+                (
+                    new Error("Auth.AccountBanned", $"Account has been banned.")
+                );
+            }
+
+            await userManager.UpdateSecurityStampAsync(user);
+            var token = await userManager.GenerateUserTokenAsync
+            (
+                user,
+                "PasswordlessLoginTotpProvider",
+                "passwordless-auth"
+            );
+            SendOTPEmail(user, token);
+
+            return Result.Success();
+        }
+
+        private void SendOTPEmail(User user, string token)
+        {
+            EmailMessage emailMessage = new()
+            {
+                ToName = user.Username,
+                ToEmail = user.Email!,
+                Subject = "Login code to Simdyo",
+                TemplateName = "OTP.html",
+                Placeholders =
+                [
+                    new("OTP", token)
+                ]
+            };
+
+            emailSender.Send(emailMessage);
+        }
+
+        public async Task<Result<LoginResponse>> LoginWithOtpAsync(LoginOtpRequest request)
+        {
+            var user = await userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return Result.Failure<LoginResponse>
+                (
+                    new Error("Auth.InvalidCredentials", $"Invalid email or password.")
+                );
+            }
+
+            var isValid = await userManager.VerifyUserTokenAsync
+            (
+                user,
+                "PasswordlessLoginTotpProvider",
+                "passwordless-auth",
+                request.Code
+            );
+            if (!isValid)
+            {
+                return Result.Failure<LoginResponse>
+                (
+                    new Error("Auth.InvalidCredentials", $"Invalid email or password.")
+                );
+            }
+
+            if (user.LastUsedToken == request.Code)
+            {
+                return Result.Failure<LoginResponse>
+                (
+                    new Error("Auth.InvalidCredentials", $"Invalid email or password.")
+                );
+            }
+
+            user.LastUsedToken = request.Code;
+            await userManager.UpdateAsync(user);
+
+            bool isBanned = await unitOfWork.UserBanRepository.GetBanStatus(user.Id);
+            if (isBanned)
+            {
+                return Result.Failure<LoginResponse>
+                (
+                    new Error("Auth.AccountBanned", $"Account has been banned.")
+                );
+            }
+
+            // confirm email on login
+            user.EmailConfirmed = true;
+
+            // generate access and refresh token
+            var (jwtToken, expiration) = await authTokenProcessor.GenerateJwtToken(user);
+            var refreshToken = authTokenProcessor.GenerateRefreshToken(user);
+
+            user.RefreshTokens.Add(refreshToken);
+            await userManager.UpdateAsync(user);
+
+            cookieService.SetToken("ACCESS_TOKEN", jwtToken, expiration);
+            cookieService.SetToken("REFRESH_TOKEN", refreshToken.Token, refreshToken.RefreshTokenExpriresAtUTC);
+
+            var permissions = await unitOfWork.UserRespository.GetUserPermissionsAsync(user);
+
+            return Result.Success
+            (
+                new LoginResponse(user.UserName!, user.Email!, expiration.ToString("o"), permissions)
+            );
+        }
+
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest registerRequest)
         {
             bool isUserExists = await userManager.FindByNameAsync(registerRequest.Username) != null;
@@ -31,7 +147,7 @@ namespace Scratch.Application.Services
             {
                 return Result.Conflict<RegisterResponse>
                 (
-                    new Error("User.UsernameDuplicate", $"User with username: {registerRequest.Username} already exists")
+                    new Error("User.DuplicateUsername", $"User with username: {registerRequest.Username} already exists")
                 );
             }
 
@@ -40,13 +156,13 @@ namespace Scratch.Application.Services
             {
                 return Result.Conflict<RegisterResponse>
                 (
-                    new Error("User.EmailDuplicate", $"User with email: {registerRequest.Email} already exists")
+                    new Error("User.DuplicateEmail", $"User with email: {registerRequest.Email} already exists")
                 );
             }
 
             User user = User.Create(registerRequest.Email, registerRequest.Username);
 
-            var result = await userManager.CreateAsync(user, registerRequest.Password);
+            var result = await userManager.CreateAsync(user);
             await userManager.AddToRoleAsync(user, Roles.Member);
 
             if (!result.Succeeded)
@@ -56,8 +172,6 @@ namespace Scratch.Application.Services
                     [.. result.Errors.Select(e => new Error(e.Code, e.Description))]
                 );
             }
-            
-            await SendConfirmationEmail(user);
 
             return Result.Success(
                 new RegisterResponse("Registration successful. Please check your email to verify your account.")

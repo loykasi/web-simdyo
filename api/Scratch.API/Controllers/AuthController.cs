@@ -16,6 +16,24 @@ namespace Scratch.API.Controllers
     public class AuthController(IAccountService accountService, IEmailService emailService) : BaseController
     {
         [HttpPost]
+        [Route("send-otp")]
+        public async Task<IActionResult> RequestLogin([FromQuery] string email)
+        {
+            var result = await accountService.RequestLoginAsync(email);
+
+            return ToApiResult(result);
+        }
+
+        [HttpPost]
+        [Route("login-otp")]
+        public async Task<IActionResult> LoginWithOtp(LoginOtpRequest request)
+        {
+            var result = await accountService.LoginWithOtpAsync(request);
+
+            return ToApiResult(result);
+        }
+
+        [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
@@ -33,14 +51,14 @@ namespace Scratch.API.Controllers
             return ToApiResult(result);
         }
 
-        [HttpPost]
-        [Route("login")]
-        public async Task<IActionResult> Login(LoginRequest loginRequest)
-        {
-            var result = await accountService.LoginAsync(loginRequest);
+        //[HttpPost]
+        //[Route("login")]
+        //public async Task<IActionResult> Login(LoginRequest loginRequest)
+        //{
+        //    var result = await accountService.LoginAsync(loginRequest);
 
-            return ToApiResult(result);
-        }
+        //    return ToApiResult(result);
+        //}
 
         [HttpPost]
         [Route("refresh")]
