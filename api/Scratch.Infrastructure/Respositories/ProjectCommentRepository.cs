@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Models.Responses;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Responses;
 namespace Scratch.Infrastructure.Respositories
 {
     public class ProjectCommentRepository(ApplicationDbContext dbContext) : IProjectCommentRepository

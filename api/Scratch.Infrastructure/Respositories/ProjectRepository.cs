@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
+using Scratch.Application.Models.Requests;
+using Scratch.Application.Models.Responses;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Enums;
-using Scratch.Domain.Requests;
-using Scratch.Domain.Responses;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Scratch.Infrastructure.Respositories
 {

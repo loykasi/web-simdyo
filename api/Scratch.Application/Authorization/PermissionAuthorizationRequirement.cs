@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Scratch.Domain.Authorizations;
 using Scratch.Domain.Options;
 
 namespace Scratch.Application.Authorization

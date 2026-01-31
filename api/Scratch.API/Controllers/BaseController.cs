@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Scratch.Domain.Results;
+using Scratch.Application.Results;
 
 namespace Scratch.API.Controllers
 {

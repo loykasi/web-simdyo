@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
-using Scratch.Domain.Dto;
+using Scratch.Application.Mappings;
+using Scratch.Application.Models.Responses;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Extensions;
 
 namespace Scratch.Infrastructure.Respositories
 {
@@ -65,5 +65,7 @@ namespace Scratch.Infrastructure.Respositories
         {
             await dbContext.ProjectCategories.Where(c => c.Id == id).ExecuteDeleteAsync();
         }
+
+        
     }
 }

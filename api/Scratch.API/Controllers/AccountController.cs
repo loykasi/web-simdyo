@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scratch.Application.Interfaces.Services;
-using Scratch.Domain.Requests;
+using Scratch.Application.Models.Requests;
 
 namespace Scratch.API.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountController(IAuthService accountService, ICurrentUserService currentUserService) : BaseController
+    public class AccountController(IAuthService authService) : BaseController
     {
         [HttpPost]
         [Authorize]
         [Route("change-password")]
         public async Task<IActionResult> ResetPassword(ChangePasswordRequest changePasswordRequest)
         {
-            var result = await accountService.ChangePassword(changePasswordRequest);
+            var result = await authService.ChangePassword(changePasswordRequest);
 
             return ToApiResult(result);
         }
@@ -22,7 +22,7 @@ namespace Scratch.API.Controllers
         [Route("{username}")]
         public async Task<IActionResult> GetProfile(string username)
         {
-            var result = await accountService.GetProfileDetail(username);
+            var result = await authService.GetProfileDetail(username);
 
             return ToApiResult(result);
         }

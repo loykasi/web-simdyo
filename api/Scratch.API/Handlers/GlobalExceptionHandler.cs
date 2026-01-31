@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
-using Scratch.Domain.Exceptions;
+using Scratch.Application.Exceptions;
 using System.Net;
 
 namespace Scratch.API.Handlers

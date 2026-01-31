@@ -1,6 +1,6 @@
-﻿using Scratch.Domain.Dto;
-using Scratch.Domain.Requests;
-using Scratch.Domain.Results;
+﻿using Scratch.Application.Models.Requests;
+using Scratch.Application.Results;
+using Scratch.Application.Models.Responses;
 
 namespace Scratch.Application.Interfaces.Services
 {

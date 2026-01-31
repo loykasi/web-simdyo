@@ -1,11 +1,9 @@
 ﻿using Scratch.Application.Abstracts;
-using Scratch.Application.Interfaces.Repositories;
 using Scratch.Application.Interfaces.Services;
-using Scratch.Domain.Authorizations;
-using Scratch.Domain.Dto;
+using Scratch.Application.Models.Requests;
+using Scratch.Application.Models.Responses;
+using Scratch.Application.Results;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Requests;
-using Scratch.Domain.Results;
 
 namespace Scratch.Application.Services
 {

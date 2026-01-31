@@ -5,7 +5,6 @@ using Scalar.AspNetCore;
 using Scratch.API.Extensions;
 using Scratch.API.Handlers;
 using Scratch.Infrastructure;
-using Scratch.Infrastructure.Options;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,28 +12,18 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<JwtOptions>(
-    builder.Configuration.GetSection(JwtOptions.JwtOptionKey)
-);
-builder.Services.Configure<EmailOptions>(
-    builder.Configuration.GetSection(EmailOptions.EmailOptionsKey)
-);
-builder.Services.Configure<URLOptions>(
-    builder.Configuration.GetSection(URLOptions.OptionKey)
-);
-builder.Services.Configure<S3Options>(
-    builder.Configuration.GetSection(S3Options.OptionsKey)
-);
+builder.ConfigureOptions();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnectionString"));
 });
 
+builder.Services.AddIdentity();
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddAuthorization(builder.Configuration);
 builder.Services.SetupCors();
-builder.Services.SetupServices();
+builder.Services.AddServices();
 
 builder.Services.AddBackgroundJobsServices(builder.Configuration);
 
@@ -104,9 +93,7 @@ if (app.Environment.IsDevelopment())
         DarkModeEnabled = true
     });
 
-    await app.SeedRolesAndPermissions();
-    await app.SeedAdmin();
-    await app.FixNullSecurityStamps();
+    await app.Seed();
 }
 
 app.UseCors("AllowOrigins");

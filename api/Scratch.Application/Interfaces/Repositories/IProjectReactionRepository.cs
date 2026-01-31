@@ -1,5 +1,4 @@
 ﻿using Scratch.Domain.Entities;
-using Scratch.Domain.Enums;
 using System.Linq.Expressions;
 
 namespace Scratch.Application.Interfaces.Repositories

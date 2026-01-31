@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scratch.API", "Scratch.API\Scratch.API.csproj", "{CCDD5E03-E5C2-403B-9BA5-7620C1DF5D67}"
+	ProjectSection(ProjectDependencies) = postProject
+		{13B31695-C4B3-4EC9-9A77-3A303E944FDE} = {13B31695-C4B3-4EC9-9A77-3A303E944FDE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scratch.Domain", "Scratch.Domain\Scratch.Domain.csproj", "{1A35176F-A097-4DCC-BE15-15F91C2A360C}"
 EndProject

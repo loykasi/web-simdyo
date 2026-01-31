@@ -1,4 +1,4 @@
-﻿using Scratch.Domain.Results;
+﻿using Scratch.Application.Results;
 
 namespace Scratch.Application.Interfaces.Services
 {

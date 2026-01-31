@@ -1,6 +1,6 @@
 ﻿using Scratch.Domain.Entities;
-using Scratch.Domain.Requests;
-using Scratch.Domain.Responses;
+using Scratch.Application.Models.Requests;
+using Scratch.Application.Models.Responses;
 
 namespace Scratch.Application.Interfaces.Repositories
 {

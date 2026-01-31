@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Scratch.Application.Authorization;
-using Scratch.Domain.Authorizations;
 
 namespace Scratch.API.Extensions;
 

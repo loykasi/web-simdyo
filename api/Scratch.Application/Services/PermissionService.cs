@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Scratch.Application.Abstracts;
 using Scratch.Application.Interfaces.Services;
+using Scratch.Application.Results;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Responses;
-using Scratch.Domain.Results;
 
 namespace Scratch.Application.Services
 {

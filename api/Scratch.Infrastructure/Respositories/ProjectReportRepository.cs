@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scratch.Application.Interfaces.Repositories;
 using Scratch.Domain.Dto;
-using Scratch.Domain.DTO;
 using Scratch.Domain.Entities;
-using System.Linq;
 
 namespace Scratch.Infrastructure.Respositories
 {

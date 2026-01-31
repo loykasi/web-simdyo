@@ -1,14 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Scratch.Application.Interfaces.Services;
-using Scratch.Application.Models.Emails;
-using Scratch.Domain.Entities;
-using Scratch.Domain.Requests;
-using Scratch.Domain.Responses;
-using Scratch.Domain.Results;
-using System.Web;
+using Scratch.Application.Models.Requests;
 
 namespace Scratch.API.Controllers
 {

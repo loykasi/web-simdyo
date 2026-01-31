@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Scratch.Application.Authorization;
 using Scratch.Application.Interfaces.Repositories;
-using Scratch.Domain.Authorizations;
-using Scratch.Domain.Dto;
+using Scratch.Application.Models.Responses;
 using Scratch.Domain.Entities;
 using Scratch.Domain.Options;
 using System.Security.Claims;

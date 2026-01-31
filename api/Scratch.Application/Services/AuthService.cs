@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Scratch.Application.Abstracts;
+using Scratch.Application.Authorization;
+using Scratch.Application.Exceptions;
 using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Models.Emails;
-using Scratch.Domain.Authorizations;
+using Scratch.Application.Models.Requests;
+using Scratch.Application.Models.Responses;
+using Scratch.Application.Results;
 using Scratch.Domain.Entities;
-using Scratch.Domain.Exceptions;
-using Scratch.Domain.Requests;
-using Scratch.Domain.Responses;
-using Scratch.Domain.Results;
 using System.Web;
 
 namespace Scratch.Application.Services
