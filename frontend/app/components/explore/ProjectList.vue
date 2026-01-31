@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { Pagination } from '~/types/pagination.type';
-import type { ProjectResponse } from '~/types/project.type';
+import type { Pagination } from "~/types/pagination.type";
+import type { ProjectResponse } from "~/types/project.type";
 
-const prop = defineProps<{
-  pending: boolean,
-  pagination: Pagination<ProjectResponse> | undefined
+defineProps<{
+  pending: boolean;
+  pagination: Pagination<ProjectResponse> | undefined;
 }>();
 
 const pageSize = 6;
-
 </script>
 <template>
   <template v-if="pending && !pagination">
@@ -29,6 +28,7 @@ const pageSize = 6;
     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
       <ProjectCard
         v-for="project in pagination?.items"
+        :key="project.publicId"
         :project="project"
       />
     </div>

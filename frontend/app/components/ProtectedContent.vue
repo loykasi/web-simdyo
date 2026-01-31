@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth.store';
+import { useAuthStore } from "~/stores/auth.store";
 
 const prop = defineProps<{
-    permissions: string[]
+  permissions: string[];
 }>();
 
 const { user } = useAuthStore();
 
-const isPermitted = computed(() => prop.permissions.every(p => user.value?.permissions.includes(p)));
+const isPermitted = computed(() =>
+  prop.permissions.every((p) => user.value?.permissions.includes(p)),
+);
 </script>
 <template>
-    <slot v-if="isPermitted" />
+  <slot v-if="isPermitted" />
 </template>

@@ -1,0 +1,2 @@
+export const MAX_THUMBNAIL_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+export const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024; // 15MB

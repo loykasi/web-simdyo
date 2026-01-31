@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import * as z from 'zod';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import { useAuthStore } from '~/stores/auth.store';
-import type { LoginOTPRequest, LoginRequest } from '~/types/auth.type';
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+import { useAuthStore } from "~/stores/auth.store";
+import type { LoginOTPRequest } from "~/types/auth.type";
 
 const prop = defineProps<{
-  email: string
+  email: string;
 }>();
 
 const emit = defineEmits<{
-  backToRequestForm: []
+  backToRequestForm: [];
 }>();
 
 const loading = ref(false);
@@ -21,50 +21,53 @@ const { user } = useAuthStore();
 const toast = useToast();
 
 const isLogged = useCookie("isLogged", {
-	default: () => false,
+  default: () => false,
 });
 
 const schema = z.object({
-	password: z.string('Invalid password').min(6, 'Must be at least 6 characters')
+  password: z
+    .string("Invalid password")
+    .min(6, "Must be at least 6 characters"),
 });
 type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
-	password: ""
+  password: "",
 });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     loading.value = true;
     const payload: LoginOTPRequest = {
-        email: prop.email,
-        code: event.data.password
+      email: prop.email,
+      code: event.data.password,
     };
     const res = await loginOTP(payload);
 
     user.value = {
-			email: res.email,
-			username: res.username,
+      email: res.email,
+      username: res.username,
       isUseOTP: res.isUseOTP,
-			permissions: res.permissions
-		};
-		
-		isLoginSuccess.value = true;
-		isLogged.value = true;
+      permissions: res.permissions,
+    };
 
-		toast.add({
-			title: `Welcome, ${res.username}`,
-			color: 'success'
-		})
+    isLoginSuccess.value = true;
+    isLogged.value = true;
+
+    toast.add({
+      title: `Welcome, ${res.username}`,
+      color: "success",
+    });
   } catch (err: any) {
     if (!err.data) {
-			toast.add({
-				title: `Server error! Try again.`,
-				color: 'error'
-			})
-		} else if (err.data[0].code === "Auth.AccountBanned") {
-			error.value = "Account has been suspended due to a violation of community guidelines."
+      toast.add({
+        title: `Server error! Try again.`,
+        color: "error",
+      });
+    } else if (err.data[0].code === "Auth.AccountBanned") {
+      error.value =
+        "Account has been suspended due to a violation of community guidelines.";
     } else if (err.data[0].code === "Auth.InvalidCredentials") {
-      error.value = "Incorrect email or password"
+      error.value = "Incorrect email or password";
     }
   } finally {
     loading.value = false;
@@ -73,8 +76,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 <template>
   <div class="p-4 w-xs">
-    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit" :validateOn="[]">
-      <UFormField :label="$t('login.email')" name="email" >
+    <UForm
+      :schema="schema"
+      :state="state"
+      class="space-y-4"
+      :validate-on="[]"
+      @submit="onSubmit"
+    >
+      <UFormField :label="$t('login.email')" name="email">
         <UInput :model-value="email" class="w-full mt-1" disabled />
       </UFormField>
 
@@ -85,25 +94,36 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           class="w-full mt-1"
         >
           <template #trailing>
-          <UButton
-            color="neutral"
-            variant="link"
-            size="sm"
-            :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-            :aria-label="showPassword ? 'Hide password' : 'showPassword password'"
-            :aria-pressed="showPassword"
-            aria-controls="password"
-            @click="showPassword = !showPassword"
-          />
+            <UButton
+              color="neutral"
+              variant="link"
+              size="sm"
+              :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              :aria-label="
+                showPassword ? 'Hide password' : 'showPassword password'
+              "
+              :aria-pressed="showPassword"
+              aria-controls="password"
+              @click="showPassword = !showPassword"
+            />
           </template>
         </UInput>
       </UFormField>
 
-      <UButton type="submit" :loading="loading" class="flex justify-center w-full">
-        {{ $t('login.login') }}
+      <UButton
+        type="submit"
+        :loading="loading"
+        class="flex justify-center w-full"
+      >
+        {{ $t("login.login") }}
       </UButton>
 
-      <UButton color="neutral" variant="subtle" class="flex justify-center w-full" @click="emit('backToRequestForm')">
+      <UButton
+        color="neutral"
+        variant="subtle"
+        class="flex justify-center w-full"
+        @click="emit('backToRequestForm')"
+      >
         Back
       </UButton>
 

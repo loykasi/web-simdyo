@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import * as z from 'zod';
-import type { FormSubmitEvent } from '@nuxt/ui';
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
 
 const prop = defineProps<{
-  email: string
+  email: string;
 }>();
 
 const emit = defineEmits<{
-  toLoginForm: [value: string]
+  toLoginForm: [value: string];
 }>();
 
 onMounted(() => {
   state.email = prop.email;
-})
+});
 
 const toast = useToast();
 const loading = ref(false);
@@ -20,7 +20,7 @@ const error = ref("");
 const { sendOTP } = useLogin();
 
 const schema = z.object({
-	email: z.email('Invalid email'),
+  email: z.email("Invalid email"),
 });
 type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({});
@@ -35,13 +35,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     if (!err.data) {
       toast.add({
         title: `Server error! Try again.`,
-        color: 'error'
-      })
+        color: "error",
+      });
     } else if (err.data[0].code === "Account.NotFound") {
-      error.value = "Account not found email"
+      error.value = "Account not found email";
     } else if (err.data[0].code === "Auth.AccountBanned") {
-      error.value = "Account has been suspended due to a violation of community guidelines."
-    } 
+      error.value =
+        "Account has been suspended due to a violation of community guidelines.";
+    }
   } finally {
     loading.value = false;
   }
@@ -49,12 +50,22 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 <template>
   <div class="p-4 w-xs">
-    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit" :validateOn="[]">
-      <UFormField :label="$t('login.email')" name="email" >
+    <UForm
+      :schema="schema"
+      :state="state"
+      class="space-y-4"
+      :validate-on="[]"
+      @submit="onSubmit"
+    >
+      <UFormField :label="$t('login.email')" name="email">
         <UInput v-model="state.email" class="w-full mt-1" />
       </UFormField>
 
-      <UButton type="submit" :loading="loading" class="flex justify-center w-full">
+      <UButton
+        type="submit"
+        :loading="loading"
+        class="flex justify-center w-full"
+      >
         <!-- {{ $t('login.login') }} -->
         Send OTP
       </UButton>

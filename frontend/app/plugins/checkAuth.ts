@@ -1,128 +1,92 @@
 import { callWithNuxt } from "#app";
-import { useAuthStore } from "~/stores/auth.store"
+import { useAuthStore } from "~/stores/auth.store";
 import type { AuthUser } from "~/types/auth.type";
-import { appendResponseHeader } from 'h3';
-import type { H3Event } from 'h3';
+import { appendResponseHeader } from "h3";
 
 export default defineNuxtPlugin(async () => {
-    const { user } = useAuthStore();
+  const { user } = useAuthStore();
+  const nuxtApp = useNuxtApp();
 
-    // async function getUser() {
-    //     const isLogged = useCookie("isLogged", {
-    //         default: () => false
-    //     });
-        
-    //     if (user.value || !isLogged.value) {
-    //         return;
-    //     }
-        
-    //     console.log("get current user")
-    //     await useAPI<AuthUser>("auth/user", {
-    //         method: "GET",
-    //         headers: useRequestHeaders(['cookie']),
-    //         onErrorAction: "refreshTokenAndRetry"
-    //     }).then(res => {
-    //         user.value = {
-    //             email: res.email,
-    //             username: res.username,
-    //             permissions: res.permissions
-    //         } as AuthUser;
-            
-    //         isLogged.value = true;
-    //         // console.log("SUCCESS get current user");
-    //     }).catch(err => {
-    //         console.log("FAIL get current user");
-    //     });
+  // function getHeader() {
+  //     const cookie = useRequestHeaders(['cookie']);
+  //     console.log(cookie);
+  //     return cookie;
+  // }
 
-    //     // console.log("DONE get current user");
-    // }
+  async function fetchUser() {
+    const config = useRuntimeConfig();
+    const cookieHeader = useRequestHeaders(["cookie"]);
 
-    const nuxtApp = useNuxtApp();
+    try {
+      return await useAPI<AuthUser>("auth/user", {
+        method: "GET",
+        headers: cookieHeader,
+        onErrorAction: "doNothing",
+      });
+    } catch (error: any) {
+      if (error.response.status != 401) throw error;
 
-    function getHeader() {
-        const cookie = useRequestHeaders(['cookie']);
-        console.log(cookie);
-        return cookie;
-    }
+      const event = await callWithNuxt(nuxtApp, useRequestEvent);
 
-    async function fetchUser() {
-        const config = useRuntimeConfig();
-        const cookieHeader = useRequestHeaders(['cookie']);
+      const res = await $fetch.raw("auth/refresh", {
+        baseURL: `${config.public.baseUrl}`,
+        method: "POST",
+        headers: cookieHeader,
+        credentials: "include",
+      });
 
-        try {
-            return await useAPI<AuthUser>("auth/user", {
-                method: "GET",
-                headers: cookieHeader,
-                onErrorAction: "doNothing"
-            })
-        } catch (error: any) {
-            if (error.response.status != 401) throw error;
+      let header = "";
+      if (event) {
+        const cookies = res.headers.getSetCookie();
+        for (const cookie of cookies) {
+          appendResponseHeader(event, "set-cookie", cookie);
 
-            const event = await callWithNuxt(nuxtApp, useRequestEvent);
-
-            try {
-                const res = await $fetch.raw("auth/refresh", {
-                    baseURL: `${config.public.baseUrl}`,
-                    method: "POST",
-                    headers: cookieHeader,
-                    credentials: "include"
-                });
-
-                let header = "";
-                if (event) {
-                    const cookies = res.headers.getSetCookie();
-                    for (const cookie of cookies) {
-                        appendResponseHeader(event, 'set-cookie', cookie);
-                        
-                        const setCookie = cookie.split(";")[0];
-                        if (setCookie) header += setCookie + ";";
-                    }
-                }
-                
-                cookieHeader.cookie = header;
-                
-                return await nuxtApp.runWithContext(() =>
-                    useAPI<AuthUser>("auth/user", {
-                        method: "GET",
-                        headers: cookieHeader,
-                        onErrorAction: "doNothing"
-                    })
-                );
-            } catch (error: any) {
-                throw error;
-            }            
+          const setCookie = cookie.split(";")[0];
+          if (setCookie) header += setCookie + ";";
         }
+      }
+
+      cookieHeader.cookie = header;
+
+      return await nuxtApp.runWithContext(() =>
+        useAPI<AuthUser>("auth/user", {
+          method: "GET",
+          headers: cookieHeader,
+          onErrorAction: "doNothing",
+        }),
+      );
+    }
+  }
+
+  async function getCurrentUser() {
+    const isLogged = useCookie("isLogged", {
+      default: () => false,
+    });
+
+    // if (import.meta.client) return;
+
+    if (user.value || !isLogged.value) {
+      return;
     }
 
-    async function getCurrentUser() {
-        const isLogged = useCookie("isLogged", {
-            default: () => false
-        });
+    console.log("get current user");
 
-        // if (import.meta.client) return;
-        
-        if (user.value || !isLogged.value) {
-            return;
-        }
+    await fetchUser()
+      .then((res) => {
+        user.value = {
+          email: res.email,
+          username: res.username,
+          isUseOTP: true,
+          permissions: res.permissions,
+        } as AuthUser;
 
-        console.log("get current user");
+        isLogged.value = true;
+      })
+      .catch((err) => {
+        isLogged.value = false;
+        console.error(err);
+      });
+  }
 
-        await fetchUser().then(res => {
-            user.value = {
-                email: res.email,
-                username: res.username,
-                isUseOTP: true,
-                permissions: res.permissions
-            } as AuthUser;
-            
-            isLogged.value = true;
-            // console.log("SUCCESS get current user");
-        }).catch(err => {
-            isLogged.value = false;
-            console.error(err);
-            // console.log("FAIL get current user");
-        });
-    }
-
-    await getCurrentUser();
-})
+  await getCurrentUser();
+});

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ProjectResponse } from '~/types/project.type';
+import type { ProjectResponse } from "~/types/project.type";
 
 defineProps<{
-  project: ProjectResponse
+  project: ProjectResponse;
 }>();
 </script>
 <template>
-<!-- <div
+  <!-- <div
     class="rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default"
 >
     <NuxtLink
@@ -50,7 +50,11 @@ defineProps<{
     >
       <img
         alt="placeholder"
-        :src="project.thumbnailLink === '' ? 'https://placehold.co/400' : project.thumbnailLink"
+        :src="
+          project.thumbnailLink === ''
+            ? 'https://placehold.co/400'
+            : project.thumbnailLink
+        "
         class="aspect-square"
       />
     </NuxtLink>
@@ -72,10 +76,7 @@ defineProps<{
         </NuxtLink>
       </div>
       <div class="flex-1 mt-2">
-        <UTooltip
-          :text="project.shortDescription"
-          :delay-duration="200"
-        >
+        <UTooltip :text="project.shortDescription" :delay-duration="200">
           <p class="line-clamp-2 overflow-hidden">
             {{ project.shortDescription }}
           </p>

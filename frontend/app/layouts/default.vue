@@ -1,10 +1,10 @@
 <template>
-    <NuxtLoadingIndicator />
-    <Header />
-    <UMain>
-        <UContainer>
-            <NuxtPage />
-        </UContainer>
-    </UMain>
-    <Footer />
+  <NuxtLoadingIndicator />
+  <PageHeader />
+  <UMain>
+    <UContainer>
+      <NuxtPage />
+    </UContainer>
+  </UMain>
+  <PageFooter />
 </template>

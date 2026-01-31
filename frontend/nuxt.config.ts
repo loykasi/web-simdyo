@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/icon',
     '@nuxt/fonts',
+    '@nuxt/eslint',
     '@nuxtjs/i18n'
   ],
   i18n: {
@@ -30,7 +31,6 @@ export default defineNuxtConfig({
     ]
   },
   routeRules: {
-    // '/explore': { redirect: '/explore/default' },
     '/': { redirect: '/explore' },
     '/explore': { redirect: '/explore/all' },
     '/dashboard': { redirect: '/dashboard/users' },
@@ -51,5 +51,8 @@ export default defineNuxtConfig({
         }
       }
     }
+  },
+  eslint: {
+    
   }
 })

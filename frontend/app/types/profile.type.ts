@@ -1,6 +1,6 @@
 export interface Profile {
-    username: string,
-    email: string,
-    totalProject: number,
-    joinedDate: string
+  username: string;
+  email: string;
+  totalProject: number;
+  joinedDate: string;
 }

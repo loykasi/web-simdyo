@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
-import { useAuth } from '~/composables/useAuth';
-import type { RegisterRequest } from '~/types/auth.type';
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+import { useAuth } from "~/composables/useAuth";
+import type { RegisterRequest } from "~/types/auth.type";
 
 const toast = useToast();
 const form = useTemplateRef("form");
@@ -20,8 +20,8 @@ const registering = ref(false);
 // });
 
 const schema = z.object({
-  username: z.string('Username is required'),
-  email: z.email('Invalid email'),
+  username: z.string("Username is required"),
+  email: z.email("Invalid email"),
 });
 type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
@@ -37,15 +37,15 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       username: event.data.username,
       email: event.data.email,
     };
-    
-    const res = await register(payload);
+
+    await register(payload);
     isRegisterSuccess.value = true;
   } catch (err: any) {
     if (!err.data) {
       toast.add({
         title: "Something went wrong. Please try again.",
-        color: "error"
-      })
+        color: "error",
+      });
       return;
     }
 
@@ -66,55 +66,77 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 }
 
 definePageMeta({
-  middleware: ['redirect-if-logged-in']
-})
+  middleware: ["redirect-if-logged-in"],
+});
 </script>
 <template>
-  <template v-if="!isRegisterSuccess">
+  <div v-if="!isRegisterSuccess">
     <UCard
       variant="outline"
       class="mt-8 mx-auto max-w-md"
       :ui="{
-          header: 'flex flex-col text-center'
+        header: 'flex flex-col text-center',
       }"
     >
       <template #header>
-        <h1 class="text-2xl font-bold text-center">{{ $t('register.title') }}</h1>
-        <p class="mt-1 text-base">{{ $t('register.description') }}</p>
+        <h1 class="text-2xl font-bold text-center">
+          {{ $t("register.title") }}
+        </h1>
+        <p class="mt-1 text-base">{{ $t("register.description") }}</p>
       </template>
       <div class="w-full">
-        <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+        <UForm
+          ref="form"
+          :schema="schema"
+          :state="state"
+          class="space-y-4"
+          @submit="onSubmit"
+        >
           <UFormField :label="$t('register.username')" name="username">
-            <UInput v-model="state.username" :placeholder="$t('register.username_placeholder')" class="w-full mt-1" />
+            <UInput
+              v-model="state.username"
+              :placeholder="$t('register.username_placeholder')"
+              class="w-full mt-1"
+            />
           </UFormField>
 
           <UFormField :label="$t('register.email')" name="email">
-            <UInput v-model="state.email" :placeholder="$t('register.email_placeholder')" class="w-full mt-1" />
+            <UInput
+              v-model="state.email"
+              :placeholder="$t('register.email_placeholder')"
+              class="w-full mt-1"
+            />
           </UFormField>
 
-          <UButton type="submit" class="flex w-full py-2 justify-center" :loading="registering">
-            {{ $t('register.continue') }}
+          <UButton
+            type="submit"
+            class="flex w-full py-2 justify-center"
+            :loading="registering"
+          >
+            {{ $t("register.continue") }}
           </UButton>
         </UForm>
       </div>
     </UCard>
-  </template>
-  <template v-else>
+  </div>
+  <div v-else>
     <UCard
       variant="outline"
       class="mt-8 mx-auto max-w-md"
       :ui="{
-          header: 'flex flex-col text-center'
+        header: 'flex flex-col text-center',
       }"
     >
       <template #header>
-        <h1 class="text-2xl font-bold text-center">{{ $t('register.success.title') }}</h1>
+        <h1 class="text-2xl font-bold text-center">
+          {{ $t("register.success.title") }}
+        </h1>
       </template>
       <div class="w-full">
         <div class="flex flex-col justify-center items-center">
-          <div>{{ $t('register.success.message') }}</div>
+          <div>{{ $t("register.success.message") }}</div>
         </div>
       </div>
     </UCard>
-  </template>
+  </div>
 </template>

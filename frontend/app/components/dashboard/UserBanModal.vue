@@ -1,81 +1,83 @@
 <script setup lang="ts">
-import * as z from 'zod';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import type { UserResponse } from '~/types/user.type';
-import { useAdminUsersStore } from '~/stores/admin/adminUsers.store';
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+import type { UserResponse } from "~/types/user.type";
+import { useAdminUsersStore } from "~/stores/admin/adminUsers.store";
 
 const prop = defineProps<{
-    user: UserResponse
+  user: UserResponse;
 }>();
 
 const emit = defineEmits<{
-    close: [boolean],
+  close: [boolean];
 }>();
 
 const { update: updateUsers } = useAdminUsersStore();
 
 const schema = z.object({
-	reason: z.string().nonempty("Required"),
-    description: z.string().optional(),
-})
+  reason: z.string().nonempty("Required"),
+  description: z.string().optional(),
+});
 
-type Schema = z.output<typeof schema>
+type Schema = z.output<typeof schema>;
 
 const state = reactive<Partial<Schema>>({
-    reason: "",
-    description: "",
-})
+  reason: "",
+  description: "",
+});
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    console.log(event.data);
+  console.log(event.data);
 
-    useAPI(`admin/users/${prop.user.id}/ban`, {
-        method: "POST",
-        body: {
-            reason: event.data.reason,
-            description: event.data.description
-        }
-    }).then(() => {
-        
-    }).catch(() => {
-        updateBanStatus(prop.user.id, false);
-    })
+  useAPI(`admin/users/${prop.user.id}/ban`, {
+    method: "POST",
+    body: {
+      reason: event.data.reason,
+      description: event.data.description,
+    },
+  }).catch(() => {
+    updateBanStatus(prop.user.id, false);
+  });
 
-    updateBanStatus(prop.user.id, true);
-    emit('close', true);
+  updateBanStatus(prop.user.id, true);
+  emit("close", true);
 }
 
 function updateBanStatus(id: string, status: boolean) {
-    updateUsers((p) => {
-        const target = p.items?.find(u => u.id == id);
-        if (target !== undefined)
-            target.isBanned = status;
+  updateUsers((p) => {
+    const target = p.items?.find((u) => u.id == id);
+    if (target !== undefined) target.isBanned = status;
 
-        return p;
-    });
+    return p;
+  });
 }
 </script>
 
 <template>
-    <UModal
-        :title="$t('ban')"
-        :description="`${$t('ban.description')} ${user.username}`"
-        :close="{ onClick: () => emit('close', false) }"
-    >
-        <template #body>
-            <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-                <UFormField :label="$t('reason')" name="reason" >
-                    <UInput v-model="state.reason" class="w-full mt-1" />
-                </UFormField>
+  <UModal
+    :title="$t('ban')"
+    :description="`${$t('ban.description')} ${user.username}`"
+    :close="{ onClick: () => emit('close', false) }"
+  >
+    <template #body>
+      <UForm
+        :schema="schema"
+        :state="state"
+        class="space-y-4"
+        @submit="onSubmit"
+      >
+        <UFormField :label="$t('reason')" name="reason">
+          <UInput v-model="state.reason" class="w-full mt-1" />
+        </UFormField>
 
-                <UFormField :label="$t('description')" name="description" >
-                    <UInput v-model="state.description" class="w-full mt-1" />
-                </UFormField>
+        <UFormField :label="$t('description')" name="description">
+          <UInput v-model="state.description" class="w-full mt-1" />
+        </UFormField>
 
-                <UButton type="submit">
-                    {{ $t('confirm') }}
-                </UButton>
-            </UForm>
-        </template>
-    </UModal>
+        <UButton type="submit">
+          {{ $t("confirm") }}
+        </UButton>
+      </UForm>
+    </template>
+  </UModal>
 </template>

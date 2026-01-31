@@ -2,7 +2,6 @@
 import { h, resolveComponent } from 'vue';
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Row } from '@tanstack/vue-table';
-import type { Pagination } from '~/types/pagination.type';
 import type { ProjectResponse } from '~/types/project.type';
 import ProjectBanModal from '~/components/dashboard/ProjectBanModal.vue';
 import { UBadge } from '#components';
@@ -12,7 +11,6 @@ import { debounce } from '~/utilities/debounce';
 const overlay = useOverlay();
 const modal = overlay.create(ProjectBanModal);
 
-const toast = useToast();
 const UButton = resolveComponent('UButton');
 const UCheckbox = resolveComponent('UCheckbox');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
@@ -143,7 +141,7 @@ function getRowItems(row: Row<ProjectResponse>) {
 }
 
 async function openBanModal(project: ProjectResponse) {
-    const instance = modal.open({
+    modal.open({
         project: project
     });
 }
@@ -214,7 +212,7 @@ const updateDebouceSearch = debounce(applySearchFilter, 500);
                     v-model="globalFilter"
                     class="max-w-sm"
                     placeholder="Filter..."
-                    v-on:update:model-value="updateDebouceSearch"
+                    @update:model-value="updateDebouceSearch"
                 />
 
                 <UButton
@@ -238,7 +236,6 @@ const updateDebouceSearch = debounce(applySearchFilter, 500);
                 :data="projects?.items"
                 :columns="columns"
                 :loading="pending"
-                @select="onSelect"
                 :ui="{
                     base: 'table-fixed border-separate border-spacing-0',
                     thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
@@ -247,6 +244,7 @@ const updateDebouceSearch = debounce(applySearchFilter, 500);
                     td: 'border-b border-default',
                     separator: 'h-0'
                 }"
+                @select="onSelect"
             />
                 
             <div class="flex items-center justify-between border-t border-accented py-3.5">

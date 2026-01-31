@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import * as z from 'zod';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import { useProject } from '~/composables/useProject';
-import JSZip from 'jszip';
-import type { UploadProjectRequest, UploadProjectResponse } from '~/types/project.type';
-import { usePreSignedUpload } from '~/composables/usePreSignedUpload';
-
-const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
-const MAX_PROJECT_FILE_SIZE = 15 * 1024 * 1024 // 15MB
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+import { useProject } from "~/composables/useProject";
+import JSZip from "jszip";
+import type {
+  UploadProjectRequest,
+  UploadProjectResponse,
+} from "~/types/project.type";
+import { usePreSignedUpload } from "~/composables/usePreSignedUpload";
+import { MAX_PROJECT_FILE_SIZE, MAX_THUMBNAIL_FILE_SIZE } from "~/constants";
 
 const toast = useToast();
 const { upload } = useProject();
@@ -16,80 +17,81 @@ const thumbnailUploadProgress = ref(0);
 const projectUploadProgress = ref(0);
 
 const { data: categories, pending: categoryPending } = await useLazyAsyncData(
-	"projectCategories",
-	() => useAPI<string[]>(`projects/categories/all`, {
-		method: "GET"
-	})
+  "projectCategories",
+  () =>
+    useAPI<string[]>(`projects/categories/all`, {
+      method: "GET",
+    }),
 );
 
 watchEffect(() => {
   if (categories.value && categories.value[0] !== "Default") {
-      categories.value = ["Default", ...categories.value];
+    categories.value = ["Default", ...categories.value];
   }
-})
+});
 
 const formatBytes = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-}
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return (
+    Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
+  );
+};
 
 const schema = z.object({
-  title: z.string('Required').min(1, 'Required'),
-  shortDescription: z.string('Required').min(1, 'Required'),
-	description: z.string('Required').min(1, 'Required'),
+  title: z.string("Required").min(1, "Required"),
+  shortDescription: z.string("Required").min(1, "Required"),
+  description: z.string("Required").min(1, "Required"),
   category: z.string().default(""),
   projectFile: z
     .instanceof(File, {
-      message: 'Please select a file.'
+      message: "Please select a file.",
     })
     .refine((file) => file.size <= MAX_PROJECT_FILE_SIZE, {
-      message: `The project is too large. Please choose a project smaller than ${formatBytes(MAX_PROJECT_FILE_SIZE)}.`
+      message: `The project is too large. Please choose a project smaller than ${formatBytes(MAX_PROJECT_FILE_SIZE)}.`,
     }),
   thumbnailFile: z
     .instanceof(File, {
-      message: 'Please select a file.'
+      message: "Please select a file.",
     })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_FILE_SIZE)}.`
-    })
-})
+    .refine((file) => file.size <= MAX_THUMBNAIL_FILE_SIZE, {
+      message: `The image is too large. Please choose an image smaller than ${formatBytes(MAX_THUMBNAIL_FILE_SIZE)}.`,
+    }),
+});
 
-type schema = z.output<typeof schema>
+type schema = z.output<typeof schema>;
 const state = reactive<Partial<schema>>({
   projectFile: undefined,
   thumbnailFile: undefined,
-  category: "Default"
-})
+  category: "Default",
+});
 
 async function onSubmit(event: FormSubmitEvent<schema>) {
   const payload: UploadProjectRequest = {
     title: event.data.title,
     shortDescription: event.data.shortDescription,
     description: event.data.description,
-    category: event.data.category === "Default"
-      ? null
-      : event.data.category,
+    category: event.data.category === "Default" ? null : event.data.category,
     projectLength: event.data.projectFile.size,
-    thumbnailLength: event.data.thumbnailFile.size
-  }
+    thumbnailLength: event.data.thumbnailFile.size,
+  };
 
   onUploadProcess.value = true;
   upload(payload)
     .then((res) => {
       uploadFiles(res);
     })
-    .catch((error) => {
+    .catch(() => {
       onUploadProcess.value = false;
       toast.add({
         title: "Failed",
         description: "Something wrong!",
         color: "error",
       });
-    })
+    });
 }
 
 async function uploadFiles(data: UploadProjectResponse) {
@@ -105,21 +107,31 @@ async function uploadFiles(data: UploadProjectResponse) {
 
   try {
     await Promise.all([
-      usePreSignedUpload(data.thumbnaiPresignedUrl, "image/png", state.thumbnailFile, thumbnailUploadProgress),
-      usePreSignedUpload(data.projectPresignedUrl, "application/x-simdyo", state.projectFile, projectUploadProgress)
+      usePreSignedUpload(
+        data.thumbnaiPresignedUrl,
+        "image/png",
+        state.thumbnailFile,
+        thumbnailUploadProgress,
+      ),
+      usePreSignedUpload(
+        data.projectPresignedUrl,
+        "application/x-simdyo",
+        state.projectFile,
+        projectUploadProgress,
+      ),
     ]);
 
     toast.add({
       title: "Success",
       description: "Upload successful!",
       color: "success",
-    })
-  } catch (error) {
+    });
+  } catch {
     toast.add({
       title: "Failed",
       description: "Something wrong!",
       color: "error",
-    })
+    });
   } finally {
     onUploadProcess.value = false;
     navigateTo(`/projects/${data.publicId}`);
@@ -127,7 +139,7 @@ async function uploadFiles(data: UploadProjectResponse) {
 }
 
 function createObjectUrl(file: File): string {
-    return URL.createObjectURL(file)
+  return URL.createObjectURL(file);
 }
 
 // extract thumbnail from project file if exist
@@ -137,33 +149,33 @@ watch(
     if (!state.projectFile) return;
 
     try {
-      let zip = await JSZip.loadAsync(state.projectFile);
-      
-      let thumbnailEntry = zip.file("thumbnail.png");
+      const zip = await JSZip.loadAsync(state.projectFile);
+
+      const thumbnailEntry = zip.file("thumbnail.png");
       if (!thumbnailEntry) return;
 
-      let thumbnailBlob = await thumbnailEntry.async("blob");
+      const thumbnailBlob = await thumbnailEntry.async("blob");
       const thumbnailFile = new File([thumbnailBlob], "thumbnail.png", {
         type: thumbnailBlob.type || "image/png",
-        lastModified: thumbnailEntry.date.getTime()
+        lastModified: thumbnailEntry.date.getTime(),
       });
 
       state.thumbnailFile = thumbnailFile;
 
       console.log(thumbnailFile);
-    } catch (error) {
+    } catch {
       console.warn(`No thumbnail in file: ${state.projectFile.name}`);
-    }    
-  }
-)
+    }
+  },
+);
 
 useHead({
-  title: 'Upload',
-})
+  title: "Upload",
+});
 
 definePageMeta({
-  middleware: ['authenticated']
-})
+  middleware: ["authenticated"],
+});
 </script>
 <template>
   <UPage>
@@ -172,8 +184,8 @@ definePageMeta({
       <UForm
         :schema="schema"
         :state="state"
-        @submit="onSubmit"
         class="space-y-4"
+        @submit="onSubmit"
       >
         <div class="flex space-x-4">
           <UFormField
@@ -182,9 +194,9 @@ definePageMeta({
             class=""
           >
             <UFileUpload
+              v-slot="{ open, removeFile }"
               v-model="state.thumbnailFile"
               accept="image/*"
-              v-slot="{ open, removeFile }"
               class="relative aspect-square size-32 mt-2 flex flex-col items-center justify-center bg-default border border-default rounded-lg focus-visible:outline-2"
             >
               <img
@@ -206,18 +218,15 @@ definePageMeta({
                   label="Remove image"
                   color="warning"
                   variant="link"
-                  @click="removeFile()"
                   class="underline"
+                  @click="removeFile()"
                 />
               </div>
               <div
                 v-else
                 class="absolute size-full flex flex-col items-center justify-center gap-3 rounded-lg"
               >
-                <UAvatar
-                  size="md"
-                  icon="i-lucide-image"
-                />
+                <UAvatar size="md" icon="i-lucide-image" />
                 <UButton
                   :label="$t('upload.upload_thumbnail')"
                   color="neutral"
@@ -232,7 +241,7 @@ definePageMeta({
               class="mt-1"
             />
           </UFormField>
-        
+
           <UFormField
             :label="$t('upload.file')"
             name="projectFile"
@@ -249,7 +258,7 @@ definePageMeta({
                 root: 'mt-2 h-32',
                 base: 'flex flex-col items-center justify-center bg-default border border-solid border-default rounded-lg focus-visible:outline-2',
                 wrapper: 'p-0 gap-3',
-                actions: 'm-0'
+                actions: 'm-0',
               }"
             >
               <template #actions="{ open }">
@@ -273,7 +282,10 @@ definePageMeta({
           <UInput v-model="state.title" class="w-full mt-2" />
         </UFormField>
 
-        <UFormField :label="$t('upload.shortDescription')" name="shortDescription">
+        <UFormField
+          :label="$t('upload.shortDescription')"
+          name="shortDescription"
+        >
           <UInput v-model="state.shortDescription" class="w-full mt-2" />
         </UFormField>
 
@@ -300,9 +312,9 @@ definePageMeta({
             autoresize
           />
         </UFormField>
-          
+
         <UButton type="submit" class="mt-4" :loading="onUploadProcess">
-          {{ $t('upload.upload') }}
+          {{ $t("upload.upload") }}
         </UButton>
       </UForm>
     </UCard>

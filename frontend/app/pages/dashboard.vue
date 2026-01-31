@@ -1,87 +1,71 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
-import UserMenu from '~/components/dashboard/UserMenu.vue';
-import { useAuthStore } from '~/stores/auth.store';
+import type { NavigationMenuItem } from "@nuxt/ui";
+import UserMenu from "~/components/dashboard/UserMenu.vue";
+import { useAuthStore } from "~/stores/auth.store";
 
 const { isPermitted } = useAuthStore();
 
-const menu = [{
-  label: $t('dashboard.users'),
-  icon: 'material-symbols:person-outline',
-  to: '/dashboard/users',
-  permissions: ['manage_users']
-}, {
-  label: $t('dashboard.projects'),
-  icon: 'material-symbols:view-object-track-outline',
-  to: '/dashboard/projects',
-  permissions: ['manage_projects']
-}, {
-  label: $t('dashboard.reports'),
-  icon: 'material-symbols:report-outline-rounded',
-  to: '/dashboard/project-reports',
-  permissions: ['manage_project_reports']
-}, {
-  label: $t('dashboard.categories'),
-  icon: 'material-symbols:category-outline-rounded',
-  to: '/dashboard/project-categories',
-  permissions: ['manage_categories']
-}, {
-  label: $t('dashboard.roles'),
-  icon: 'material-symbols:settings-account-box-outline',
-  to: '/dashboard/roles',
-}, {
-  label: $t('dashboard.settings'),
-  icon: 'material-symbols:settings-outline',
-  to: '/account'
-}]
+const menu = [
+  {
+    label: $t("dashboard.users"),
+    icon: "material-symbols:person-outline",
+    to: "/dashboard/users",
+    permissions: ["manage_users"],
+  },
+  {
+    label: $t("dashboard.projects"),
+    icon: "material-symbols:view-object-track-outline",
+    to: "/dashboard/projects",
+    permissions: ["manage_projects"],
+  },
+  {
+    label: $t("dashboard.reports"),
+    icon: "material-symbols:report-outline-rounded",
+    to: "/dashboard/project-reports",
+    permissions: ["manage_project_reports"],
+  },
+  {
+    label: $t("dashboard.categories"),
+    icon: "material-symbols:category-outline-rounded",
+    to: "/dashboard/project-categories",
+    permissions: ["manage_categories"],
+  },
+  {
+    label: $t("dashboard.roles"),
+    icon: "material-symbols:settings-account-box-outline",
+    to: "/dashboard/roles",
+  },
+  {
+    label: $t("dashboard.settings"),
+    icon: "material-symbols:settings-outline",
+    to: "/account",
+  },
+];
 
 const items: NavigationMenuItem[] = menu
-    .filter(item => !item.permissions || isPermitted(item.permissions))
-    .map(item => { return {
-          label: item.label,
-          icon: item.icon,
-          to: item.to
-      } as NavigationMenuItem
-    })
-
-// const items: NavigationMenuItem[] = [
-// ...(isPermitted(["manage_users"]) ? [ 
-//   {
-//     label: 'Users',
-//     icon: 'material-symbols:person-outline',
-//     to: '/dashboard/users'
-//   }
-// ] : []),
-// ...(isPermitted(["manage_projects"]) ? [ 
-//   {
-//     label: 'Projects',
-//     icon: 'material-symbols:view-object-track-outline',
-//     to: '/dashboard/projects'
-//   }
-// ] : []), {
-//     label: 'Reports',
-//     icon: 'material-symbols:report-outline-rounded',
-//     to: '/dashboard/project-reports'
-// }, {
-//     label: 'Categories',
-//     icon: 'material-symbols:category-outline-rounded',
-//     to: '/dashboard/project-categories'
-// }, {
-//     label: 'Settings',
-//     icon: 'material-symbols:settings-outline',
-//     to: '/account'
-// }]
+  .filter((item) => !item.permissions || isPermitted(item.permissions))
+  .map((item) => {
+    return {
+      label: item.label,
+      icon: item.icon,
+      to: item.to,
+    } as NavigationMenuItem;
+  });
 
 definePageMeta({
-  layout: 'admin',
-  middleware: ['admin-authorization']
+  layout: "admin",
+  middleware: ["admin-authorization"],
 });
 </script>
 
 <template>
   <UDashboardGroup>
-    <UDashboardSidebar collapsible resizable :ui="{ footer: 'border-t border-default' }">
-      <template #header="{ collapsed }">
+    <UDashboardSidebar
+      collapsible
+      resizable
+      :ui="{ footer: 'border-t border-default' }"
+    >
+      <template #header="{}">
         <NuxtLink
           to="/"
           class="p-2.5 focus-visible:outline-primary hover:text-default transition-colors shrink-0 font-bold text-xl text-highlighted flex items-end gap-1.5 me-4"
@@ -89,12 +73,12 @@ definePageMeta({
           Simdyo
         </NuxtLink>
       </template>
-      
+
       <template #default="{ collapsed }">
         <UNavigationMenu
-            :collapsed="collapsed"
-            :items="items"
-            orientation="vertical"
+          :collapsed="collapsed"
+          :items="items"
+          orientation="vertical"
         />
       </template>
 
@@ -104,7 +88,6 @@ definePageMeta({
       </template>
     </UDashboardSidebar>
 
-    <NuxtPage></NuxtPage>
+    <NuxtPage />
   </UDashboardGroup>
 </template>
-
