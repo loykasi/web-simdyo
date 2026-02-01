@@ -33,9 +33,15 @@ const items = computed<NavigationMenuItem[]>(() => [
       ]
     : []),
 ]);
+
 </script>
 <template>
-  <UHeader>
+  <UHeader
+    mode="modal"
+    :toggle="{
+      class: 'block md:hidden'
+    }"
+  >
     <template #left>
       <NuxtLink
         to="/"
@@ -43,7 +49,17 @@ const items = computed<NavigationMenuItem[]>(() => [
       >
         Simdyo
       </NuxtLink>
-      <UNavigationMenu :items="items" variant="pill" />
+      <UNavigationMenu :items="items" variant="pill" class="hidden md:block" />
+    </template>
+
+    <template #body>
+      <UNavigationMenu :items="items" orientation="vertical" />
+      <ULocaleSelect
+          :model-value="locale"
+          :locales="[en, vi]"
+          class="block sm:hidden"
+          @update:model-value="setLocale($event)"
+        />
     </template>
 
     <template #right>
@@ -51,6 +67,7 @@ const items = computed<NavigationMenuItem[]>(() => [
         <ULocaleSelect
           :model-value="locale"
           :locales="[en, vi]"
+          class="hidden sm:block"
           @update:model-value="setLocale($event)"
         />
         <UColorModeButton />

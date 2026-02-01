@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Pagination } from "~/types/pagination.type";
 import type { ProjectResponse } from "~/types/project.type";
+import ProjectList from "../explore/ProjectList.vue";
 
 const route = useRoute();
 const username = route.params.username as string;
@@ -36,7 +37,7 @@ async function updatePage(page: number) {
 }
 </script>
 <template>
-  <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+  <!-- <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
     <template v-if="projectPagePending">
       <div
         v-for="item in pageSize"
@@ -56,7 +57,9 @@ async function updatePage(page: number) {
         :project="project"
       />
     </template>
-  </div>
+  </div> -->
+
+  <ProjectList :pending="projectPagePending" :pagination="projectPage" />
 
   <div class="mt-4 flex justify-end">
     <UPagination

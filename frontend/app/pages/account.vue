@@ -13,7 +13,7 @@ const items = [
 ];
 
 definePageMeta({
-  middleware: ["authenticated"],
+  middleware: ["admin-authorization"],
 });
 </script>
 

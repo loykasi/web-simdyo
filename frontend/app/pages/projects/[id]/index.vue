@@ -180,7 +180,6 @@ const containerRef = useTemplateRef<HTMLDivElement>("container-ref");
 
 // scale this for responsive
 const innerContainerRef = useTemplateRef<HTMLDivElement>("inner-container-ref");
-
 const gamePlayerRef = useTemplateRef<HTMLDivElement>("game-player-ref");
 
 const minHeight = 360;
@@ -196,7 +195,14 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", onResize);
 });
 
-function onResize(event: Event) {
+watch(
+  () => gamePlayerRef.value && containerRef.value && innerContainerRef.value,
+  () => {
+    onResize();
+  }
+)
+
+function onResize(event: Event | null = null) {
   if (!gamePlayerRef.value || !containerRef.value || !innerContainerRef.value)
     return;
 
@@ -209,7 +215,7 @@ function onResize(event: Event) {
     controllerHeight +
     margin;
 
-  const target = event.target as Window;
+  const target = (event?.target as Window) || window;
   const visibleHeight = Math.max(
     Math.min(target.innerHeight, defaultHeight),
     minHeight,
@@ -283,52 +289,56 @@ function onResize(event: Event) {
             </div>
             <div class="flex items-center gap-x-2">
               <ClientOnly>
-                <UButton color="neutral" variant="ghost" @click="reactLike">
-                  <div
-                    v-if="reactionStatus === 'Like'"
-                    class="text-primary flex items-center"
-                  >
-                    <UIcon
-                      name="material-symbols:favorite"
-                      class="block size-6"
-                    />
-                    <span class="block ms-2 font-semibold text-xl">{{
-                      project.likeCount
-                    }}</span>
-                  </div>
-                  <div v-else class="flex items-center">
-                    <UIcon
-                      name="material-symbols:favorite-outline"
-                      class="block size-6"
-                    />
-                    <span class="block ms-2 font-semibold text-xl">{{
-                      project.likeCount
-                    }}</span>
-                  </div>
-                </UButton>
-                <UButton color="neutral" variant="ghost" @click="reactOkay">
-                  <div
-                    v-if="reactionStatus === 'Okay'"
-                    class="text-primary flex items-center"
-                  >
-                    <UIcon
-                      name="material-symbols:sentiment-neutral"
-                      class="block size-6"
-                    />
-                    <span class="block ms-2 font-semibold text-xl">{{
-                      project.okayCount
-                    }}</span>
-                  </div>
-                  <div v-else class="flex items-center">
-                    <UIcon
-                      name="material-symbols:sentiment-neutral-outline"
-                      class="block size-6"
-                    />
-                    <span class="block ms-2 font-semibold text-xl">{{
-                      project.okayCount
-                    }}</span>
-                  </div>
-                </UButton>
+                <UTooltip text="I love this!">
+                  <UButton color="neutral" variant="ghost" @click="reactLike">
+                    <div
+                      v-if="reactionStatus === 'Like'"
+                      class="text-primary flex items-center"
+                    >
+                      <UIcon
+                        name="material-symbols:favorite"
+                        class="block size-6"
+                      />
+                      <span class="block ms-2 font-semibold text-xl">{{
+                        project.likeCount
+                      }}</span>
+                    </div>
+                    <div v-else class="flex items-center">
+                      <UIcon
+                        name="material-symbols:favorite-outline"
+                        class="block size-6"
+                      />
+                      <span class="block ms-2 font-semibold text-xl">{{
+                        project.likeCount
+                      }}</span>
+                    </div>
+                  </UButton>
+                </UTooltip>
+                <UTooltip text="Nice try!">
+                  <UButton color="neutral" variant="ghost" @click="reactOkay">
+                    <div
+                      v-if="reactionStatus === 'Okay'"
+                      class="text-primary flex items-center"
+                    >
+                      <UIcon
+                        name="material-symbols:sentiment-neutral"
+                        class="block size-6"
+                      />
+                      <span class="block ms-2 font-semibold text-xl">{{
+                        project.okayCount
+                      }}</span>
+                    </div>
+                    <div v-else class="flex items-center">
+                      <UIcon
+                        name="material-symbols:sentiment-neutral-outline"
+                        class="block size-6"
+                      />
+                      <span class="block ms-2 font-semibold text-xl">{{
+                        project.okayCount
+                      }}</span>
+                    </div>
+                  </UButton>
+                </UTooltip>
               </ClientOnly>
             </div>
           </div>

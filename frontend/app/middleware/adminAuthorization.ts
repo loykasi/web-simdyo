@@ -8,6 +8,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
 
   if (user.value?.isUseOTP) {
-    return navigateTo(`/login?redirect=${encodeURIComponent("/dashboard")}`);
+    return navigateTo(`/login?redirect=${encodeURIComponent(to.path)}`);
   }
 });
