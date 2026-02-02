@@ -37,6 +37,9 @@ namespace Scratch.Infrastructure
             builder.Entity<ProjectReaction>()
                 .Property(r => r.Type)
                 .HasConversion<string>();
+
+            builder.Entity<UserDailyUploadStats>()
+                .HasKey(u => new { u.UserId, u.Date });
         }
 
         public override int SaveChanges()
@@ -78,5 +81,6 @@ namespace Scratch.Infrastructure
         public DbSet<ProjectReport> ProjectReports { get; set; }
         public DbSet<ProjectBan> ProjectBans { get; set; }
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
+        public DbSet<UserDailyUploadStats> UserDailyUploadStats { get; set; }
     }
 }

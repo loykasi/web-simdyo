@@ -8,37 +8,24 @@ using Scratch.Infrastructure.Respositories;
 
 namespace Scratch.Infrastructure
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(
+        ApplicationDbContext dbContext,
+        UserManager<User> userManager,
+        RoleManager<Role> roleManager
+    ) : IUnitOfWork
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
-        public IUserRespository UserRespository { get; }
-        public IProjectRepository ProjectRepository { get; }
-        public IProjectReactionRepository ProjectReactionRepository { get; }
-        public IProjectCommentRepository ProjectCommentRepository { get; }
-        public IUserBanRepository UserBanRepository { get; }
-        public IProjectReportRepository ProjectReportRepository { get; }
-        public IProjectBanRepository ProjectBanRepository { get; }
-        public IProjectCategoryRepository ProjectCategoryRepository { get; }
-        public IRoleRepository RoleRepository { get; }
-
-        public UnitOfWork(
-            ApplicationDbContext dbContext,
-            UserManager<User> userManager,
-            RoleManager<Role> roleManager
-        )
-        {
-            _dbContext = dbContext;
-            UserRespository = new UserRepository(dbContext, userManager);
-            ProjectRepository = new ProjectRepository(dbContext);
-            ProjectReactionRepository = new ProjectReactionRepository(dbContext);
-            ProjectCommentRepository = new ProjectCommentRepository(dbContext);
-            UserBanRepository = new UserBanRepository(dbContext);
-            ProjectReportRepository = new ProjectReportRepository(dbContext);
-            ProjectBanRepository = new ProjectBanRepository(dbContext);
-            ProjectCategoryRepository = new ProjectCategoryRepository(dbContext);
-            RoleRepository = new RoleRepository(dbContext, roleManager);
-        }
+        public IUserRespository UserRespository { get; } = new UserRepository(dbContext, userManager);
+        public IProjectRepository ProjectRepository { get; } = new ProjectRepository(dbContext);
+        public IProjectReactionRepository ProjectReactionRepository { get; } = new ProjectReactionRepository(dbContext);
+        public IProjectCommentRepository ProjectCommentRepository { get; } = new ProjectCommentRepository(dbContext);
+        public IUserBanRepository UserBanRepository { get; } = new UserBanRepository(dbContext);
+        public IProjectReportRepository ProjectReportRepository { get; } = new ProjectReportRepository(dbContext);
+        public IProjectBanRepository ProjectBanRepository { get; } = new ProjectBanRepository(dbContext);
+        public IProjectCategoryRepository ProjectCategoryRepository { get; } = new ProjectCategoryRepository(dbContext);
+        public IRoleRepository RoleRepository { get; } = new RoleRepository(dbContext, roleManager);
+        public IUserDailyUploadStatsRepository UserDailyUploadStatsRepository { get; } = new UserDailyUploadStatsRepository(dbContext);
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {

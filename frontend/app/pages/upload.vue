@@ -9,6 +9,7 @@ import type {
 } from "~/types/project.type";
 import { usePreSignedUpload } from "~/composables/usePreSignedUpload";
 import { MAX_PROJECT_FILE_SIZE, MAX_THUMBNAIL_FILE_SIZE } from "~/constants";
+import type { DailyUploadLimitResponse } from "~/types/dailyUploadLimit.type";
 
 const toast = useToast();
 const { upload } = useProject();
@@ -22,6 +23,17 @@ const { data: categories, pending: categoryPending } = await useLazyAsyncData(
     useAPI<string[]>(`projects/categories/all`, {
       method: "GET",
     }),
+);
+
+const { data: limitStat, pending: limitStatPending  } = await useAsyncData(
+  "uploadDailyLimit",
+  () =>
+    useAPI<DailyUploadLimitResponse>(`projects/upload-limit`, {
+      method: "GET",
+    }),
+  {
+    server: false
+  }
 );
 
 watchEffect(() => {
@@ -313,9 +325,23 @@ definePageMeta({
           />
         </UFormField>
 
-        <UButton type="submit" class="mt-4" :loading="onUploadProcess">
-          {{ $t("upload.upload") }}
-        </UButton>
+        <div
+          v-if="!limitStatPending && limitStat"
+          class="flex gap-x-4 items-center"
+        >
+          <UButton
+            type="submit"
+            :loading="onUploadProcess"
+            :disabled="limitStat.remaining == 0"
+          >
+            {{ $t("upload.upload") }}
+          </UButton>
+          <div
+            class="text-warning font-medium"
+          >
+            {{ limitStat.remaining }} uploads left today
+          </div>
+        </div>
       </UForm>
     </UCard>
   </UPage>

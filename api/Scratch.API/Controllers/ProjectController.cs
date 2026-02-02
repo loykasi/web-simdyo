@@ -44,6 +44,14 @@ namespace Scratch.API.Controllers
             return ToApiResult(result);
         }
 
+        [HttpGet("upload-limit")]
+        public async Task<IActionResult> GetDailyLimit()
+        {
+            var result = await projectService.GetDailyLimit();
+
+            return ToApiResult(result);
+        }
+
         [HttpPost]
         [Authorize]
         [Route("upload")]

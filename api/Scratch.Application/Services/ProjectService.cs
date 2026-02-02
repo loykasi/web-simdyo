@@ -19,6 +19,7 @@ namespace Scratch.Application.Services
     {
         private const long _thumbnailSizeLimit = 2 * 1024 * 1024;
         private const long _projectSizeLimit = 15 * 1024 * 1024;
+        private const int _uploadLimit = 3;
 
         public async Task<Result<Pagination<ProjectResponse>>> GetAll(
             string? filter,
@@ -116,22 +117,44 @@ namespace Scratch.Application.Services
 
         public async Task<Result<UploadProjectResponse>> RequestUpload(UploadProjectRequest request)
         {
-            // TO DO: validate files size
-            if (request.ThumbnailLength > _thumbnailSizeLimit||
-                request.ProjectLength > _projectSizeLimit)
-            {
-                return Result.BadRequest<UploadProjectResponse>
-                (
-                    new Error("Profile.Validation", "File size exceeds limit")
-                );
-            }
-
             var user = await currentUserService.GetUserAsync();
             if (user == null)
             {
                 return Result.NotFound<UploadProjectResponse>
                 (
                     new Error("Profile.InvalidUserToken", "Invalid token")
+                );
+            }
+
+            var date = DateOnly.FromDateTime(DateTime.Now);
+            var stat = await unitOfWork.UserDailyUploadStatsRepository
+                .GetByUserIdAsync(user.Id, date);
+
+            if (stat == null)
+            {
+                stat = new UserDailyUploadStats
+                {
+                    User = user,
+                    Date = date,
+                    UploadCount = 0
+                };
+                unitOfWork.UserDailyUploadStatsRepository.Add(stat);
+            }
+
+            if (stat.UploadCount >= _uploadLimit)
+            {
+                return Result.BadRequest<UploadProjectResponse>
+                (
+                    new Error("Project.LimitReached", "Daily upload limit reached")
+                );
+            }
+
+            if (request.ThumbnailLength > _thumbnailSizeLimit||
+                request.ProjectLength > _projectSizeLimit)
+            {
+                return Result.BadRequest<UploadProjectResponse>
+                (
+                    new Error("Project.Validation", "File size exceeds limit")
                 );
             }
 
@@ -188,14 +211,15 @@ namespace Scratch.Application.Services
                 );
             }
 
+            stat.UploadCount++;
+            await unitOfWork.SaveChangesAsync();
+
             var uploadResponse = new UploadProjectResponse
             (
                 PublicId: project.PublicId,
                 ProjectPresignedUrl: projectPresignedUrl,
                 ThumbnaiPresignedUrl: thumbnailPresignedUrl
             );
-
-            await unitOfWork.SaveChangesAsync();
 
             return Result.Success(uploadResponse);
         }
@@ -379,6 +403,31 @@ namespace Scratch.Application.Services
             return Result.Success();
         }
 
-        private string GetUniqueHash => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString("x");
+        public async Task<Result<DailyUploadLimitResponse>> GetDailyLimit()
+        {
+            var user = await currentUserService.GetUserAsync();
+
+            if (user == null)
+            {
+                return Result.UnAuthorized<DailyUploadLimitResponse>
+                (
+                    new Error("Auth.Unauthorized", $"Unauthorized")
+                );
+            }
+
+            var date = DateOnly.FromDateTime(DateTime.Now);
+            var dailyLimit = await unitOfWork.UserDailyUploadStatsRepository
+                .GetByUserIdAsync(user.Id, date);
+
+            var response = new DailyUploadLimitResponse
+            {
+                Limit = _uploadLimit,
+                UploadCount = dailyLimit != null ? dailyLimit.UploadCount : 0
+            };
+
+            return Result.Success(response);
+        }
+
+        private static string GetUniqueHash => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString("x");
     }
 }
