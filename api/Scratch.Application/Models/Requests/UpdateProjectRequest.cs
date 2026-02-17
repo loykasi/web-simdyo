@@ -5,7 +5,6 @@ namespace Scratch.Application.Models.Requests
     public record UpdateProjectRequest
     {
         public required string Title { get; set; }
-        public required string ShortDescription { get; set; }
         public required string Description { get; set; }
         public string? Category { get; set; }
         public long? ProjectLength { get; set; }

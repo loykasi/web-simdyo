@@ -1,6 +1,5 @@
 export interface UploadProjectRequest {
   title: string;
-  shortDescription: string;
   description: string;
   category: string | null;
   projectLength: number;
@@ -9,7 +8,6 @@ export interface UploadProjectRequest {
 
 export interface UpdateProjectRequest {
   title: string;
-  shortDescription: string;
   description: string;
   category: string | null;
   projectLength: number | null;

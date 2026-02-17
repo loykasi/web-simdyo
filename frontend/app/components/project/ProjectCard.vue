@@ -62,7 +62,7 @@ defineProps<{
     <div class="py-2 h-32 flex flex-col flex-1">
       <NuxtLink
         :to="`/projects/${project.publicId}`"
-        class="text-base text-primary line-clamp-1 font-bold hover:underline"
+        class="text-base text-primary line-clamp-2 font-bold hover:underline"
       >
         {{ project.title }}
       </NuxtLink>
@@ -75,16 +75,16 @@ defineProps<{
           {{ project.username }}
         </NuxtLink>
       </div>
-      <div class="flex-1 mt-2">
+      <!-- <div class="flex-1 mt-2">
         <UTooltip :text="project.shortDescription" :delay-duration="200">
           <p class="line-clamp-2 overflow-hidden">
             {{ project.shortDescription }}
           </p>
         </UTooltip>
-      </div>
-      <!-- <div class="">
-        <UBadge color="neutral" variant="soft">Game</UBadge>
       </div> -->
+      <div class="mt-2 flex-1 flex items-start">
+        <UBadge color="neutral" variant="soft">Game</UBadge>
+      </div>
     </div>
 
     <div class="py-2 pe-4 flex flex-col items-end justify-center gap-y-2">

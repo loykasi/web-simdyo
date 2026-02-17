@@ -174,7 +174,6 @@ namespace Scratch.Application.Services
             Project project = new()
             {
                 Name = request.Title,
-                ShortDescription = request.ShortDescription,
                 Description = request.Description,
                 Category = category,
                 User = user
@@ -264,7 +263,6 @@ namespace Scratch.Application.Services
             }
             
             project.Name = request.Title;
-            project.ShortDescription = request.ShortDescription;
             project.Description = request.Description;
 
             if (request.Category != null)

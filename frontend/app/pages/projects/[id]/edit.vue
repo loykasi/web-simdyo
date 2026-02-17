@@ -80,7 +80,6 @@ function createObjectUrl(file: File): string {
 async function onSubmit(event: FormSubmitEvent<schema>) {
   const payload: UpdateProjectRequest = {
     title: event.data.title,
-    shortDescription: event.data.shortDescription,
     description: event.data.description,
     category: event.data.category === "Default" ? null : event.data.category,
     projectLength: event.data.projectFile ? event.data.projectFile.size : null,
@@ -373,13 +372,6 @@ useHead({
 
         <UFormField :label="$t('upload.title')" name="title">
           <UInput v-model="state.title" class="w-full mt-2" />
-        </UFormField>
-
-        <UFormField
-          :label="$t('upload.shortDescription')"
-          name="shortDescription"
-        >
-          <UInput v-model="state.shortDescription" class="w-full mt-2" />
         </UFormField>
 
         <UFormField :label="$t('upload.category')" name="category">

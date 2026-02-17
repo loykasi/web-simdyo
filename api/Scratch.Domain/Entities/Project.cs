@@ -4,7 +4,6 @@
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required string ShortDescription { get; set; }
         public required string Description { get; set; }
         public string PublicId { get; set; } = "";
         public string FileLink { get; set; } = "";

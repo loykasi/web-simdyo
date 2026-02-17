@@ -4,7 +4,6 @@
     (
         string PublicId,
         string Title,
-        string ShortDescription,
         string Description,
         string? Category,
         string ProjectLink,
