@@ -7,10 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Scratch.Application.Abstracts;
+using Scratch.Application.Interfaces.Schedulers;
 using Scratch.Application.Interfaces.Services;
 using Scratch.Application.Services;
 using Scratch.Domain.Entities;
 using Scratch.Infrastructure.Options;
+using Scratch.Infrastructure.Scheduler;
 using Scratch.Infrastructure.Services;
 using Scratch.Infrastructure.TokenProviders;
 using System.Text;
@@ -114,6 +116,8 @@ namespace Scratch.Infrastructure
             services.AddScoped<ICookieService, CookieService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IPublicIdService, PublicIdService>();
+
+            services.AddScoped<IRefreshTokenScheduler, RefreshTokenScheduler>();
 
             services.AddSingleton<IObjectStorageService, ObjectStorageService>();
 

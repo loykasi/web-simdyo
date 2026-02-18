@@ -104,4 +104,6 @@ app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
 
+HangfireJobRegistrar.Register();
+
 app.Run();
