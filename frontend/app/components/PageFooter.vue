@@ -3,14 +3,12 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const items: NavigationMenuItem[] = [
   {
-    label: $t("footer.privacy"),
-    to: "/#",
-    target: "_blank",
+    label: $t("footer.rules"),
+    to: "/rules",
   },
   {
     label: $t("footer.terms"),
-    to: "/#",
-    target: "_blank",
+    to: "/terms",
   },
   {
     label: $t("footer.feedback"),
