@@ -11,7 +11,7 @@ namespace API.Extensions
             (
                 "cleanup-refreshtoken",
                 job => job.RemoveExpiredRefreshTokenAsync(),
-                Cron.Minutely
+                Cron.Daily
             );
         }
     }
