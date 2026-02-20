@@ -4,6 +4,11 @@ import type { ProjectResponse } from "~/types/project.type";
 defineProps<{
   project: ProjectResponse;
 }>();
+
+const formatter = new Intl.NumberFormat("en", {
+  notation: "compact",
+  compactDisplay: "short",
+});
 </script>
 <template>
   <!-- <div
@@ -89,11 +94,11 @@ defineProps<{
 
     <div class="py-2 pe-4 flex flex-col items-end justify-center gap-y-2">
       <div class="flex items-center gap-1 text-muted">
-        <span class="font-bold text-xl">{{ project.likeCount }}</span>
+        <span class="font-bold text-lg">{{ formatter.format(project.likeCount) }}</span>
         <UIcon name="lucide:heart" class="size-5 mt-0.5" />
       </div>
       <div class="flex items-center gap-1 text-muted">
-        <span class="font-bold text-xl">{{ project.okayCount }}</span>
+        <span class="font-bold text-lg">{{ formatter.format(project.okayCount) }}</span>
         <UIcon name="lucide:meh" class="size-5 mt-0.5" />
       </div>
       <!-- <div class="flex items-center gap-1 text-muted">
