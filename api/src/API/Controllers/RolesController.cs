@@ -10,7 +10,7 @@ namespace API.Controllers
     public class RolesController(IRoleService roleService) : BaseController
     {
         [HttpGet]
-        [RequirePermission(Permissions.ManageRoles, Permissions.ManageUsers)]
+        [RequirePermission(Permissions.ManageRoles)]
         public async Task<IActionResult> GetAllRoles([FromQuery] bool nameOnly)
         {
             if (nameOnly)
@@ -28,7 +28,6 @@ namespace API.Controllers
         public async Task<IActionResult> AddRole(AddRoleRequest payload)
         {
             var result = await roleService.Add(payload);
-            
             return ToApiResult(result);
         }
 
@@ -37,7 +36,6 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateRole(int id, UpdateRoleRequest payload)
         {
             var result = await roleService.Update(id, payload);
-
             return ToApiResult(result);
         }
 
@@ -46,7 +44,6 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteRole(int id)
         {
             var result = await roleService.Delete(id);
-
             return ToApiResult(result);
         }
 
@@ -66,7 +63,6 @@ namespace API.Controllers
         )
         {
             var result = await roleService.UpdateRolePermissions(roleId, payload);
-
             return ToApiResult(result);
         }
     }

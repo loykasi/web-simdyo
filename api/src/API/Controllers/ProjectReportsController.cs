@@ -16,7 +16,6 @@ namespace API.Controllers
             [FromQuery] string? filter, [FromQuery] int? page, [FromQuery] int? limit)
         {
             var result = await projectReportService.Get(filter, page, limit);
-
             return ToApiResult(result);
         }
 
@@ -25,7 +24,6 @@ namespace API.Controllers
         public async Task<IActionResult> Report(string publicId, ReportProjectRequest payload)
         {
             var result = await projectReportService.AddReport(publicId, payload);
-
             return ToApiResult(result);
         }
     }

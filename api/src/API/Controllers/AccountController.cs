@@ -14,7 +14,6 @@ namespace API.Controllers
         public async Task<IActionResult> ResetPassword(ChangePasswordRequest changePasswordRequest)
         {
             var result = await authService.ChangePassword(changePasswordRequest);
-
             return ToApiResult(result);
         }
 
@@ -23,7 +22,6 @@ namespace API.Controllers
         public async Task<IActionResult> GetProfile(string username)
         {
             var result = await authService.GetProfileDetail(username);
-
             return ToApiResult(result);
         }
     }

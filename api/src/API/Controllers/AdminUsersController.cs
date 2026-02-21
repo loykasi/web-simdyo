@@ -2,6 +2,7 @@
 using Application.Interfaces.Services;
 using Application.Models.Requests.Account;
 using Application.Models.Requests.Role;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -19,7 +20,6 @@ namespace API.Controllers
         public async Task<IActionResult> GetUsers([FromQuery] string? searchTerm, [FromQuery] int? pageNumber, [FromQuery] int? limit)
         {
             var result = await userService.Get(searchTerm, pageNumber, limit);
-
             return ToApiResult(result);
         }
 
@@ -27,7 +27,6 @@ namespace API.Controllers
         public async Task<IActionResult> SetRole(string id, SetUserRoleRequest payload)
         {
             var result = await userService.SetRole(id, payload);
-
             return ToApiResult(result);
         }
 
@@ -35,7 +34,6 @@ namespace API.Controllers
         public async Task<IActionResult> Ban(int userId, UserBanRequest payload)
         {
             var result = await userBanService.Ban(userId, payload);
-
             return ToApiResult(result);
         }
 
@@ -43,7 +41,6 @@ namespace API.Controllers
         public async Task<IActionResult> Unban(int userId)
         {
             var result = await userBanService.RevokeBan(userId);
-
             return ToApiResult(result);
         }
     }

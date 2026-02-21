@@ -23,25 +23,20 @@ namespace API.Controllers
         )
         {
             var result = await projectService.GetAll(search, page, limit);
-
             return ToApiResult(result);
         }
 
         [HttpPost("{publicId}/ban")]
-        [Authorize]
         public async Task<IActionResult> Ban(string publicId, BanProjectRequest payload)
         {
             var result = await projectBanService.AddBan(publicId, payload);
-            
             return ToApiResult(result);
         }
 
         [HttpDelete("{publicId}/ban")]
-        [Authorize]
         public async Task<IActionResult> Unban(string publicId)
         {
             var result = await projectBanService.RevokeBan(publicId);
-
             return ToApiResult(result);
         }
     }
