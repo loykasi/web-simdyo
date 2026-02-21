@@ -1,10 +1,13 @@
 ﻿using Application.Authorization;
 using Domain.Entities;
 using Domain.Options;
+using Infrastructure.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Infrastructure
@@ -16,9 +19,10 @@ namespace Infrastructure
             using var scope = app.Services.CreateScope();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+            var accountOptions = scope.ServiceProvider.GetRequiredService<IOptions<AccountOptions>>();
             
             await SeedRolesAndPermissions(roleManager);
-            await SeedAdmin(userManager);
+            await SeedAdmin(userManager, accountOptions);
             await FixNullSecurityStamps(userManager);
         }
 
@@ -62,17 +66,28 @@ namespace Infrastructure
             }
         }
 
-        public static async Task SeedAdmin(UserManager<User> userManager)
+        public static async Task SeedAdmin(UserManager<User> userManager, IOptions<AccountOptions> options)
         {
-            var adminEmail = "admin@gmail.com";
-            var adminPassword = "123456";
+            // var adminEmail = "admin@gmail.com";
+            // var adminPassword = "123456";
+
+            string? adminUsername = options.Value.Username;
+            string? adminEmail = options.Value.Email;
+            string? adminPassword = options.Value.Password;
+
+            if (string.IsNullOrWhiteSpace(adminUsername)
+                || string.IsNullOrWhiteSpace(adminEmail)
+                || string.IsNullOrWhiteSpace(adminPassword))
+            {
+                return;
+            }
 
             var userExist = await userManager.FindByEmailAsync(adminEmail);
             if (userExist == null)
             {
                 var adminUser = new User
                 {
-                    UserName = "admin",
+                    Username = adminUsername,
                     Email = adminEmail,
                     EmailConfirmed = true
                 };

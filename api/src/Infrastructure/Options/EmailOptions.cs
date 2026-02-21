@@ -2,11 +2,15 @@
 {
     public class EmailOptions
     {
-        public const string EmailOptionsKey = "SmtpSettings";
+        public const string OptionsKey = "SmtpSettings";
 
-        public string SmtpServer { get; set; }
-        public int SmtpPort { get; set; }
-        public string FromEmail { get; set; }
-        public string FromName { get; set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string Email { get; set; }
+        public string From { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public bool UseSsl { get; set; }
+        public bool IsAuthenticated { get; set; }
     }
 }

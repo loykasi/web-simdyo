@@ -20,7 +20,7 @@ namespace Infrastructure.Services
         public async Task SendMail(EmailMessage emailMessage)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail));
+            message.From.Add(new MailboxAddress(_options.From, _options.Email));
             message.To.Add(new MailboxAddress(emailMessage.ToName, emailMessage.ToEmail));
             message.Subject = emailMessage.Subject;
             message.Body = new TextPart("html")
@@ -29,8 +29,11 @@ namespace Infrastructure.Services
             };
 
             using var client = new SmtpClient();
-            await client.ConnectAsync(_options.SmtpServer, _options.SmtpPort, false);
-            //client.Authenticate("joey", "password");
+            await client.ConnectAsync(_options.Host, _options.Port, _options.UseSsl);
+            if (_options.IsAuthenticated)
+            {
+                await client.AuthenticateAsync(_options.Username, _options.Password);   
+            }
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
         }

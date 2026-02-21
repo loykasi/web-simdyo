@@ -28,13 +28,16 @@ namespace Infrastructure
                 builder.Configuration.GetSection(JwtOptions.JwtOptionKey)
             );
             builder.Services.Configure<EmailOptions>(
-                builder.Configuration.GetSection(EmailOptions.EmailOptionsKey)
+                builder.Configuration.GetSection(EmailOptions.OptionsKey)
             );
             builder.Services.Configure<URLOptions>(
                 builder.Configuration.GetSection(URLOptions.OptionKey)
             );
             builder.Services.Configure<S3Options>(
                 builder.Configuration.GetSection(S3Options.OptionsKey)
+            );
+            builder.Services.Configure<AccountOptions>(
+                builder.Configuration.GetSection(AccountOptions.OptionsKey)
             );
         }
 
