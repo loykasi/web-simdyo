@@ -1,6 +1,6 @@
 ﻿using Application.Results;
-using Application.Models.Requests;
-using Application.Models.Responses;
+using Application.Models.Requests.Role;
+using Application.Models.Responses.Role;
 
 namespace Application.Interfaces.Services
 {

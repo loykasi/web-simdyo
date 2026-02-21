@@ -1,6 +1,6 @@
 ﻿using Application.Authorization;
 using Application.Interfaces.Repositories;
-using Application.Models.Responses;
+using Application.Models.Responses.Role;
 using Domain.Entities;
 using Domain.Options;
 using Microsoft.AspNetCore.Identity;

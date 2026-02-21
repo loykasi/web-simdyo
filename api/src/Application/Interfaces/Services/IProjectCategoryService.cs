@@ -1,6 +1,6 @@
 ﻿using Application.Results;
-using Application.Models.Responses;
-using Application.Models.Requests;
+using Application.Models.Requests.ProjectCategory;
+using Application.Models.Responses.ProjectCategory;
 
 namespace Application.Interfaces.Services
 {

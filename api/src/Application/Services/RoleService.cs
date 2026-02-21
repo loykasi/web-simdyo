@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Services;
-using Application.Models.Requests;
-using Application.Models.Responses;
+using Application.Models.Requests.Role;
+using Application.Models.Responses.Role;
 using Application.Results;
 using Domain.Entities;
 

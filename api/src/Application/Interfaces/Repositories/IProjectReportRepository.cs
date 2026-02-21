@@ -1,4 +1,4 @@
-﻿using Application.Models.Responses;
+﻿using Application.Models.Responses.Project;
 using Domain.Entities;
 
 namespace Application.Interfaces.Repositories

@@ -1,7 +1,8 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Services;
 using Application.Models.Requests;
-using Application.Models.Responses;
+using Application.Models.Requests.Project;
+using Application.Models.Responses.Project;
 using Application.Results;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;

@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Services;
 using Application.Models.Requests;
+using Application.Models.Requests.Project;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +46,7 @@ namespace API.Controllers
         }
 
         [HttpGet("upload-limit")]
+        [Authorize]
         public async Task<IActionResult> GetDailyLimit()
         {
             var result = await projectService.GetDailyLimit();

@@ -1,4 +1,4 @@
-﻿using Application.Models.Responses;
+﻿using Application.Models.Responses.ProjectCategory;
 using Domain.Entities;
 
 namespace Application.Mappings

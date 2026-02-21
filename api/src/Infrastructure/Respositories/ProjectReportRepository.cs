@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.Repositories;
-using Application.Models.Responses;
+using Application.Models.Responses.Project;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

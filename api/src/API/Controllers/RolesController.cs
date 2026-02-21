@@ -1,6 +1,6 @@
 ﻿using Application.Authorization;
 using Application.Interfaces.Services;
-using Application.Models.Requests;
+using Application.Models.Requests.Role;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

@@ -1,6 +1,7 @@
-﻿using Application.Models.Responses;
-using Application.Results;
-using Application.Models.Requests;
+﻿using Application.Results;
+using Application.Models.Requests.Auth;
+using Application.Models.Responses.Account;
+using Application.Models.Responses.Auth;
 
 namespace Application.Interfaces.Services
 {

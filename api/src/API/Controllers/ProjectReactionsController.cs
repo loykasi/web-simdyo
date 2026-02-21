@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.Services;
-using Application.Models.Requests;
+using Application.Models.Requests.ProjectReaction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

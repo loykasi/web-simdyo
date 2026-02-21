@@ -1,6 +1,7 @@
-﻿using Application.Models.Responses;
-using Application.Models.Requests;
+﻿using Application.Models.Requests;
 using Domain.Entities;
+using Application.Models.Requests.Project;
+using Application.Models.Responses.Project;
 
 namespace Application.Interfaces.Repositories
 {

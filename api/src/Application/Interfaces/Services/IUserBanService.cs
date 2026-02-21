@@ -1,4 +1,4 @@
-﻿using Application.Models.Requests;
+﻿using Application.Models.Requests.Account;
 using Application.Results;
 
 namespace Application.Interfaces.Services

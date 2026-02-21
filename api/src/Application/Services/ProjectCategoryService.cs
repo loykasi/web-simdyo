@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Services;
 using Application.Mappings;
-using Application.Models.Requests;
-using Application.Models.Responses;
+using Application.Models.Requests.ProjectCategory;
+using Application.Models.Responses.ProjectCategory;
 using Application.Results;
 using Domain.Entities;
 

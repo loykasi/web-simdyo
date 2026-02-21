@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
 using Application.Mappings;
-using Application.Models.Responses;
+using Application.Models.Responses.ProjectCategory;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

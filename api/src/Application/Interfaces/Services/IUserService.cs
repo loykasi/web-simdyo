@@ -1,7 +1,7 @@
 ﻿using Application.Results;
-using Application.Models.Responses;
-using Application.Models.Requests;
 using Domain.Entities;
+using Application.Models.Requests.Role;
+using Application.Models.Responses.Account;
 
 namespace Application.Interfaces.Services
 {

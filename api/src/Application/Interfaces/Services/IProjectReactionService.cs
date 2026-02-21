@@ -1,4 +1,4 @@
-﻿using Application.Models.Requests;
+﻿using Application.Models.Requests.ProjectReaction;
 using Application.Results;
 
 namespace Application.Interfaces.Services

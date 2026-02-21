@@ -1,4 +1,4 @@
-using Application.Models.Responses;
+using Application.Models.Responses.ProjectComment;
 using Domain.Entities;
 
 namespace Application.Interfaces.Repositories
