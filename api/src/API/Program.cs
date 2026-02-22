@@ -5,7 +5,6 @@ using Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -31,36 +30,78 @@ builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-    options.AddFixedWindowLimiter("fixed", cfg =>
-    {
-        cfg.PermitLimit = 1;
-        cfg.Window = TimeSpan.FromSeconds(1);
-    });
-
-    options.AddPolicy("per-user", httpContext =>
-    {
-        string? userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!string.IsNullOrWhiteSpace(userId))
-        {
-            return RateLimitPartition.GetTokenBucketLimiter(
-                userId,
-                _ => new TokenBucketRateLimiterOptions
-                {
-                    TokenLimit = 50,
-                    TokensPerPeriod = 10,
-                    ReplenishmentPeriod = TimeSpan.FromSeconds(1),
-                });
-        }
-
-        return RateLimitPartition.GetFixedWindowLimiter(
-            "anonymous",
-            _ => new FixedWindowRateLimiterOptions
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>
+    (
+        httpContext => RateLimitPartition.GetFixedWindowLimiter
+        (
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 5,
-                Window = TimeSpan.FromSeconds(1)
-            });
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1)
+            }
+        )
+    );
+
+    options.AddFixedWindowLimiter("login", cfg =>
+    {
+        cfg.PermitLimit = 5;
+        cfg.Window = TimeSpan.FromMinutes(1);
+        cfg.QueueLimit = 0;
     });
+
+    options.AddFixedWindowLimiter("register", cfg =>
+    {
+        cfg.PermitLimit = 8;
+        cfg.Window = TimeSpan.FromMinutes(5);
+    });
+
+    options.AddTokenBucketLimiter("comment", cfg =>
+    {
+        cfg.TokenLimit = 5;
+        cfg.QueueLimit = 0;
+        cfg.TokensPerPeriod = 1;
+        cfg.ReplenishmentPeriod = TimeSpan.FromSeconds(30);
+        cfg.AutoReplenishment = true;
+    });
+
+    //options.AddSlidingWindowLimiter("comment", cfg =>
+    //{
+    //    cfg.PermitLimit = 10;
+    //    cfg.Window = TimeSpan.FromMinutes(1);
+    //    cfg.SegmentsPerWindow = 5;
+    //});
+
+    //options.AddFixedWindowLimiter("fixed", cfg =>
+    //{
+    //    cfg.PermitLimit = 1;
+    //    cfg.Window = TimeSpan.FromSeconds(1);
+    //});
+
+    //options.AddPolicy("per-user", httpContext =>
+    //{
+    //    string? userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    //    if (!string.IsNullOrWhiteSpace(userId))
+    //    {
+    //        return RateLimitPartition.GetTokenBucketLimiter(
+    //            userId,
+    //            _ => new TokenBucketRateLimiterOptions
+    //            {
+    //                TokenLimit = 50,
+    //                TokensPerPeriod = 10,
+    //                ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+    //            });
+    //    }
+
+    //    return RateLimitPartition.GetFixedWindowLimiter(
+    //        "anonymous",
+    //        _ => new FixedWindowRateLimiterOptions
+    //        {
+    //            PermitLimit = 5,
+    //            Window = TimeSpan.FromSeconds(1)
+    //        });
+    //});
 });
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

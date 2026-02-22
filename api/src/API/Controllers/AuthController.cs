@@ -2,6 +2,7 @@
 using Application.Models.Requests.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -10,6 +11,7 @@ namespace API.Controllers
     {
         [HttpPost]
         [Route("send-otp")]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> RequestLogin([FromQuery] string email)
         {
             var result = await authService.RequestLoginAsync(email);
@@ -18,6 +20,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("login-otp")]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> LoginWithOtp(LoginOtpRequest request)
         {
             var result = await authService.LoginWithOtpAsync(request);
@@ -26,6 +29,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("register")]
+        [EnableRateLimiting("register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
             var result = await authService.RegisterAsync(registerRequest);
@@ -42,6 +46,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("login")]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             var result = await authService.LoginAsync(loginRequest);

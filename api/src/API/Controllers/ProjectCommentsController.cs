@@ -2,6 +2,7 @@ using Application.Interfaces.Services;
 using Application.Models.Requests.ProjectComment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -18,6 +19,7 @@ namespace API.Controllers
 
         [HttpPost("{publicId}/comments")]
         [Authorize]
+        [EnableRateLimiting("comment")]
         public async Task<IActionResult> Add(string publicId, AddCommentRequest addCommentRequest)
         {
             var result = await projectCommentService.Add(publicId, addCommentRequest);
