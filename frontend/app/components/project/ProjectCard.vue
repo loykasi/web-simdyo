@@ -64,7 +64,7 @@ const formatter = new Intl.NumberFormat("en", {
       />
     </NuxtLink>
 
-    <div class="py-2 h-32 flex flex-col flex-1">
+    <div class="py-2 h-32 flex flex-col flex-1 overflow-hidden">
       <NuxtLink
         :to="`/projects/${project.publicId}`"
         class="text-base text-primary line-clamp-2 font-bold hover:underline"
