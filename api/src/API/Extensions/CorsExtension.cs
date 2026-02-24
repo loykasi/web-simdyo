@@ -1,9 +1,14 @@
-﻿namespace API.Extensions;
+﻿using Infrastructure.Options;
+
+namespace API.Extensions;
 
 public static class CorsExtension
 {
-    public static void SetupCors(this IServiceCollection services)
+    public static void SetupCors(this IServiceCollection services, IConfiguration configuration)
     {
+        var corsOptions = configuration.GetSection(CorsOptions.OptionsKey).Get<CorsOptions>()
+                    ?? throw new ArgumentException(nameof(CorsOptions));
+
         services.AddCors(options =>
         {
             options.AddPolicy
@@ -11,7 +16,7 @@ public static class CorsExtension
                 "AllowOrigins",
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000", "http://127.0.0.1:8788")
+                    policy.WithOrigins(corsOptions.AllowedOrigins)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

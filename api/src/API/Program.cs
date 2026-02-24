@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity();
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddAuthorization(builder.Configuration);
-builder.Services.SetupCors();
+builder.Services.SetupCors(builder.Configuration);
 builder.Services.AddServices();
 
 builder.Services.AddBackgroundJobsServices(builder.Configuration);
