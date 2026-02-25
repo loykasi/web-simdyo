@@ -51,15 +51,15 @@ const columns: TableColumn<ProjectResponse>[] = [
     },
     {
         accessorKey: 'title',
-        header: $t('title')
+        header: $t('common.fields.title')
     },
     {
         accessorKey: 'category',
-        header: $t('category')
+        header: $t('common.fields.category')
     },
     {
         accessorKey: 'createdAt',
-        header: $t('joined_date'),
+        header: $t('common.stats.joined_date'),
         cell: ({ row }) => {
         return new Date(row.getValue('createdAt')).toLocaleString('en-US', {
             day: 'numeric',
@@ -72,7 +72,7 @@ const columns: TableColumn<ProjectResponse>[] = [
     },
     {
         accessorKey: 'deletedAt',
-        header: $t('public_status'),
+        header: $t('common.fields.public_status'),
         cell: ({ row }) => {
             const isPublic = row.getValue('deletedAt') == null;
             const color = isPublic ? 'success' : 'error';
@@ -83,11 +83,11 @@ const columns: TableColumn<ProjectResponse>[] = [
     },
     {
         accessorKey: 'isBanned',
-        header: $t('ban_status'),
+        header: $t('common.fields.status'),
         cell: ({ row }) => {
             const isBanned = row.getValue('isBanned') as boolean;
             const color = isBanned ? 'error' : 'success';
-            const label = $t(isBanned ? 'banned' : 'active')
+            const label = $t(isBanned ? 'common.stats.banned' : 'common.stats.active')
 
             return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => label)
         }

@@ -8,13 +8,13 @@ const { user } = useAuthStore();
     <div class="flex flex-col gap-4">
       <div>
         <label class="block font-medium text-default">{{
-          $t("settings.account.username")
+          $t("common.fields.username")
         }}</label>
         <div class="text-default">{{ user?.username }}</div>
       </div>
       <div>
         <label class="block font-medium text-default">{{
-          $t("settings.account.email")
+          $t("common.fields.email")
         }}</label>
         <div class="text-default">{{ user?.email }}</div>
       </div>

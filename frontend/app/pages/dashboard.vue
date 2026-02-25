@@ -7,36 +7,36 @@ const { isPermitted } = useAuthStore();
 
 const menu = [
   {
-    label: $t("dashboard.users"),
+    label: $t("dashboard.nav.users"),
     icon: "material-symbols:person-outline",
     to: "/dashboard/users",
     permissions: ["manage_users"],
   },
   {
-    label: $t("dashboard.projects"),
+    label: $t("dashboard.nav.projects"),
     icon: "material-symbols:view-object-track-outline",
     to: "/dashboard/projects",
     permissions: ["manage_projects"],
   },
   {
-    label: $t("dashboard.reports"),
+    label: $t("dashboard.nav.reports"),
     icon: "material-symbols:report-outline-rounded",
     to: "/dashboard/project-reports",
     permissions: ["manage_project_reports"],
   },
   {
-    label: $t("dashboard.categories"),
+    label: $t("dashboard.nav.categories"),
     icon: "material-symbols:category-outline-rounded",
     to: "/dashboard/project-categories",
     permissions: ["manage_categories"],
   },
   {
-    label: $t("dashboard.roles"),
+    label: $t("dashboard.nav.roles"),
     icon: "material-symbols:settings-account-box-outline",
     to: "/dashboard/roles",
   },
   {
-    label: $t("dashboard.settings"),
+    label: $t("dashboard.nav.settings"),
     icon: "material-symbols:settings-outline",
     to: "/account",
   },

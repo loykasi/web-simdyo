@@ -125,8 +125,6 @@ function onResize(event: Event | null = null) {
   gameRef.value.style.top = `${(h - height) / 2}px`;
 
   actionRef.value.style.width = `${width}px`;
-
-  console.log("resize");
 }
 </script>
 <template>

@@ -162,7 +162,7 @@ function loadReplies(id: number) {
 <template>
   <div class="grid grid-cols-3 mt-8">
     <div class="col-span-2">
-      <h1 class="text-2xl font-semibold">{{ $t("project.comments") }}</h1>
+      <h1 class="text-2xl font-semibold">{{ $t("project.comments.title") }}</h1>
       <ProjectCommentForm v-if="isLoggedIn" @add-comment="addComment" />
       <div class="mt-8">
         <div v-for="comment in pagination?.items" :key="comment.id">
@@ -198,7 +198,7 @@ function loadReplies(id: number) {
               class="px-6 mt-2 font-semibold"
               @click="loadReplies(comment.id)"
             >
-              {{ $t("project.show_replies") }}
+              {{ $t("project.comments.show_replies") }}
             </UButton>
           </div>
         </div>
@@ -208,7 +208,7 @@ function loadReplies(id: number) {
         class="w-full justify-center px-6 mt-4 font-semibold"
         @click="loadComments"
       >
-        {{ $t("project.show_comments") }}
+        {{ $t("project.comments.show_more") }}
       </UButton>
     </div>
   </div>

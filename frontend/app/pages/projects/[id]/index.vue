@@ -182,8 +182,9 @@ const containerRef = useTemplateRef<HTMLDivElement>("container-ref");
 const innerContainerRef = useTemplateRef<HTMLDivElement>("inner-container-ref");
 const gamePlayerRef = useTemplateRef<HTMLDivElement>("game-player-ref");
 
+const headerRef = useTemplateRef<HTMLDivElement>("header-ref");
+
 const minHeight = 360;
-const headerHeight = 64;
 const titleHeight = 68;
 const controllerHeight = 24;
 
@@ -202,9 +203,18 @@ watch(
   }
 )
 
+function getAbsoluteHeight(element: HTMLElement): number {
+  const styles = window.getComputedStyle(element);
+  const margin = parseFloat(styles['marginTop']) + parseFloat(styles['marginBottom']);
+
+  return Math.ceil(element.offsetHeight + margin);
+}
+
 function onResize(event: Event | null = null) {
   if (!gamePlayerRef.value || !containerRef.value || !innerContainerRef.value)
     return;
+
+  const headerHeight = headerRef.value ? getAbsoluteHeight(headerRef.value) : 64;
 
   const defaultGameCanvasHeight = (containerRef.value.offsetWidth * 9) / 16;
   const margin = parseFloat(getComputedStyle(gamePlayerRef.value).marginBottom);
@@ -232,9 +242,9 @@ function onResize(event: Event | null = null) {
     <div ref="inner-container-ref" class="mx-auto">
       <template v-if="isPending"> Loading... </template>
       <template v-else-if="project">
-        <div class="flex justify-between my-4">
-          <h1 class="text-3xl font-semibold">{{ project.title }}</h1>
-          <div class="flex gap-x-3">
+        <div ref="header-ref" class="flex justify-between my-4 gap-x-3 overflow-hidden">
+          <h1 class="text-3xl font-semibold line-clamp-2">{{ project.title }}</h1>
+          <div class="flex gap-x-3 items-center">
             <template v-if="isAuthor()">
               <UButton
                 v-if="project.deletedAt === null"
@@ -242,7 +252,7 @@ function onResize(event: Event | null = null) {
                 :loading="statusLoading"
                 @click="deleteProject"
               >
-                {{ $t("project.delete") }}
+                {{ $t("common.actions.delete") }}
               </UButton>
               <UButton
                 v-else
@@ -250,7 +260,7 @@ function onResize(event: Event | null = null) {
                 :loading="statusLoading"
                 @click="restoreProject"
               >
-                {{ $t("project.restore") }}
+                {{ $t("project.actions.restore") }}
               </UButton>
 
               <UButton
@@ -258,14 +268,16 @@ function onResize(event: Event | null = null) {
                 :loading="statusLoading"
                 @click="editProject"
               >
-                {{ $t("project.edit") }}
+                {{ $t("common.actions.edit") }}
               </UButton>
             </template>
+            <ReportModal
+              v-if="isLoggedIn"
+              :project="project"
+            />
             <UButton :to="project.projectLink" color="secondary">
-              {{ $t("project.download") }}
+              {{ $t("project.actions.download") }}
             </UButton>
-            <!-- <UButton size="xl">See inside</UButton> -->
-            <ReportModal :project="project" />
           </div>
         </div>
 
@@ -276,7 +288,7 @@ function onResize(event: Event | null = null) {
         <UCard class="mt-4">
           <div class="flex items-center justify-between gap-x-3 w-full">
             <div class="flex items-center">
-              <span class="text-dimmed me-2">{{ $t("project.main.by") }}</span>
+              <span class="text-dimmed me-2">{{ $t("project.details.by_author") }}</span>
               <NuxtLink
                 :to="`/profile/${project.username}`"
                 class="hover:underline"
@@ -354,7 +366,7 @@ function onResize(event: Event | null = null) {
                 class="underline cursor-pointer"
                 @click="ToggleMoreInformation"
               >
-                {{ $t("project.more") }}
+                {{ $t("project.actions.more_info") }}
               </span>
               <UCollapsible
                 v-model:open="detailOpen"
@@ -366,7 +378,7 @@ function onResize(event: Event | null = null) {
                       <tbody>
                         <tr>
                           <td class="pe-4 py-1.5 font-medium text-default">
-                            {{ $t("author") }}
+                            {{ $t("common.fields.author") }}
                           </td>
                           <td>
                             <NuxtLink
@@ -379,7 +391,7 @@ function onResize(event: Event | null = null) {
                         </tr>
                         <tr>
                           <td class="pe-4 py-1.5 font-medium text-default">
-                            {{ $t("category") }}
+                            {{ $t("common.fields.category") }}
                           </td>
                           <td>{{ project.category ?? "All" }}</td>
                         </tr>

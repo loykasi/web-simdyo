@@ -36,23 +36,23 @@ const columns: TableColumn<ProjectReportResponse>[] = [
   },
   {
     accessorKey: "reason",
-    header: $t("reason"),
+    header: $t("common.fields.reason"),
   },
   {
     accessorKey: "description",
-    header: $t("description"),
+    header: $t("common.fields.description"),
   },
   {
     accessorKey: "projectPublicId",
-    header: $t("public_id"),
+    header: $t("common.fields.public_id"),
   },
   {
     accessorKey: "username",
-    header: $t("username"),
+    header: $t("common.fields.username"),
   },
   {
     accessorKey: "createdAt",
-    header: $t("joined_date"),
+    header: $t("common.stats.joined_date"),
     cell: ({ row }) => {
       return new Date(row.getValue("createdAt")).toLocaleString("en-US", {
         day: "numeric",
@@ -137,7 +137,7 @@ const updateDebouceSearch = debounce(applySearchFilter, 500);
 <template>
   <UDashboardPanel id="users" resizable>
     <template #header>
-      <UDashboardNavbar :title="$t('dashboard.reports')" />
+      <UDashboardNavbar :title="$t('dashboard.nav.reports')" />
     </template>
 
     <template #body>

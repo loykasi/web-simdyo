@@ -55,8 +55,8 @@ function updateBanStatus(id: string, status: boolean) {
 
 <template>
   <UModal
-    :title="$t('ban')"
-    :description="`${$t('ban.description')} ${user.username}`"
+    :title="$t('dashboard.user_ban.title')"
+    :description="`${$t('dashboard.user_ban.description')} ${user.username}`"
     :close="{ onClick: () => emit('close', false) }"
   >
     <template #body>
@@ -66,16 +66,16 @@ function updateBanStatus(id: string, status: boolean) {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormField :label="$t('reason')" name="reason">
+        <UFormField :label="$t('common.fields.reason')" name="reason">
           <UInput v-model="state.reason" class="w-full mt-1" />
         </UFormField>
 
-        <UFormField :label="$t('description')" name="description">
+        <UFormField :label="$t('common.fields.description')" name="description">
           <UInput v-model="state.description" class="w-full mt-1" />
         </UFormField>
 
         <UButton type="submit">
-          {{ $t("confirm") }}
+          {{ $t("common.actions.confirm") }}
         </UButton>
       </UForm>
     </template>

@@ -83,11 +83,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       :validate-on="[]"
       @submit="onSubmit"
     >
-      <UFormField :label="$t('login.email')" name="email">
+      <UFormField :label="$t('common.fields.email')" name="email">
         <UInput :model-value="email" class="w-full mt-1" disabled />
       </UFormField>
 
-      <UFormField :label="$t('login.password')" name="password">
+      <UFormField :label="$t('common.fields.password')" name="password">
         <UInput
           v-model="state.password"
           :type="showPassword ? 'text' : 'password'"
@@ -115,7 +115,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         :loading="loading"
         class="flex justify-center w-full"
       >
-        {{ $t("login.login") }}
+        {{ $t("auth.login.title") }}
       </UButton>
 
       <UButton

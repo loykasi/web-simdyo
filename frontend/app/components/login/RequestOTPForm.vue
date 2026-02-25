@@ -57,7 +57,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       :validate-on="[]"
       @submit="onSubmit"
     >
-      <UFormField :label="$t('login.email')" name="email">
+      <UFormField :label="$t('common.fields.email')" name="email">
         <UInput v-model="state.email" class="w-full mt-1" />
       </UFormField>
 
@@ -66,8 +66,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         :loading="loading"
         class="flex justify-center w-full"
       >
-        <!-- {{ $t('login.login') }} -->
-        Send OTP
+        {{ $t('auth.login.send_otp') }}
       </UButton>
 
       <div

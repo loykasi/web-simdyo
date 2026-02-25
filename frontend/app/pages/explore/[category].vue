@@ -79,13 +79,13 @@ useHead({
 
 <template>
   <UPage>
-    <h1 class="my-6 font-bold text-4xl">Explorer</h1>
+    <h1 class="my-6 font-bold text-4xl">{{ $t('explore.title') }}</h1>
     <form class="flex items-center bg-accented h-8" @submit.prevent="onSearch">
       <input
         id="search"
         v-model="searchTerm"
         type="text"
-        :placeholder="$t('nav.search')"
+        :placeholder="$t('explore.search')"
         required
         class="px-2.5 py-1.5 flex-1 text-sm"
       />

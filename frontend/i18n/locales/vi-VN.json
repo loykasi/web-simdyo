@@ -1,115 +1,175 @@
 {
-    "author": "Tác giả",
-    "category": "Danh mục",
-    "delete": "Xóa",
-    "reply": "Phản hồi",
-    "default": "Mặc định",
-    "nav.create": "Khởi tạo",
-    "nav.explore": "Khám phá",
-    "nav.upload": "Đăng",
-    "nav.login": "Đăng nhập",
-    "nav.register": "Đăng ký",
-    "nav.search": "Tìm kiếm dự án hoặc người sáng tạo",
-    "footer.privacy": "Bảo mật",
-    "account_menu.profile": "Tài khoản",
-    "account_menu.settings": "Cài đặt",
-    "account_menu.logout": "Đăng xuất",
-    "footer.terms": "Điều khoản",
-    "footer.feedback": "Nhận xét",
-    "login.username": "Tên người dùng",
-    "login.password": "Mật khẩu",
-    "login.forgot": "Quên mật khẩu",
-    "login.login": "Đăng nhập",
-    "register.title": "Tạo tài khoản",
-    "register.description": "Tham gia Simdyo, sáng tạo và chia sẻ dự án.",
-    "register.username": "Tên người dùng",
-    "register.username_placeholder": "Nhập tên người dùng",
-    "register.email": "Email",
-    "register.email_placeholder": "Nhập địa chỉ email",
-    "register.password": "Mật khẩu",
-    "register.confirm_password": "Nhập lại mật khẩu",
-    "register.continue": "Đăng ký",
-    "register.success.title": "Tài khoản đã được tạo",
-    "register.success.message": "Bạn có thể đăng nhập vào tài khoản của mình ngay bây giờ.",
-    "forgot_password": "Quên mật khẩu",
-    "forgot_password.description": "Nhập địa chỉ email của bạn và liên kết đặt lại mật khẩu sẽ được gửi đến email của bạn.",
-    "forgot_password.email": "Email",
-    "forgot_password.placeholder": "Địa chỉ email",
-    "forgot_password.continue": "Tiếp tục",
-    "home.hero.title": "Tạo trò chơi của bạn",
-    "home.hero.description": "Thiết kế, viết mã, chơi với trình soạn thảo trực quan trực quan. ",
-    "home.hero.create": "Bắt đầu tạo",
-    "explorer.title": "Khám phá",
-    "project.delete": "Xóa",
-    "project.restore": "Phục hồi",
-    "project.edit": "Chỉnh sửa",
-    "project.download": "Tải",
-    "project.report": "Báo cáo",
-    "project.main.by": "Đăng bởi",
-    "project.more": "Thông tin thêm",
-    "project.comments": "Bình luận",
-    "project.show_comments": "Xem thêm bình luận",
-    "project.show_replies": "Xem thêm phản hồi",
-    "gameplayer.pause": "Tạm dừng",
-    "gameplayer.resume": "Tiếp tục",
-    "gameplayer.restart": "Khởi động lại",
-    "project_report.title": "Báo cáo dự án",
-    "project_report.description": "Chuyện gì đang diễn ra?",
-    "project_report.report_reason": "Lý do",
-    "project_report.report_description": "Cho chúng tôi biết thêm chi tiết",
-    "project_report.submit": "Gửi",
-    "upload": "Upload",
-    "upload.thumbnail": "Hình ảnh",
-    "upload.upload_thumbnail": "Tải ảnh lên",
-    "upload.file": "Tệp dự án",
-    "upload.upload_file": "Tải lên dự án",
-    "upload.title": "Tiêu đề",
-    "upload.description": "Mô tả",
-    "upload.category": "Thể loại",
-    "upload.upload": "Tải lên",
-    "profile.username": "Tên người dùng",
-    "profile.email": "Email",
-    "profile.total_projects": "Số lượng dự án",
-    "profile.projects": "Dự án",
-    "profile.all": "Tất cả",
-    "profile.trash": "Thùng rác",
-    "settings": "Cài đặt tài khoản",
-    "settings.account": "Tài khoản",
-    "settings.account.username": "Tên người dùng",
-    "settings.account.email": "Email",
-    "settings.password": "Mật khẩu",
-    "settings.password.current": "Mật khẩu cụ thể",
-    "settings.password.new": "Mật khẩu mới",
-    "settings.password.confirm": "Nhập lại mật khẩu mới",
-    "settings.password.submit": "Thay đổi",
-    "dashboard.users": "Người dùng",
-    "dashboard.projects": "Dự án",
-    "dashboard.reports": "Báo cáo",
-    "dashboard.categories": "Danh mục",
-    "dashboard.categories.new": "Danh mục mới",
-    "dashboard.roles": "Vai trò",
-    "dashboard.roles.new": "Vai trò mới",
-    "dashboard.settings": "Cài đặt",
-    "username": "Tên người dùng",
-    "email": "Email",
-    "role": "Vai trò",
-    "joined_date": "Ngày tham gia",
-    "ban_status": "Trạng thái",
-    "banned": "Khóa",
-    "active": "Hoạt động",
-    "title": "Tiêu đề",
-    "public_status": "Trạng thái công khai",
-    "reason": "Lý do",
-    "description": "Mô tả",
-    "public_id": "ID công khai",
-    "name": "Tên",
-    "created_at": "Ngày tạo",
-    "updated_at": "Ngày cập nhật",
-    "confirm": "Xác nhận",
-    "set_role.description": "Chọn vai trò cho:",
-    "ban": "Khóa",
-    "create": "Tạo",
-    "cancle": "Hủy",
-    "create_category.title": "Danh mục mới",
-    "create_category.description": "Tạo danh mục mới"
+  "common": {
+    "actions": {
+      "save": "Lưu",
+      "delete": "Xóa",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "edit": "Chỉnh sửa",
+      "create": "Khởi tạo",
+      "upload": "Đăng tải",
+      "reply": "Phản hổi",
+      "continue": "Tiếp tục",
+      "submit": "Gửi",
+      "change": "Thay",
+      "replace": "Thay"
+    },
+    "fields": {
+      "username": "Tên người dùng",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "role": "Vai trò",
+      "category": "Danh mục",
+      "author": "Tác giả",
+      "title": "Tiêu đề",
+      "description": "Mô tả",
+      "reason": "Lý do",
+      "status": "Trạng thái",
+      "public_status": "Trạng thái công khai",
+      "public_id": "ID công khai",
+      "name": "Tên"
+    },
+    "stats": {
+      "active": "Hoạt động",
+      "banned": "Bị cấm",
+      "created_at": "Ngày tạo",
+      "updated_at": "Ngày cập nhật",
+      "joined_date": "Ngày tham gia"
+    }
+  },
+  "nav": {
+    "create": "Khởi tạo",
+    "explore": "Khám phá",
+    "upload": "Đăng",
+    "login": "Đăng nhập",
+    "register": "Đăng ký"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "forgot_password": "Quên mật khẩu",
+      "send_otp": "Gửi OTP"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "description": "Tham gia Simdyo, sáng tạo và chia sẻ dự án.",
+      "placeholders": {
+        "username": "Nhập tên người dùng",
+        "email": "Nhập địa chỉ email",
+        "password_confirm": "Nhập lại mật khẩu"
+      },
+      "success": {
+        "title": "Tài khoản đã được tạo",
+        "message": "Bạn có thể đăng nhập vào tài khoản của mình ngay bây giờ."
+      }
+    },
+    "forgot_password": {
+      "title": "Forgot password",
+      "description": "Enter your email and a reset password link will be sent to your email.",
+      "placeholder": "Email address"
+    }
+  },
+  "account_menu": {
+    "profile": "Tài khoản",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "project": {
+    "actions": {
+      "restore": "Phục hồi",
+      "download": "Tải",
+      "report": "Báo cáo",
+      "more_info": "Thông tin thêm"
+    },
+    "comments": {
+      "title": "Bình luận",
+      "show_more": "Xem thêm bình luận",
+      "show_replies": "Xem thêm phản hồi"
+    },
+    "details": {
+      "by_author": "Đăng bởi"
+    },
+    "report_form": {
+      "title": "Báo cáo dự án",
+      "description": "Bạn gặp phải vấn đề gì?",
+      "specifics_label": "Cho chúng tôi biết thêm chi tiết"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Tạo trò chơi của bạn",
+      "description": "Thiết kế, viết mã, chơi với trình soạn thảo trực quan trực quan. ",
+      "cta": "Bắt đầu tạo"
+    }
+  },
+  "explore": {
+    "title": "Khám phá",
+    "search": "Tìm kiếm dự án hoặc người sáng tạo"
+  },
+  "upload": {
+    "sections": {
+      "thumbnail": "Ảnh",
+      "file": "Tập tin dự án"
+    },
+    "actions": {
+      "browse_thumbnail": "Chọn ảnh",
+      "browse_file": "Chọn dự án"
+    }
+  },
+  "profile": {
+    "total_projects": "Tổng số dự án",
+    "tabs": {
+      "projects": "Dự án",
+      "all": "Tất cả",
+      "trash": "Thùng rác"
+    }
+  },
+  "settings": {
+    "title": "Cài đặt tài khoản",
+    "sections": {
+      "account": "Tài khoản",
+      "password": "Mật khẩu"
+    },
+    "password_form": {
+      "current": "Mật khẩu hiện đại",
+      "new": "Mật khẩu mới",
+      "confirm": "Nhập lại mật khẩu"
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "users": "Người dùng",
+      "projects": "Dụ án",
+      "reports": "Báo cáo",
+      "categories": "Danh mục",
+      "roles": "Vai trò",
+      "settings": "Cài đặt"
+    },
+    "categories": {
+      "new_button": "Tạo danh mục",
+      "create_title": "Danh mục mới",
+      "create_description": "Thêm danh mục mới"
+    },
+    "roles": {
+      "new_button": "Tạo vai trò"
+    },
+    "user_ban": {
+      "title":"Khóa tài khoản",
+      "description": "Khóa tài khoản với tên:"
+    },
+    "project_ban": {
+      "title":"Khóa dự án",
+      "description": "Khóa dự án với ID công khai:"
+    }
+  },
+  "gameplayer": {
+    "pause": "Tạm dừng",
+    "resume": "Tiếp tục",
+    "restart": "Khởi động lại"
+  },
+  "footer": {
+    "rules": "Luật",
+    "terms": "Điều khoản",
+    "feedback": "Nhận xét"
+  }
 }

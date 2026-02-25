@@ -88,7 +88,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
       <div>
         <UButton type="submit" class="px-4">{{
-          $t("settings.password.submit")
+          $t("common.actions.submit")
         }}</UButton>
       </div>
     </UForm>

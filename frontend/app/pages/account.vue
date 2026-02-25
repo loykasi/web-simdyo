@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const items = [
   {
-    label: $t("settings.account"),
+    label: $t("settings.sections.account"),
     icon: "material-symbols:person-outline",
     slot: "account",
   },
   {
-    label: $t("settings.password"),
+    label: $t("settings.sections.password"),
     icon: "material-symbols:lock-outline",
     slot: "password",
   },
@@ -19,7 +19,7 @@ definePageMeta({
 
 <template>
   <UPage>
-    <UPageHeader :title="$t('settings')" />
+    <UPageHeader :title="$t('settings.title')" />
 
     <UTabs
       :items="items"

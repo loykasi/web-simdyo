@@ -277,7 +277,7 @@ useHead({
 
 <template>
   <UPage>
-    <UPageHeader :title="$t('upload')" />
+    <UPageHeader :title="$t('common.actions.upload')" />
     <UCard class="mt-4">
       <UForm
         :schema="schema"
@@ -287,7 +287,7 @@ useHead({
       >
         <div class="flex space-x-4">
           <UFormField
-            :label="$t('upload.thumbnail')"
+            :label="$t('upload.sections.thumbnail')"
             name="thumbnailFile"
             class=""
           >
@@ -311,7 +311,7 @@ useHead({
                 <UAvatar size="md" icon="i-lucide-image" />
 
                 <UButton
-                  :label="state.thumbnailFile ? 'Change' : 'Replace'"
+                  :label="state.thumbnailFile ? $t('common.actions.change') : $t('common.actions.replace')"
                   color="neutral"
                   variant="outline"
                   @click="open()"
@@ -335,7 +335,7 @@ useHead({
           </UFormField>
 
           <UFormField
-            :label="$t('upload.file')"
+            :label="$t('upload.sections.file')"
             name="projectFile"
             class="flex-1"
           >
@@ -355,7 +355,7 @@ useHead({
             >
               <template #actions="{ open }">
                 <UButton
-                  :label="$t('upload.upload_file')"
+                  :label="$t('upload.actions.browse_file')"
                   color="neutral"
                   variant="outline"
                   @click="open()"
@@ -370,11 +370,11 @@ useHead({
           </UFormField>
         </div>
 
-        <UFormField :label="$t('upload.title')" name="title">
+        <UFormField :label="$t('common.fields.title')" name="title">
           <UInput v-model="state.title" class="w-full mt-2" />
         </UFormField>
 
-        <UFormField :label="$t('upload.category')" name="category">
+        <UFormField :label="$t('common.fields.category')" name="category">
           <USelect
             v-model="state.category"
             :items="categories"
@@ -390,7 +390,7 @@ useHead({
           </USelect>
         </UFormField>
 
-        <UFormField :label="$t('upload.description')" name="description">
+        <UFormField :label="$t('common.fields.description')" name="description">
           <UTextarea
             v-model="state.description"
             class="w-full mt-2"
@@ -399,7 +399,7 @@ useHead({
         </UFormField>
 
         <UButton type="submit" class="mt-4" :loading="onSaveProcess">
-          Save
+          {{  $t('common.actions.save') }}
         </UButton>
       </UForm>
     </UCard>

@@ -80,9 +80,9 @@ definePageMeta({
     >
       <template #header>
         <h1 class="text-2xl font-bold text-center">
-          {{ $t("register.title") }}
+          {{ $t("auth.register.title") }}
         </h1>
-        <p class="mt-1 text-base">{{ $t("register.description") }}</p>
+        <p class="mt-1 text-base">{{ $t("auth.register.description") }}</p>
       </template>
       <div class="w-full">
         <UForm
@@ -92,18 +92,18 @@ definePageMeta({
           class="space-y-4"
           @submit="onSubmit"
         >
-          <UFormField :label="$t('register.username')" name="username">
+          <UFormField :label="$t('common.fields.username')" name="username">
             <UInput
               v-model="state.username"
-              :placeholder="$t('register.username_placeholder')"
+              :placeholder="$t('auth.register.placeholders.username')"
               class="w-full mt-1"
             />
           </UFormField>
 
-          <UFormField :label="$t('register.email')" name="email">
+          <UFormField :label="$t('common.fields.email')" name="email">
             <UInput
               v-model="state.email"
-              :placeholder="$t('register.email_placeholder')"
+              :placeholder="$t('auth.register.placeholders.email')"
               class="w-full mt-1"
             />
           </UFormField>
@@ -113,7 +113,7 @@ definePageMeta({
             class="flex w-full py-2 justify-center"
             :loading="registering"
           >
-            {{ $t("register.continue") }}
+            {{ $t("common.actions.continue") }}
           </UButton>
         </UForm>
       </div>
@@ -129,12 +129,12 @@ definePageMeta({
     >
       <template #header>
         <h1 class="text-2xl font-bold text-center">
-          {{ $t("register.success.title") }}
+          {{ $t("auth.register.success.title") }}
         </h1>
       </template>
       <div class="w-full">
         <div class="flex flex-col justify-center items-center">
-          <div>{{ $t("register.success.message") }}</div>
+          <div>{{ $t("auth.register.success.message") }}</div>
         </div>
       </div>
     </UCard>

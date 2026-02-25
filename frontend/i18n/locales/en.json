@@ -1,115 +1,175 @@
 {
-    "author": "Author",
-    "category": "Category",
-    "delete": "Delete",
-    "reply": "Reply",
-    "default": "Default",
-    "nav.create": "Create",
-    "nav.explore": "Explore",
-    "nav.upload": "Upload",
-    "nav.login": "Login",
-    "nav.register": "Register",
-    "nav.search": "Search for projects or creators",
-    "account_menu.profile": "Profile",
-    "account_menu.settings": "Settings",
-    "account_menu.logout": "Log out",
-    "footer.rules": "Rules",
-    "footer.terms": "Terms",
-    "footer.feedback": "Feedback",
-    "login.email": "Email",
-    "login.password": "Password",
-    "login.forgot": "Forgot password",
-    "login.login": "Log in",
-    "register.title": "Create accout",
-    "register.description": "Join Simdyo, create and share your projects.",
-    "register.username": "Username",
-    "register.username_placeholder": "Enter your username",
-    "register.email": "Email",
-    "register.email_placeholder": "Enter your email address",
-    "register.password": "Password",
-    "register.confirm_password": "Re-enter password",
-    "register.continue": "Register",
-    "register.success.title": "Account has been created",
-    "register.success.message": "You can log in to your account now.",
-    "forgot_password": "Forgot password",
-    "forgot_password.description": "Enter your email and a reset password link will be sent to your email.",
-    "forgot_password.email": "Email",
-    "forgot_password.placeholder": "Email address",
-    "forgot_password.continue": "Continue",
-    "home.hero.title": "Create your game",
-    "home.hero.description": "Design, code, play with an intuitive visual editor. Shares with other around the world.",
-    "home.hero.create": "Start Creating",
-    "explorer.title": "Explore",
-    "project.delete": "Delete",
-    "project.restore": "Restore",
-    "project.edit": "Edit",
-    "project.download": "Download",
-    "project.report": "Report",
-    "project.main.by": "By",
-    "project.more": "More information",
-    "project.comments": "Comments",
-    "project.show_comments": "Show more comments",
-    "project.show_replies": "Show more replies",
-    "gameplayer.pause": "Pause",
-    "gameplayer.resume": "Resume",
-    "gameplayer.restart": "Restart",
-    "project_report.title": "Report project",
-    "project_report.description": "What's going on?",
-    "project_report.report_reason": "Reason",
-    "project_report.report_description": "Tell us more specific",
-    "project_report.submit": "Send",
-    "upload": "Upload",
-    "upload.thumbnail": "Thumbnail",
-    "upload.upload_thumbnail": "Upload",
-    "upload.file": "Project file",
-    "upload.upload_file": "Upload project",
-    "upload.title": "Title",
-    "upload.description": "Description",
-    "upload.category": "Category",
-    "upload.upload": "Upload",
-    "profile.username": "Username",
-    "profile.email": "Email",
-    "profile.total_projects": "Total projects",
-    "profile.projects": "Projects",
-    "profile.all": "All",
-    "profile.trash": "Trash",
-    "settings": "Account settings",
-    "settings.account": "Account",
-    "settings.account.username": "Username",
-    "settings.account.email": "Email",
-    "settings.password": "Password",
-    "settings.password.current": "Current password",
-    "settings.password.new": "New password",
-    "settings.password.confirm": "Confirm password",
-    "settings.password.submit": "Change",
-    "dashboard.users": "Users",
-    "dashboard.projects": "Projects",
-    "dashboard.reports": "Reports",
-    "dashboard.categories": "Catergories",
-    "dashboard.categories.new": "New category",
-    "dashboard.roles": "Roles",
-    "dashboard.roles.new": "New role",
-    "dashboard.settings": "Settings",
-    "username": "Username",
-    "email": "Email",
-    "role": "Role",
-    "joined_date": "Joined date",
-    "ban_status": "Ban status",
-    "banned": "Banned",
-    "active": "Active",
-    "title": "Title",
-    "public_status": "Public status",
-    "reason": "Reason",
-    "description": "Description",
-    "public_id": "Public ID",
-    "name": "Name",
-    "created_at": "Created Date",
-    "updated_at": "Updated Date",
-    "confirm": "Confirm",
-    "set_role.description": "Select role for user:",
-    "ban": "Ban",
+  "common": {
+    "actions": {
+      "save": "Save",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "edit": "Edit",
+      "create": "Create",
+      "upload": "Upload",
+      "reply": "Reply",
+      "continue": "Continue",
+      "submit": "Submit",
+      "change": "Change",
+      "replace": "Replace"
+    },
+    "fields": {
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role",
+      "category": "Category",
+      "author": "Author",
+      "title": "Title",
+      "description": "Description",
+      "reason": "Reason",
+      "status": "Status",
+      "public_status": "Public status",
+      "public_id": "Public ID",
+      "name": "Name"
+    },
+    "stats": {
+      "active": "Active",
+      "banned": "Banned",
+      "created_at": "Created Date",
+      "updated_at": "Updated Date",
+      "joined_date": "Joined date"
+    }
+  },
+  "nav": {
     "create": "Create",
-    "cancle": "Cancle",
-    "create_category.title": "New category",
-    "create_category.description": "Add a new category"
+    "explore": "Explore",
+    "upload": "Upload",
+    "login": "Login",
+    "register": "Register"
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "forgot_password": "Forgot password",
+      "send_otp": "Send OTP"
+    },
+    "register": {
+      "title": "Create account",
+      "description": "Join Simdyo, create and share your projects.",
+      "placeholders": {
+        "username": "Enter your username",
+        "email": "Enter your email address",
+        "password_confirm": "Re-enter password"
+      },
+      "success": {
+        "title": "Account has been created",
+        "message": "You can log in to your account now."
+      }
+    },
+    "forgot_password": {
+      "title": "Forgot password",
+      "description": "Enter your email and a reset password link will be sent to your email.",
+      "placeholder": "Email address"
+    }
+  },
+  "account_menu": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "project": {
+    "actions": {
+      "restore": "Restore",
+      "download": "Download",
+      "report": "Report",
+      "more_info": "More information"
+    },
+    "comments": {
+      "title": "Comments",
+      "show_more": "Show more comments",
+      "show_replies": "Show more replies"
+    },
+    "details": {
+      "by_author": "By"
+    },
+    "report_form": {
+      "title": "Report project",
+      "description": "What's going on?",
+      "specifics_label": "Tell us more specific"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Create your game",
+      "description": "Design, code, play with an intuitive visual editor. Shares with other around the world.",
+      "cta": "Start Creating"
+    }
+  },
+  "explore": {
+    "title": "Explore",
+    "search": "Search for projects or creators"
+  },
+  "upload": {
+    "sections": {
+      "thumbnail": "Thumbnail",
+      "file": "Project file"
+    },
+    "actions": {
+      "browse_thumbnail": "Upload",
+      "browse_file": "Upload project"
+    }
+  },
+  "profile": {
+    "total_projects": "Total projects",
+    "tabs": {
+      "projects": "Projects",
+      "all": "All",
+      "trash": "Trash"
+    }
+  },
+  "settings": {
+    "title": "Account settings",
+    "sections": {
+      "account": "Account",
+      "password": "Password"
+    },
+    "password": {
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm password"
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "users": "Users",
+      "projects": "Projects",
+      "reports": "Reports",
+      "categories": "Categories",
+      "roles": "Roles",
+      "settings": "Settings"
+    },
+    "categories": {
+      "new_button": "New category",
+      "create_title": "New category",
+      "create_description": "Add a new category"
+    },
+    "roles": {
+      "new_button": "New role"
+    },
+    "user_ban": {
+      "title":"Ban",
+      "description": "Banning user:"
+    },
+    "project_ban": {
+      "title":"Ban",
+      "description": "Banning project with public ID:"
+    }
+  },
+  "gameplayer": {
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart"
+  },
+  "footer": {
+    "rules": "Rules",
+    "terms": "Terms",
+    "feedback": "Feedback"
+  }
 }

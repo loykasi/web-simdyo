@@ -72,7 +72,7 @@ const formatter = new Intl.NumberFormat("en", {
         {{ project.title }}
       </NuxtLink>
       <div class="text-sm">
-        <span>By </span>
+        <span class="mr-1.5">{{ $t('project.details.by_author' )}}</span>
         <NuxtLink
           :to="`/profile/${project.username}`"
           class="hover:text-secondary underline"

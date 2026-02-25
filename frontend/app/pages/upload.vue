@@ -190,7 +190,7 @@ definePageMeta({
 </script>
 <template>
   <UPage>
-    <UPageHeader :title="$t('upload')" />
+    <UPageHeader :title="$t('common.actions.upload')" />
     <UCard class="mt-4">
       <UForm
         :schema="schema"
@@ -200,7 +200,7 @@ definePageMeta({
       >
         <div class="flex space-x-4">
           <UFormField
-            :label="$t('upload.thumbnail')"
+            :label="$t('upload.sections.thumbnail')"
             name="thumbnailFile"
             class=""
           >
@@ -239,7 +239,7 @@ definePageMeta({
               >
                 <UAvatar size="md" icon="i-lucide-image" />
                 <UButton
-                  :label="$t('upload.upload_thumbnail')"
+                  :label="$t('upload.actions.browse_thumbnail')"
                   color="neutral"
                   variant="outline"
                   @click="open()"
@@ -254,7 +254,7 @@ definePageMeta({
           </UFormField>
 
           <UFormField
-            :label="$t('upload.file')"
+            :label="$t('upload.sections.file')"
             name="projectFile"
             class="flex-1"
           >
@@ -274,7 +274,7 @@ definePageMeta({
             >
               <template #actions="{ open }">
                 <UButton
-                  :label="$t('upload.upload_file')"
+                  :label="$t('upload.actions.browse_file')"
                   color="neutral"
                   variant="outline"
                   @click="open()"
@@ -289,11 +289,11 @@ definePageMeta({
           </UFormField>
         </div>
 
-        <UFormField :label="$t('upload.title')" name="title">
+        <UFormField :label="$t('common.fields.title')" name="title">
           <UInput v-model="state.title" class="w-full mt-2" />
         </UFormField>
 
-        <UFormField :label="$t('upload.category')" name="category">
+        <UFormField :label="$t('common.fields.category')" name="category">
           <USelect
             v-model="state.category"
             :items="categories"
@@ -309,7 +309,7 @@ definePageMeta({
           </USelect>
         </UFormField>
 
-        <UFormField :label="$t('upload.description')" name="description">
+        <UFormField :label="$t('common.fields.description')" name="description">
           <UTextarea
             v-model="state.description"
             class="w-full mt-2"
@@ -326,7 +326,7 @@ definePageMeta({
             :loading="onUploadProcess"
             :disabled="limitStat.remaining == 0"
           >
-            {{ $t("upload.upload") }}
+            {{ $t("common.actions.upload") }}
           </UButton>
           <div
             class="text-warning font-medium"

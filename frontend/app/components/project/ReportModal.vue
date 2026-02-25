@@ -80,11 +80,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
   <UModal
     v-model:open="open"
-    :title="$t('project_report.title')"
-    :description="$t('project_report.description')"
+    :title="$t('project.report_form.title')"
+    :description="$t('project.report_form.description')"
     :dismissible="!loading"
   >
-    <UButton color="warning">{{ $t("project.report") }}</UButton>
+    <UButton color="warning">{{ $t("project.actions.report") }}</UButton>
 
     <template #body>
       <UForm
@@ -93,19 +93,19 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormField :label="$t('project_report.report_reason')" name="reason">
+        <UFormField :label="$t('project.report_form.specifics_label')" name="reason">
           <USelect v-model="state.reason" :items="items" class="w-full mt-1" />
         </UFormField>
 
         <UFormField
-          :label="$t('project_report.report_description')"
+          :label="$t('common.fields.description')"
           name="description"
         >
           <UTextarea v-model="state.description" class="w-full mt-1" />
         </UFormField>
 
         <UButton type="submit" :loading="loading">
-          {{ $t("project_report.submit") }}
+          {{ $t("common.actions.submit") }}
         </UButton>
       </UForm>
     </template>
