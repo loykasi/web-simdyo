@@ -54,7 +54,6 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [Route("refresh")]
         public async Task<IActionResult> Refresh()
         {
