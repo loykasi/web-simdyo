@@ -109,7 +109,8 @@
   "upload": {
     "sections": {
       "thumbnail": "Thumbnail",
-      "file": "Project file"
+      "file": "Project file",
+      "file_update": "Project file (only if you want to update new version)"
     },
     "actions": {
       "browse_thumbnail": "Upload",
