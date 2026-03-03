@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure
 {
-    public class ApplicationDbContext: IdentityDbContext<User, Role, int>
+    public class ApplicationDbContext
+    (
+        DbContextOptions<ApplicationDbContext> options
+    ) : IdentityDbContext<User, Role, int>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-        }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -54,8 +53,15 @@ namespace Infrastructure
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            ApplyTimestamps();
-            return await base.SaveChangesAsync(cancellationToken);
+            try
+            {
+                ApplyTimestamps();
+                return await base.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                throw new ApplicationException("Database operation failed.");
+            }
         }
 
         private void ApplyTimestamps()
