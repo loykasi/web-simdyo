@@ -182,7 +182,7 @@ namespace Application.Services
             }
 
             return Result.Success(
-                new RegisterResponse("Registration successful. Please check your email to verify your account.")
+                new RegisterResponse("Registration successful.")
             );
         }
 
