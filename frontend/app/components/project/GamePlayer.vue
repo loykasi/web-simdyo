@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const disableGamePlayer = true;
+const disableGamePlayer = false;
 
 const prop = defineProps<{
   projectLink: string;
@@ -11,9 +11,8 @@ const running = ref(true);
 const controlDisable = ref(true);
 const fullscreen = ref(false);
 
-function handleUnityMessage(event: any) {
+function handleUnityMessage(event: MessageEvent) {
   if (event.data?.type === "unityLoaded") {
-    console.log("Unity WebGL loaded!", event.origin);
     unityLoaded.value = true;
 
     if (unityCanvas.value?.contentWindow) {
@@ -25,7 +24,6 @@ function handleUnityMessage(event: any) {
   }
 
   if (event.data?.type === "gameLoaded") {
-    console.log("Game loaded!", event.origin);
     controlDisable.value = false;
   }
 

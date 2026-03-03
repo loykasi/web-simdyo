@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const unityLoaded = ref(false);
 
-function handleUnityMessage(event: any) {
+function handleUnityMessage(event: MessageEvent) {
   if (event.data?.type === "unityLoaded") {
     unityLoaded.value = true;
   }

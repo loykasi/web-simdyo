@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | visual-script</title>
+    <title>Unity Web Player | Simdyo</title>
     <style>
       html, body {
         width: 100%;
@@ -25,7 +25,7 @@
   </head>
   <body>
     <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <script src="Build/9fa243f4d95d73bf26b19bf0b38228ce.loader.js"></script>
+    <script src="Build/31caaf8b04ffcbd4d739ec2820e57f3a.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
@@ -45,17 +45,17 @@
 
       createUnityInstance(document.querySelector("#unity-canvas"), {
         arguments: [],
-        dataUrl: "Build/f36e264854c43e231965da32e4c9999f.data.unityweb",
-        frameworkUrl: "Build/de0118eb569fd421884a630ed4d8566f.framework.js.unityweb",
-        codeUrl: "Build/31a383fdb569e6d987c8b865fbfd1403.wasm.unityweb",
+        dataUrl: "Build/67743c0c4acb3be8614c36557811c1e7.data.unityweb",
+        frameworkUrl: "Build/13253f7e2cd744e99160b39147ce8209.framework.js.unityweb",
+        codeUrl: "Build/c22c7f9e417a73de769324aec85663bf.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "visual-script",
-        productVersion: "1.0",
+        companyName: "Loykas",
+        productName: "Simdyo",
+        productVersion: "0.1",
         // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
         // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       }).then((unityInstance) => {
-        window.parent.postMessage({ type: "unityLoaded" }, "http://localhost:3000/create");
+        window.parent.postMessage({ type: "unityLoaded" });
       }).catch((message) => {
         alert(message);
       });
