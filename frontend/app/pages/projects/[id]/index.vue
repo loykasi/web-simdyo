@@ -134,7 +134,6 @@ async function deleteProject() {
   })
     .then(() => {
       if (project.value !== undefined) {
-        console.log("delete");
         project.value.deletedAt = new Date().toISOString();
       }
     })
@@ -152,7 +151,6 @@ async function restoreProject() {
   })
     .then(() => {
       if (project.value !== undefined) {
-        console.log("restore");
         project.value.deletedAt = null;
       }
     })
@@ -164,6 +162,12 @@ async function restoreProject() {
 
 async function editProject() {
   navigateTo(`/projects/${projectId}/edit`);
+}
+
+async function onDownloaded() {
+  useAPI(`projects/${projectId}/download`, {
+    method: "POST",
+  });
 }
 
 const headTitle = computed(() =>
@@ -275,7 +279,7 @@ function onResize(event: Event | null = null) {
               v-if="isLoggedIn"
               :project="project"
             />
-            <UButton :to="project.projectLink" color="secondary">
+            <UButton :to="project.projectLink" color="secondary" @click="onDownloaded">
               {{ $t("project.actions.download") }}
             </UButton>
           </div>

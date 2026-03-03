@@ -69,8 +69,6 @@ export default defineNuxtPlugin(async () => {
       return;
     }
 
-    console.log("get current user");
-
     await fetchUser()
       .then((res) => {
         user.value = {
