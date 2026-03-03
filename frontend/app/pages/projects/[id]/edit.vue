@@ -8,6 +8,7 @@ import type {
   UploadProjectResponse,
 } from "~/types/project.type";
 import { MAX_PROJECT_FILE_SIZE, MAX_THUMBNAIL_FILE_SIZE } from "~/constants";
+import JSZip from "jszip";
 
 const route = useRoute();
 const projectId = route.params.id as string;
@@ -44,9 +45,8 @@ const formatBytes = (bytes: number, decimals = 2) => {
 };
 
 const schema = z.object({
-  title: z.string("Required").min(1, "Required"),
-  shortDescription: z.string("Required").min(1, "Required"),
-  description: z.string("Required").min(1, "Required"),
+  title: z.string("Required").trim().min(1, "Required").max(60),
+  description: z.string().trim().max(3000).default(""),
   category: z.string().default(""),
   projectFile: z
     .instanceof(File, {
@@ -87,23 +87,6 @@ async function onSubmit(event: FormSubmitEvent<schema>) {
       ? event.data.thumbnailFile.size
       : null,
   };
-
-  // const payload = new FormData();
-  // payload.append("title", event.data.title);
-  // payload.append("shortDescription", event.data.description);
-  // payload.append("description", event.data.description);
-
-  // if (event.data.category !== "Default") {
-  //     payload.append("category", event.data.category);
-  // }
-
-  // if (event.data.projectFile !== undefined) {
-  //     payload.append("projectFile", event.data.projectFile);
-  // }
-
-  // if (event.data.thumbnailFile !== undefined) {
-  //     payload.append("thumbnailFile", event.data.thumbnailFile);
-  // }
 
   onSaveProcess.value = true;
   update(projectId, payload)
@@ -155,15 +138,13 @@ async function uploadFiles(data: UploadProjectResponse) {
 }
 
 const projectPending = ref(true);
-const defaultThumbnail = ref("https://placehold.co/400");
+const defaultThumbnail = ref("");
 onMounted(() => {
   useAPI<ProjectResponse>(`projects/${projectId}`, {
     method: "GET",
   })
     .then((res) => {
-      console.log("run");
       state.title = res.title;
-      state.shortDescription = res.shortDescription;
       state.description = res.description;
       state.category = res.category ?? "Default";
       defaultThumbnail.value = res.thumbnailLink;
@@ -174,106 +155,37 @@ onMounted(() => {
     });
 });
 
+// extract thumbnail from project file if exist
+watch(
+  () => state.projectFile,
+  async () => {
+    if (!state.projectFile) return;
+
+    try {
+      const zip = await JSZip.loadAsync(state.projectFile);
+
+      const thumbnailEntry = zip.file("thumbnail.png");
+      if (!thumbnailEntry) return;
+
+      const thumbnailBlob = await thumbnailEntry.async("blob");
+      const thumbnailFile = new File([thumbnailBlob], "thumbnail.png", {
+        type: thumbnailBlob.type || "image/png",
+        lastModified: thumbnailEntry.date.getTime(),
+      });
+
+      state.thumbnailFile = thumbnailFile;
+    } catch {
+      console.warn(`No thumbnail in file: ${state.projectFile.name}`);
+    }
+  },
+);
+
+
 const headTitle = computed(() => `${state.title || route.fullPath} - Edit`);
 useHead({
   title: headTitle,
 });
 </script>
-<!-- <template>
-    <UPage>
-        <UPageHeader title="Edit" />
-
-        <template v-if="projectPending">
-        </template>
-        <template v-else>
-            <UCard class="mt-4">
-                <UForm :schema="schema" :state="state" @submit="onSubmit">
-                    <div class="grid grid-cols-3 space-x-12 space-y-4">
-                        <div>
-                            <UFormField label="Select thumbnail" name="thumbnailFile">
-                                <UFileUpload
-                                    v-model="state.thumbnailFile"
-                                    accept="image/*"
-                                    v-slot="{ open, removeFile }"
-                                    class="relative aspect-square mt-2 flex flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-600"
-                                >
-                                    <img
-                                        :src="state.thumbnailFile ? createObjectUrl(state.thumbnailFile) : defaultThumbnail"
-                                        class="size-full"
-                                    />
-                                    <div class="absolute size-full flex flex-col items-center justify-center gap-3 bg-black/50 opacity-0 hover:opacity-100 transition">
-                                        <UAvatar
-                                            size="lg"
-                                            icon="i-lucide-image"
-                                        />
-
-                                        <UButton
-                                            :label="state.thumbnailFile ? 'Change image' : 'Replace image'"
-                                            color="neutral"
-                                            variant="outline"
-                                            @click="open()"
-                                        />
-
-                                        <UButton
-                                            v-if="state.thumbnailFile"
-                                            label="Remove image"
-                                            color="warning"
-                                            variant="link"
-                                            @click="removeFile()"
-                                            class="underline"
-                                        />
-                                    </div>
-                                </UFileUpload>
-                            </UFormField>
-                        </div>
-                        <div class="col-span-2 space-y-4">
-                            <UFormField label="Select file (Upload file only if use want to update)" name="projectFile">
-                                <UFileUpload
-                                    v-model="state.projectFile"
-                                    accept="zip/*"
-                                    position="inside"
-                                    layout="list"
-                                    label="Drop your file here"
-                                    :interactive="false"
-                                    class="mt-2"
-                                >
-                                    <template #actions="{ open }">
-                                        <UButton
-                                            label="Upload project"
-                                            icon="i-lucide-upload"
-                                            color="neutral"
-                                            variant="outline"
-                                            @click="open()"
-                                        />
-                                    </template>
-                                </UFileUpload>
-                            </UFormField>
-
-                            <UFormField label="Title" name="title">
-                                <UInput v-model="state.title" class="w-full mt-2" />
-                            </UFormField>
-
-                            <UFormField label="Description" name="description">
-                                <UTextarea
-                                    v-model="state.description"
-                                    class="w-full mt-2"
-                                    autoresize
-                                />
-                            </UFormField>
-
-                            <UFormField label="Category" name="category">
-                                <USelect v-model="state.category" :items="categories" class="w-full mt-2" />
-                            </UFormField>
-                        </div>
-                    </div>
-                    <UButton type="submit" class="mt-4" :loading="loading">
-                        Save
-                    </UButton>
-                </UForm>
-            </UCard>
-        </template>
-    </UPage>
-</template> -->
 
 <template>
   <UPage>
@@ -335,7 +247,7 @@ useHead({
           </UFormField>
 
           <UFormField
-            :label="$t('upload.sections.file')"
+            :label="$t('upload.sections.file_update')"
             name="projectFile"
             class="flex-1"
           >
@@ -385,7 +297,7 @@ useHead({
               {{ modelValue }}
             </template>
             <template #item-label="{ item }">
-              {{ $t(item) }}
+              {{ item }}
             </template>
           </USelect>
         </UFormField>

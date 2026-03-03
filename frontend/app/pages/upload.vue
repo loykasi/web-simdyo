@@ -54,9 +54,8 @@ const formatBytes = (bytes: number, decimals = 2) => {
 };
 
 const schema = z.object({
-  title: z.string("Required").min(1, "Required"),
-  shortDescription: z.string("Required").min(1, "Required"),
-  description: z.string("Required").min(1, "Required"),
+  title: z.string("Required").trim().min(1, "Required").max(60),
+  description: z.string().trim().max(3000).default(""),
   category: z.string().default(""),
   projectFile: z
     .instanceof(File, {
@@ -82,6 +81,7 @@ const state = reactive<Partial<schema>>({
 });
 
 async function onSubmit(event: FormSubmitEvent<schema>) {
+  console.log("uploading");
   const payload: UploadProjectRequest = {
     title: event.data.title,
     description: event.data.description,
@@ -172,8 +172,6 @@ watch(
       });
 
       state.thumbnailFile = thumbnailFile;
-
-      console.log(thumbnailFile);
     } catch {
       console.warn(`No thumbnail in file: ${state.projectFile.name}`);
     }
@@ -304,7 +302,7 @@ definePageMeta({
               {{ modelValue }}
             </template>
             <template #item-label="{ item }">
-              {{ $t(item) }}
+              {{ item }}
             </template>
           </USelect>
         </UFormField>
