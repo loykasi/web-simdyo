@@ -6,7 +6,6 @@ using Hangfire;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
@@ -14,9 +13,6 @@ namespace Infrastructure.Services
     {
         private readonly S3Options _options;
         private readonly IAmazonS3 _s3Client;
-
-        private readonly string _savePath = @"C:\\Users\\Admin\\Desktop\\_\\playground\\scratch-project\\test-storage";
-        private readonly string _s3Path = @"https://pub-962bffdbd95945c6a12e8c14089413e4.r2.dev/";
 
         public ObjectStorageService(IOptions<S3Options> s3Options)
         {
@@ -46,7 +42,7 @@ namespace Infrastructure.Services
 
             await _s3Client.PutObjectAsync(request);
 
-            return _s3Path + name;
+            return _options.PublicURL + name;
         }
 
         public void DeleteJobs(IEnumerable<string> names)
@@ -77,7 +73,7 @@ namespace Infrastructure.Services
 
         public string GetPath(string name)
         {
-            return _s3Path + name;
+            return _options.PublicURL + name;
         }
 
         public bool TryGetPreSignedUrl(string name, string contentType, long contentLength, out string preSignedUrl)

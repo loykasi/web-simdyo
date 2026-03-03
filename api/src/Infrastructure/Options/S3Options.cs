@@ -8,5 +8,6 @@
         public string SecretKey { get; set; }
         public string URL { get; set; }
         public string Bucket { get; set; }
+        public string PublicURL { get; set; }
     }
 }

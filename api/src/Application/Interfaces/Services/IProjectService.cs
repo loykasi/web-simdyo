@@ -17,6 +17,7 @@ namespace Application.Interfaces.Services
         Task<Result<UploadProjectResponse>> Update(string publicId, UpdateProjectRequest updateProjectRequest);
         Task<Result> Delete(string id);
         Task<Result> Undelete(string id);
+        Task<Result<string>> Download(string id);
 
         Task<Result<DailyUploadLimitResponse>> GetDailyLimit();
     }

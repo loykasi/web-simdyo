@@ -15,6 +15,8 @@
         public int UserId { get; set; }
         public User User { get; set; } = null!;
 
+        public int DownloadCount { get; set; }
+
         public ICollection<ProjectReaction> ProjectReactions { get; set; }
         public ICollection<ProjectBan> ProjectBans { get; set; }
 

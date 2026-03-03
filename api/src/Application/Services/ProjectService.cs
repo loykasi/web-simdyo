@@ -181,10 +181,10 @@ namespace Application.Services
             };
             unitOfWork.ProjectRepository.Add(project);
 
-            string projectName = $"{project.PublicId}_{GetUniqueHash}.simdyo";
-            string thumbnailName = $"{project.PublicId}_{GetUniqueHash}.png";
-
             project.PublicId = publicIdService.Encode(project.Id);
+
+            string projectName = $"projects/{project.PublicId}/project_{GetUniqueHash}.simdyo";
+            string thumbnailName = $"projects/{project.PublicId}/cover_{GetUniqueHash}.png";
             project.FileLink = objectStorageService.GetPath(projectName);
             project.ThumbnailLink = objectStorageService.GetPath(thumbnailName);
 
@@ -286,7 +286,7 @@ namespace Application.Services
 
             if (request.ProjectLength.HasValue)
             {
-                string projectName = $"{project.PublicId}_{GetUniqueHash}.simdyo";
+                string projectName = $"projects/{project.PublicId}/project__{GetUniqueHash}.simdyo";
                 if (objectStorageService.TryGetPreSignedUrl
                 (
                     projectName,
@@ -302,7 +302,7 @@ namespace Application.Services
 
             if (request.ThumbnailLength.HasValue)
             {
-                string thumbnailName = $"{project.PublicId}_{GetUniqueHash}.png";
+                string thumbnailName = $"projects/{project.PublicId}/cover_{GetUniqueHash}.png";
                 if (objectStorageService.TryGetPreSignedUrl
                 (
                     thumbnailName,
@@ -400,6 +400,22 @@ namespace Application.Services
             await unitOfWork.SaveChangesAsync();
 
             return Result.Success();
+        }
+
+        public async Task<Result<string>> Download(string publicId)
+        {
+            var project = await publicIdService.GetProject(publicId);
+            if (project == null)
+            {
+                return Result.NotFound<string>
+                (
+                    new Error("Project.NotFound", $"No project with id: {publicId}.")
+                );
+            }
+
+            project.DownloadCount++;
+            await unitOfWork.SaveChangesAsync();
+            return Result.Success(project.FileLink);
         }
 
         public async Task<Result<DailyUploadLimitResponse>> GetDailyLimit()

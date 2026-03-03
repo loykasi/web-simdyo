@@ -80,5 +80,12 @@ namespace API.Controllers
             var result = await projectService.Undelete(publicId);
             return ToApiResult(result);
         }
+
+        [HttpPost("{publicId}/download")]
+        public async Task<IActionResult> Download(string publicId)
+        {
+            var result = await projectService.Download(publicId);
+            return ToApiResult(result);
+        }
     }
 }
