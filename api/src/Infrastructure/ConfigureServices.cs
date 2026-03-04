@@ -40,6 +40,9 @@ namespace Infrastructure
             builder.Services.Configure<AccountOptions>(
                 builder.Configuration.GetSection(AccountOptions.OptionsKey)
             );
+            builder.Services.Configure<PublicIdOptions>(
+                builder.Configuration.GetSection(PublicIdOptions.OptionsKey)
+            );
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)

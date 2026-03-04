@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Services;
 using Domain.Entities;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using Sqids;
 
 namespace Infrastructure.Services
@@ -10,11 +12,11 @@ namespace Infrastructure.Services
         private SqidsEncoder<int> _sqids;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PublicIdService(IUnitOfWork unitOfWork)
+        public PublicIdService(IUnitOfWork unitOfWork, IOptions<PublicIdOptions> options)
         {
             _sqids = new SqidsEncoder<int>(new()
             {
-                Alphabet = "YlouQaeEWTI0FMpKwUXJbCvr6O5kxRtDsgZVj8GLSqc2i7NnHmh4Bd9PzyAf13",
+                Alphabet = options.Value.Alphabet,
                 MinLength = 5
             });
 
