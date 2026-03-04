@@ -126,6 +126,8 @@ var app = builder.Build();
 //     db.Database.Migrate();
 // }
 
+await app.Seed();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -139,8 +141,6 @@ if (app.Environment.IsDevelopment())
         Authorization = [],
         DarkModeEnabled = true
     });
-
-    await app.Seed();
 }
 
 app.UseCors("AllowOrigins");
