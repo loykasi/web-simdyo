@@ -12,7 +12,7 @@ const items: NavigationMenuItem[] = [
   },
   {
     label: $t("footer.feedback"),
-    to: "/#",
+    to: "https://forms.gle/bNBGvWZTGqBd74pi9",
     target: "_blank",
   },
 ];
