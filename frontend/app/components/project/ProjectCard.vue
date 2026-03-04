@@ -88,7 +88,7 @@ const formatter = new Intl.NumberFormat("en", {
         </UTooltip>
       </div> -->
       <div class="mt-2 flex-1 flex items-start">
-        <UBadge color="neutral" variant="soft">Game</UBadge>
+        <UBadge color="neutral" variant="soft">{{ project.category ?? "Default" }}</UBadge>
       </div>
     </div>
 
