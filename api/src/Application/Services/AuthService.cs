@@ -486,7 +486,7 @@ namespace Application.Services
 
             return Result.Success
             (
-                new AccountDetailResponse(user.UserName!, user.Email!, totalProject)
+                new AccountDetailResponse(user.UserName!, totalProject)
             );
         }
     }

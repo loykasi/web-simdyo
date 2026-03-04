@@ -51,7 +51,7 @@ useHead({
 <template>
   <UPage>
     <template v-if="profilePending">
-      <div class="h-[105px] border-b border-default py-8">
+      <div class="h-[40px] my-6">
         <USkeleton class="w-40 h-full" />
       </div>
     </template>
@@ -71,12 +71,6 @@ useHead({
             </tr>
             <tr>
               <td class="pe-8 py-1.5 font-medium text-default">
-                {{ $t("common.fields.email") }}
-              </td>
-              <td><USkeleton class="w-20 h-6" /></td>
-            </tr>
-            <tr>
-              <td class="pe-8 py-1.5 font-medium text-default">
                 {{ $t("profile.total_projects") }}
               </td>
               <td><USkeleton class="w-20 h-6" /></td>
@@ -90,12 +84,6 @@ useHead({
                 {{ $t("common.fields.username") }}
               </td>
               <td>{{ profile?.username }}</td>
-            </tr>
-            <tr>
-              <td class="pe-8 py-1.5 font-medium text-default">
-                {{ $t("common.fields.email") }}
-              </td>
-              <td>{{ profile?.email }}</td>
             </tr>
             <tr>
               <td class="pe-8 py-1.5 font-medium text-default">
