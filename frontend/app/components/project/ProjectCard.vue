@@ -80,13 +80,6 @@ const formatter = new Intl.NumberFormat("en", {
           {{ project.username }}
         </NuxtLink>
       </div>
-      <!-- <div class="flex-1 mt-2">
-        <UTooltip :text="project.shortDescription" :delay-duration="200">
-          <p class="line-clamp-2 overflow-hidden">
-            {{ project.shortDescription }}
-          </p>
-        </UTooltip>
-      </div> -->
       <div class="mt-2 flex-1 flex items-start">
         <UBadge color="neutral" variant="soft">{{ project.category ?? "Default" }}</UBadge>
       </div>
@@ -95,16 +88,12 @@ const formatter = new Intl.NumberFormat("en", {
     <div class="py-2 pe-4 flex flex-col items-end justify-center gap-y-2">
       <div class="flex items-center gap-1 text-muted">
         <span class="font-bold text-lg">{{ formatter.format(project.likeCount) }}</span>
-        <UIcon name="lucide:heart" class="size-5 mt-0.5" />
+        <UIcon name="material-symbols:favorite-outline" class="size-5 mt-0.5" />
       </div>
       <div class="flex items-center gap-1 text-muted">
         <span class="font-bold text-lg">{{ formatter.format(project.okayCount) }}</span>
-        <UIcon name="lucide:meh" class="size-5 mt-0.5" />
+        <UIcon name="material-symbols:sentiment-neutral-outline" class="size-5 mt-0.5" />
       </div>
-      <!-- <div class="flex items-center gap-1 text-muted">
-        <span class="font-bold text-xl">100</span>
-        <UIcon name="lucide:eye" class="size-5 mt-0.5" />
-      </div> -->
     </div>
   </div>
 </template>
