@@ -120,12 +120,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//     db.Database.Migrate();
-// }
-
 await app.Seed();
 
 if (app.Environment.IsDevelopment())
@@ -150,7 +144,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
-
-HangfireJobRegistrar.Register();
 
 app.Run();

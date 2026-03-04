@@ -6,6 +6,7 @@ using Domain.Entities;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Infrastructure;
+using Infrastructure.Background;
 using Infrastructure.Options;
 using Infrastructure.Scheduler;
 using Infrastructure.Services;
@@ -138,6 +139,8 @@ namespace Infrastructure
             );
 
             services.AddHangfireServer();
+
+            services.AddHostedService<HangfireRecurringJobService>();
 
             return services;
         }

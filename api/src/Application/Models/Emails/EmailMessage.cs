@@ -23,7 +23,6 @@
             {
                 body = body.Replace($"{{{placeholder.Name}}}", placeholder.Value);
             }
-            Console.WriteLine(body);
             return body;
         }
     }

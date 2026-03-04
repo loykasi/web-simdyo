@@ -13,10 +13,12 @@ namespace Infrastructure.Services
     {
         private readonly S3Options _options;
         private readonly IAmazonS3 _s3Client;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public ObjectStorageService(IOptions<S3Options> s3Options)
+        public ObjectStorageService(IOptions<S3Options> s3Options, IBackgroundJobClient backgroundJobClient)
         {
             _options = s3Options.Value;
+            _backgroundJobClient = backgroundJobClient;
 
             var credentials = new BasicAWSCredentials(_options.AccessKey, _options.SecretKey);
             var config = new AmazonS3Config
@@ -47,7 +49,7 @@ namespace Infrastructure.Services
 
         public void DeleteJobs(IEnumerable<string> names)
         {
-            BackgroundJob.Enqueue(() => Delete(names));
+            _backgroundJobClient.Enqueue(() => Delete(names));
         }
 
         public async Task<bool> Delete(IEnumerable<string> names)

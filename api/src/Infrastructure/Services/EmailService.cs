@@ -8,13 +8,17 @@ using MimeKit;
 
 namespace Infrastructure.Services
 {
-    public class EmailService(IOptions<EmailOptions> options) : IEmailService
+    public class EmailService
+    (
+        IOptions<EmailOptions> options,
+        IBackgroundJobClient backgroundJobClient
+    ) : IEmailService
     {
         private readonly EmailOptions _options = options.Value;
 
         public void Send(EmailMessage emailMessage)
         {
-            BackgroundJob.Enqueue(() => SendMail(emailMessage));
+            backgroundJobClient.Enqueue(() => SendMail(emailMessage));
         }
 
         public async Task SendMail(EmailMessage emailMessage)
