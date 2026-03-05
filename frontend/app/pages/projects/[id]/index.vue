@@ -244,7 +244,11 @@ function onResize(event: Event | null = null) {
 <template>
   <div ref="container-ref">
     <div ref="inner-container-ref" class="mx-auto">
-      <template v-if="isPending"> Loading... </template>
+      <template v-if="isPending">
+        <div class="flex flex-col items-center mt-12">
+          <UIcon name="lucide:loader-circle" class="size-12 animate-spin" />
+        </div>
+      </template>
       <template v-else-if="project">
         <div ref="header-ref" class="flex justify-between my-4 gap-x-3 overflow-hidden">
           <h1 class="text-3xl font-semibold line-clamp-2">{{ project.title }}</h1>
@@ -413,8 +417,8 @@ function onResize(event: Event | null = null) {
       </template>
       <template v-else>
         <UEmpty
-          icon="i-lucide-file"
-          title="No projects found"
+          icon="material-symbols:sentiment-stressed-outline"
+          title="No project found"
           description="Make sure you've type the url correctly."
         />
       </template>
