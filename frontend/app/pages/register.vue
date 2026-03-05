@@ -9,19 +9,9 @@ const form = useTemplateRef("form");
 const isRegisterSuccess = ref(false);
 const registering = ref(false);
 
-// const schema = z.object({
-//     username: z.string('Username is required'),
-//     email: z.email('Invalid email'),
-//     password: z.string('Password is required').min(6, 'Must be at least 6 characters'),
-//     confirmPassword: z.string('Required')
-// }).refine((data) => data.password === data.confirmPassword, {
-//     message: "Passwords don't match",
-//     path: ["confirmPassword"],
-// });
-
 const schema = z.object({
-  username: z.string("Username is required"),
-  email: z.email("Invalid email"),
+  username: z.string("Username is required").trim(),
+  email: z.email("Invalid email").trim(),
 });
 type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
@@ -53,9 +43,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       const errors = [];
       errors.push({ name: "username", message: "Username taken! Try another" });
       form.value?.setErrors(errors);
-    }
-
-    if (err.data[0].code === "User.DuplicateEmail") {
+    } else if (err.data[0].code === "User.DuplicateEmail") {
       const errors = [];
       errors.push({ name: "email", message: "Email already in use" });
       form.value?.setErrors(errors);
