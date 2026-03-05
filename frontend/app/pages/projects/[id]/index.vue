@@ -363,7 +363,7 @@ function onResize(event: Event | null = null) {
         <UCard class="mt-4">
           <div>
             <div>
-              <span>{{ project.description }}</span>
+              <p class="whitespace-pre-line">{{ project.description }}</p>
             </div>
             <div class="mt-4">
               <span
