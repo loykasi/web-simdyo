@@ -7,16 +7,20 @@ import type { ProjectResponse } from "~/types/project.type";
 const route = useRoute();
 
 const searchQuery = computed(() => route.query.q || "");
-const categoryQuery = computed(() => {
-  let value = (route.params.category as string).toLowerCase();
-  value = value === "all" ? "" : value;
-  return value;
-});
+const categoryQuery = computed(() => (route.params.category as string).toLowerCase());
 
 const pageSize = 12;
 const loading = ref(false);
 
 const key = computed(() => `projects-${categoryQuery.value}`);
+
+watch(
+  () => route.query.q,
+  (q) => {
+    console.log(q)
+  },
+  { immediate: true }
+)
 
 const { data: pagination, pending } = await useLazyAsyncData(
   key,
@@ -62,8 +66,7 @@ function showMore() {
 const searchTerm = ref(route.query.q || "");
 
 function onSearch() {
-  console.log(searchTerm.value);
-  navigateTo({
+  return navigateTo({
     path: `/explore/${categoryQuery.value}`,
     query: {
       q: searchTerm.value,

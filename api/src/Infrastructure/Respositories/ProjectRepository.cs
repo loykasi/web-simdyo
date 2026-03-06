@@ -77,7 +77,8 @@ namespace Infrastructure.Respositories
         {
             IQueryable<Project> query = GetAvailable()
                 .Include(p => p.Category)
-                .Where(p => p.Name.ToLower().Contains(paginationQuery.SearchTerm))
+                .Where(p => p.Name.ToLower().Contains(paginationQuery.SearchTerm)
+                        || p.User.Username.ToLower().Contains(paginationQuery.SearchTerm))
                 .OrderByDescending(p => p.Id);
 
             if (paginationQuery.Category != null)
