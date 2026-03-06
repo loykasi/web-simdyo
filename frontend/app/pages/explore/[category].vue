@@ -14,14 +14,6 @@ const loading = ref(false);
 
 const key = computed(() => `projects-${categoryQuery.value}`);
 
-watch(
-  () => route.query.q,
-  (q) => {
-    console.log(q)
-  },
-  { immediate: true }
-)
-
 const { data: pagination, pending } = await useLazyAsyncData(
   key,
   () =>
@@ -29,7 +21,7 @@ const { data: pagination, pending } = await useLazyAsyncData(
       method: "GET",
       query: {
         search: searchQuery.value,
-        category: categoryQuery.value,
+        category: categoryQuery.value === "all" ? "" : categoryQuery.value,
         limit: pageSize,
       },
     }),
